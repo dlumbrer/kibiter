@@ -259,9 +259,14 @@ define(function (require) {
     };
 
     AggConfig.prototype.makeLabel = function () {
-      if (!this.type) return '';
-      var pre = (_.get(this.vis, 'params.mode') === 'percentage') ? 'Percentage of ' : '';
-      return pre += this.type.makeLabel(this);
+      var label = (_.get(this.vis, 'params.mode') === 'percentage') ? 'Percentage of ' : '';
+      label += this.type.makeLabel(this);
+
+      if (this.params.customLabel !== '') {
+        label = this.params.customLabel;
+      }
+
+      return label;
     };
 
     AggConfig.prototype.field = function () {
