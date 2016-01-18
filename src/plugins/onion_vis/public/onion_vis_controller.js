@@ -17,6 +17,7 @@ define(function (require) {
       var totalRegular = $scope.total * 0.95;
       var totalCovered = 0;
       // Time to compute core, regular and casual
+      // people is ordered by value
       $scope.people.forEach(function (person) {
         totalCovered += person.value;
         if (totalCovered <= totalCore) {
