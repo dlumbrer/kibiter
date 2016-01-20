@@ -19,7 +19,7 @@ var chrome = require('ui/chrome');
 var routes = require('ui/routes');
 var modules = require('ui/modules');
 
-var kibanaLogoUrl = require('ui/images/kibana.svg');
+var kibanaLogoUrl = require('ui/images/open-stack-cloud-computing-logo.png');
 
 routes.enable();
 
@@ -33,31 +33,20 @@ chrome
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
   'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
 })
-.setNavBackground('#222222')
+.setNavBackground('#FFFFFF')
 .setTabDefaults({
   resetWhenActive: true,
   lastUrlStore: window.sessionStore,
-  activeIndicatorColor: '#656a76'
+  activeIndicatorColor: '#C43422;'
 })
 .setTabs([
   {
-    id: 'discover',
-    title: 'Discover'
+    id: 'git',
+    title: 'Git'
   },
   {
-    id: 'visualize',
-    title: 'Visualize',
-    activeIndicatorColor: function () {
-      return (String(this.lastUrl).indexOf('/visualize/step/') === 0) ? 'white' : '#656a76';
-    }
-  },
-  {
-    id: 'dashboard',
-    title: 'Dashboard'
-  },
-  {
-    id: 'settings',
-    title: 'Settings'
+    id: 'gerrit',
+    title: 'Gerrit'
   }
 ])
 .setRootController('kibana', function ($scope, $rootScope, courier, config) {
