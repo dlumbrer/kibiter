@@ -27,7 +27,7 @@ var kibanaLogoUrl = require('ui/images/kibana.svg');
 function setTabs(metadashboards) {
   var tabs = [];
   _.each(metadashboards, function (title, dash) {
-    tabs.push({id:title, title: dash});
+    tabs.push({id:'dashboard/' + title, title: dash});
   });
   chrome.setTabs(tabs);
 }
@@ -50,27 +50,6 @@ chrome
   lastUrlStore: window.sessionStore,
   activeIndicatorColor: '#656a76'
 })
-.setTabs([
-  {
-    id: 'discover',
-    title: 'Discover'
-  },
-  {
-    id: 'visualize',
-    title: 'Visualize',
-    activeIndicatorColor: function () {
-      return (String(this.lastUrl).indexOf('/visualize/step/') === 0) ? 'white' : '#656a76';
-    }
-  },
-  {
-    id: 'dashboard',
-    title: 'Dashboard'
-  },
-  {
-    id: 'settings',
-    title: 'Settings'
-  }
-])
 .setRootController('kibana', function ($scope, $rootScope, courier, config, es, kbnIndex) {
   function setDefaultTimezone() {
     moment.tz.setDefault(config.get('dateFormat:tz'));
