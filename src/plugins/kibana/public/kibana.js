@@ -31,16 +31,6 @@ chrome
   lastUrlStore: window.sessionStore,
   activeIndicatorColor: '#C43422;'
 })
-.setTabs([
-  {
-    id: 'git',
-    title: 'Git'
-  },
-  {
-    id: 'gerrit',
-    title: 'Gerrit'
-  }
-])
 .setRootController('kibana', function ($scope, $rootScope, courier, config) {
   function setDefaultTimezone() {
     moment.tz.setDefault(config.get('dateFormat:tz'));
