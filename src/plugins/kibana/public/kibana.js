@@ -11,7 +11,7 @@ const chrome = require('ui/chrome');
 const routes = require('ui/routes');
 const modules = require('ui/modules');
 
-var kibanaLogoUrl = require('ui/images/open-stack-cloud-computing-logo.png');
+var kibanaLogoUrl = require('ui/images/bitergia.png');
 
 routes.enable();
 
@@ -25,7 +25,7 @@ chrome
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
   'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
 })
-.setNavBackground('#FFFFFF')
+.setNavBackground('#333333')
 .setTabDefaults({
   resetWhenActive: true,
   lastUrlStore: window.sessionStore,
