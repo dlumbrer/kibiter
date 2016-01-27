@@ -43,7 +43,8 @@ routes
 chrome
 .setBrand({
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
-  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
+  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat',
+  'title': 'OpenStack'
 })
 .setNavBackground('#333333')
 .setTabDefaults({
