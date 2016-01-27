@@ -21,8 +21,9 @@ var modules = require('ui/modules');
 var Scanner = require('ui/utils/scanner');
 var _ = require('lodash');
 
-
-var kibanaLogoUrl = require('ui/images/bitergia.png');
+// var kibanaLogoUrl = require('ui/images/bitergia.png');
+// var kibanaLogoUrl = require('ui/images/bitergia-analytics-logo.png');
+var kibanaLogoUrl = require('ui/images/bitergia-analytics-logo-2.png');
 
 function setTabs(metadashboards) {
   var tabs = [];
