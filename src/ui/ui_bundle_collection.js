@@ -8,8 +8,8 @@ let unlink = promisify(require('fs').unlink);
 let readdir = promisify(require('fs').readdir);
 let readSync = require('fs').readFileSync;
 
-let UiBundle = require('./UiBundle');
-let appEntryTemplate = require('./appEntryTemplate');
+import UiBundle from './ui_bundle';
+import appEntryTemplate from './app_entry_template';
 
 class UiBundleCollection {
   constructor(bundlerEnv, filter) {
