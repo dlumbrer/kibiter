@@ -1,6 +1,5 @@
 # Kibana is served by a back end server. This setting specifies the port to use.
 # server.port: 5601
-server.port: 5610
 
 # This setting specifies the IP address of the back end server.
 # server.host: "0.0.0.0"
