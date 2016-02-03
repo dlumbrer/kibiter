@@ -3,7 +3,7 @@
     <div class="col-md-4 col-md-offset-4 jumbotron">
       <center>
         <img kbn-src="/plugins/kibana/settings/sections/about/barcode.svg" alt="Kibana Barcode Logo" width="128" height="128"><br>
-        <h1>Kibana</h1>
+        <h1>Kibiter powered by Kibana</h1>
         <p>
           <table class="table table-condensed kbn-settings-about-versions">
             <tr>
@@ -17,13 +17,19 @@
             </tr>
 
             <tr>
+              <td>Branch</td>
+              <td>{{branch}}</td>
+            </tr>
+
+            <tr>
               <td>Commit SHA</td>
               <td>{{buildSha | limitTo:7}}</td>
             </tr>
 
           </table>
         </p>
-        <small>© 2015 All Rights Reserved - <a href="https://elastic.co">Elasticsearch</a></small>
+        <small>© 2015 All Rights Reserved - <a href="https://elastic.co">Elasticsearch</a></small><br>
+        <small>© 2016 All Rights Reserved - <a href="https://bitergia.com">Bitergia</a></small>
       </center>
     </div>
   </div>
