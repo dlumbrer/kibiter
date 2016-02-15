@@ -62,6 +62,14 @@ export default function buildHierarchicalDataProvider(Private, Notifier) {
       var split = buildSplit(firstAgg, metric, aggData);
       split.hits = resp.hits.total;
       split.raw = raw;
+      // Add others
+      split.raw.rows.push(['Others', aggData.sum_other_doc_count]);
+      split.slices.children.push({
+        'aggConfig': undefined,
+        'aggConfigResult': undefined,
+        'name': 'Others',
+        'size': aggData.sum_other_doc_count
+      });
       split.tooltipFormatter = tooltipFormatter(raw.columns);
       return split;
     }
