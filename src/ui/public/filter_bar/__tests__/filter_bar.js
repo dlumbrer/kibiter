@@ -1,12 +1,14 @@
 import angular from 'angular';
 import _ from 'lodash';
-var $ = require('jquery');
 import ngMock from 'ngMock';
 import expect from 'expect.js';
 import sinon from 'sinon';
 
-require('ui/filter_bar');
 import MockState from 'fixtures/mock_state';
+import $ from 'jquery';
+import 'ui/filter_bar';
+import FilterBarLibMapFilterProvider from 'ui/filter_bar/lib/mapFilter';
+import FilterBarQueryFilterProvider from 'ui/filter_bar/query_filter';
 
 describe('Filter Bar Directive', function () {
   var $rootScope;
@@ -39,9 +41,9 @@ describe('Filter Bar Directive', function () {
       $compile = _$compile_;
       $timeout = _$timeout_;
       Promise = $injector.get('Promise');
-      mapFilter = Private(require('ui/filter_bar/lib/mapFilter'));
+      mapFilter = Private(FilterBarLibMapFilterProvider);
 
-      var queryFilter = Private(require('ui/filter_bar/query_filter'));
+      var queryFilter = Private(FilterBarQueryFilterProvider);
       queryFilter.getFilters = function () {
         return appState.filters;
       };

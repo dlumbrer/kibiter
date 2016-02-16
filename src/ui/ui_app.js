@@ -1,5 +1,5 @@
 import _ from 'lodash';
-var { join } = require('path');
+import { join } from 'path';
 
 class UiApp {
   constructor(uiExports, spec) {
@@ -36,7 +36,7 @@ class UiApp {
   getModules() {
     return _.chain([
       this.uiExports.find(_.get(this, 'spec.uses', [])),
-      this.uiExports.find(['chromeNavControls']),
+      this.uiExports.find(['chromeNavControls', 'sledgehammers']),
     ])
     .flatten()
     .uniq()

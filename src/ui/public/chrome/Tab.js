@@ -1,6 +1,6 @@
 import _ from 'lodash';
-const reEsc = require('lodash').escapeRegExp;
-const { parse, format } = require('url');
+import { escapeRegExp as reEsc } from 'lodash';
+import { parse, format } from 'url';
 
 const urlJoin = (a, b) => {
   if (!b) return a;

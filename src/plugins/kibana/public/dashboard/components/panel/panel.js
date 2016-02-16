@@ -1,16 +1,16 @@
 define(function (require) {
-  const moment = require('moment');
-  const $ = require('jquery');
+  var moment = require('moment');
+  var $ = require('jquery');
   require('ui/modules')
   .get('app/dashboard')
   .directive('dashboardPanel', function (savedVisualizations, savedSearches, Notifier, Private, $injector) {
-    const _ = require('lodash');
-    const loadPanel = Private(require('plugins/kibana/dashboard/components/panel/lib/load_panel'));
-    const filterManager = Private(require('ui/filter_manager'));
-    const notify = new Notifier();
+    var _ = require('lodash');
+    var loadPanel = Private(require('plugins/kibana/dashboard/components/panel/lib/load_panel'));
+    var filterManager = Private(require('ui/filter_manager'));
+    var notify = new Notifier();
 
-    const services = require('plugins/kibana/settings/saved_object_registry').all().map(function (serviceObj) {
-      const service = $injector.get(serviceObj.service);
+    var services = require('plugins/kibana/settings/saved_object_registry').all().map(function (serviceObj) {
+      var service = $injector.get(serviceObj.service);
       return {
         type: service.type,
         name: serviceObj.service
@@ -20,9 +20,9 @@ define(function (require) {
     require('ui/visualize');
     require('ui/doc_table');
 
-    const brushEvent = Private(require('ui/utils/brush_event'));
+    var brushEvent = Private(require('ui/utils/brush_event'));
 
-    const getPanelId = function (panel) {
+    var getPanelId = function (panel) {
       return ['P', panel.panelIndex].join('-');
     };
 
@@ -32,7 +32,7 @@ define(function (require) {
       requires: '^dashboardGrid',
       link: function ($scope, $el) {
         // using $scope inheritance, panels are available in AppState
-        const $state = $scope.state;
+        var $state = $scope.state;
 
         // receives $scope.panel from the dashboard grid directive, seems like should be isolate?
         $scope.$watch('id', function () {
@@ -49,7 +49,7 @@ define(function (require) {
             });
 
             // create child ui state from the savedObj
-            const uiState = panelConfig.uiState || {};
+            var uiState = panelConfig.uiState || {};
             $scope.uiState = $scope.parentUiState.createChild(getPanelId(panelConfig.panel), uiState, true);
 
             if ($scope.uiState) {
@@ -61,7 +61,7 @@ define(function (require) {
             }
 
             $scope.filter = function (field, value, operator) {
-              const index = $scope.savedObj.searchSource.get('index').id;
+              var index = $scope.savedObj.searchSource.get('index').id;
               filterManager.add(field, value, operator, index);
             };
           })
@@ -71,12 +71,12 @@ define(function (require) {
             // If the savedObjectType matches the panel type, this means the object itself has been deleted,
             // so we shouldn't even have an edit link. If they don't match, it means something else is wrong
             // with the object (but the object still exists), so we link to the object editor instead.
-            const objectItselfDeleted = e.savedObjectType === $scope.panel.type;
+            var objectItselfDeleted = e.savedObjectType === $scope.panel.type;
             if (objectItselfDeleted) return;
 
-            const type = $scope.panel.type;
-            const id = $scope.panel.id;
-            const service = _.find(services, { type: type });
+            var type = $scope.panel.type;
+            var id = $scope.panel.id;
+            var service = _.find(services, { type: type });
             if (!service) return;
 
             $scope.editUrl = '#settings/objects/' + service.name + '/' + id + '?notFound=' + e.savedObjectType;
@@ -94,13 +94,20 @@ define(function (require) {
           if (!_.isString($scope.panel.title)) $scope.panel.title = null;
           $scope.uiState.set('title', $scope.panel.title);
         };
-
         $scope.confirmTitle = function () {$scope.setTitle();};
         $scope.cancelTitle = function () {
           $scope.panel.title = $scope.uiState.get('title');
           $scope.showFormTitle = false;
         };
         $scope.resetTitle = function () {$scope.panel.title = null;};
+        $scope.maybeCancel = function ($event) {
+          const keyCodes = {
+            ESC: 27
+          };
+          if ($event.keyCode === keyCodes.ESC) {
+            $scope.cancelTitle();
+          }
+        };
       }
     };
   });

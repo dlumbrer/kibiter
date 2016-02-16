@@ -1,8 +1,15 @@
+import _ from 'lodash';
+import expect from 'expect.js';
+import ngMock from 'ngMock';
+import sinon from 'auto-release-sinon';
+import 'ui/private';
+import AggParamsPM from 'ui/agg_types/AggParams';
+import VisProvider from 'ui/Vis';
+import RegistryFieldFormatsProvider from 'ui/registry/field_formats';
+import AggTypesAggTypeProvider from 'ui/agg_types/AggType';
+import VisAggConfigProvider from 'ui/Vis/AggConfig';
+import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
 describe('AggType Class', function () {
-  var _ = require('lodash');
-  var expect = require('expect.js');
-  var ngMock = require('ngMock');
-  var sinon = require('auto-release-sinon');
   var AggType;
   var AggParams;
   var AggConfig;
@@ -10,19 +17,17 @@ describe('AggType Class', function () {
   var fieldFormat;
   var Vis;
 
-  require('ui/private');
 
   beforeEach(ngMock.module('kibana'));
   beforeEach(ngMock.inject(function (Private) {
-    var AggParamsPM = require('ui/agg_types/AggParams');
     AggParams = sinon.spy(Private(AggParamsPM));
     Private.stub(AggParamsPM, AggParams);
 
-    Vis = Private(require('ui/Vis'));
-    fieldFormat = Private(require('ui/registry/field_formats'));
-    AggType = Private(require('ui/agg_types/AggType'));
-    AggConfig = Private(require('ui/Vis/AggConfig'));
-    indexPattern = Private(require('fixtures/stubbed_logstash_index_pattern'));
+    Vis = Private(VisProvider);
+    fieldFormat = Private(RegistryFieldFormatsProvider);
+    AggType = Private(AggTypesAggTypeProvider);
+    AggConfig = Private(VisAggConfigProvider);
+    indexPattern = Private(FixturesStubbedLogstashIndexPatternProvider);
   }));
 
   describe('constructor', function () {
@@ -131,6 +136,16 @@ describe('AggType Class', function () {
           expect(aggType.params.length).to.be(2);
           expect(aggType.params[0].name).to.be('json');
           expect(aggType.params[1].name).to.be('customLabel');
+        });
+
+        it('can disable customLabel', function () {
+          var aggType = new AggType({
+            name: 'smart agg',
+            customLabels: false
+          });
+
+          expect(aggType.params.length).to.be(1);
+          expect(aggType.params[0].name).to.be('json');
         });
 
         it('passes the params arg directly to the AggParams constructor', function () {

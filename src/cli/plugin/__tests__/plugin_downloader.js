@@ -3,10 +3,10 @@ import sinon from 'sinon';
 import nock from 'nock';
 import glob from 'glob';
 import rimraf from 'rimraf';
-const { join } = require('path');
 import mkdirp from 'mkdirp';
 import pluginLogger from '../plugin_logger';
 import pluginDownloader from '../plugin_downloader';
+import { join } from 'path';
 
 describe('kibana cli', function () {
 
@@ -116,6 +116,25 @@ describe('kibana cli', function () {
             .replyWithFile(200, filePath);
 
           const sourceUrl = 'http://www.files.com/plugin.tar.gz';
+
+          return downloader._downloadSingle(sourceUrl)
+          .then(function (data) {
+            expect(data.archiveType).to.be('.tar.gz');
+            expectWorkingPathNotEmpty();
+          });
+        });
+
+        it('should consider .tgz files as archive type .tar.gz', function () {
+          const filePath = join(__dirname, 'replies/test_plugin_master.tar.gz');
+
+          const couchdb = nock('http://www.files.com')
+            .defaultReplyHeaders({
+              'content-length': '10'
+            })
+            .get('/plugin.tgz')
+            .replyWithFile(200, filePath);
+
+          const sourceUrl = 'http://www.files.com/plugin.tgz';
 
           return downloader._downloadSingle(sourceUrl)
           .then(function (data) {
