@@ -75,6 +75,10 @@ dashboard-grid {
           // http://stackoverflow.com/questions/22008135/internet-explorer-10-does-not-apply-flexbox-on-inline-elements
           display: inline-block;
 
+          div {
+            display: inline-block;
+          }
+
           .ellipsis();
           flex: 1 1 auto;
 
@@ -83,7 +87,20 @@ dashboard-grid {
             font-size: 1.2em;
             margin-right: 4px;
           }
+
+          .panel-title-edit {
+            i {
+              opacity: 1;
+            }
+          }
+
+          &:hover {
+            .panel-title-edit {
+              cursor: pointer;
+            }
+          }
         }
+
 
         a {
           color: @dashboard-panel-heading-link-color;
