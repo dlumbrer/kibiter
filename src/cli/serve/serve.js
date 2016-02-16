@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 const { isWorker } = require('cluster');
 const { resolve } = require('path');
 
@@ -61,7 +61,11 @@ function initServerSettings(opts, extraCliOptions) {
     opts.pluginDir
   )));
 
-  set('plugins.paths', [].concat(opts.pluginPath || []));
+  set('plugins.paths', _.compact([].concat(
+    get('plugins.paths'),
+    opts.pluginPath
+  )));
+
   merge(extraCliOptions);
 
   return settings;
@@ -107,6 +111,7 @@ module.exports = function (program) {
     command
     .option('--dev', 'Run the server with development mode defaults')
     .option('--no-ssl', 'Don\'t run the dev server using HTTPS')
+    .option('--no-base-path', 'Don\'t put a proxy in front of the dev server, which adds a random basePath')
     .option('--no-watch', 'Prevents automatic restarts of the server in --dev mode');
   }
 
