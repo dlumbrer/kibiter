@@ -11,7 +11,7 @@
     "dashboarding"
   ],
   "private": false,
-  "version": "4.5.0-snapshot",
+  "version": "4.6.0-snapshot",
   "build": {
     "number": 8467,
     "sha": "6cb7fec4e154faa0a4a3fee4b33dfef91b9870d9"
@@ -54,7 +54,8 @@
     "karma": "karma start",
     "elasticsearch": "grunt esvm:dev:keepalive",
     "lint": "grunt eslint:source",
-    "lintroller": "grunt eslint:fixSource"
+    "lintroller": "grunt eslint:fixSource",
+    "makelogs": "makelogs"
   },
   "repository": {
     "type": "git",
@@ -171,6 +172,7 @@
     "libesvm": "3.2.0",
     "license-checker": "3.1.0",
     "load-grunt-config": "0.7.2",
+    "makelogs": "2.0.0",
     "marked-text-renderer": "0.1.0",
     "mocha": "2.3.0",
     "nock": "2.10.0",
@@ -181,7 +183,7 @@
     "source-map": "0.4.4"
   },
   "engines": {
-    "node": "0.12.10",
-    "npm": "2.14.3"
+    "node": "4.3.2",
+    "npm": "2.14.22"
   }
 }
