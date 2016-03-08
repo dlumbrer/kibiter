@@ -43,7 +43,7 @@ RUN git clone https://github.com/grimoirelab/kibiter.git && cd kibiter && git ch
 RUN . /root/.bashrc && cd kibiter && nvm install "${NODE_VERSION}" && \
     npm install -g grunt-cli && npm install && \
     grunt _build:downloadNodeBuilds:start _build:downloadNodeBuilds:finish && \
-    grunt build && \
+    grunt --no-color build && \
     tar xfz target/kibana-4.*-linux-x64.tar.gz --directory /opt && mv /opt/* /opt/kibana && \
     rm -rf /kibiter
 
