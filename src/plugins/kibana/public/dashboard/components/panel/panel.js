@@ -52,6 +52,14 @@ define(function (require) {
             const uiState = panelConfig.uiState || {};
             $scope.uiState = $scope.parentUiState.createChild(getPanelId(panelConfig.panel), uiState, true);
 
+            if ($scope.uiState) {
+              $scope.panel.title = $scope.uiState.get('title');
+              // sync external uiState changes
+              var syncUIState = function () {$scope.panel.title = $scope.uiState.get('title');};
+              $scope.uiState.on('change', syncUIState);
+              $scope.$on('$destroy', function () {$scope.uiState.off('change', syncUIState);});
+            }
+
             $scope.filter = function (field, value, operator) {
               const index = $scope.savedObj.searchSource.get('index').id;
               filterManager.add(field, value, operator, index);
@@ -78,6 +86,27 @@ define(function (require) {
 
         $scope.remove = function () {
           _.pull($state.panels, $scope.panel);
+        };
+
+        $scope.setTitle = function () {
+          $scope.showFormTitle = !$scope.showFormTitle;
+          // save the panel title to the UI state
+          if (!_.isString($scope.panel.title)) $scope.panel.title = null;
+          $scope.uiState.set('title', $scope.panel.title);
+        };
+        $scope.confirmTitle = function () {$scope.setTitle();};
+        $scope.cancelTitle = function () {
+          $scope.panel.title = $scope.uiState.get('title');
+          $scope.showFormTitle = false;
+        };
+        $scope.resetTitle = function () {$scope.panel.title = null;};
+        $scope.maybeCancel = function ($event) {
+          const keyCodes = {
+            ESC: 27
+          };
+          if ($event.keyCode === keyCodes.ESC) {
+            $scope.cancelTitle();
+          }
         };
       }
     };
