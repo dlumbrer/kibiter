@@ -36,9 +36,11 @@ RUN arch="$(dpkg --print-architecture)" \
 
 # Build the release tarball from sources
 
+ENV NODE_VERSION "4.3.0"
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 RUN git clone https://github.com/grimoirelab/kibiter.git && cd kibiter && git checkout ${KIBANA_BRANCH}
-RUN . /root/.bashrc && cd kibiter && nvm install "$(cat .node-version)" && \
+# RUN . /root/.bashrc && cd kibiter && nvm install "$(cat .node-version)" && \
+RUN . /root/.bashrc && cd kibiter && nvm install "${NODE_VERSION}" && \
     npm install -g grunt-cli && npm install && grunt build && \
     tar xfz target/kibana-4.*-linux-x64.tar.gz --directory /opt && mv /opt/* /opt/kibana && \
     rm -rf /kibiter
