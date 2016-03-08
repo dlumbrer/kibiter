@@ -8,7 +8,7 @@ ENV KIBANA_BRANCH integration-4.4.1-public
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd -r kibana && useradd -r -m -g kibana kibana
 
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && apt-get install -y \
     ca-certificates curl wget \
     git python zip make g++ \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
@@ -22,7 +22,7 @@ RUN arch="$(dpkg --print-architecture)" \
 	&& gpg --verify /usr/local/bin/gosu.asc \
 	&& rm /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu
-# 
+#
 # ENV KIBANA_VERSION 4.3.1
 # ENV KIBANA_SHA1 115ba22882df75eb5f07330b7ad8781a57569b00
 
@@ -39,7 +39,9 @@ RUN arch="$(dpkg --print-architecture)" \
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 RUN git clone https://github.com/grimoirelab/kibiter.git && cd kibiter && git checkout ${KIBANA_BRANCH}
 RUN . /root/.bashrc && cd kibiter && nvm install "$(cat .node-version)" && \
-    npm install -g grunt-cli && npm install && grunt build && \
+    npm install -g grunt-cli && npm install && \
+    grunt _build:downloadNodeBuilds:start _build:downloadNodeBuilds:finish && \
+    grunt --no-color build && \
     tar xfz target/kibana-4.*-linux-x64.tar.gz --directory /opt && mv /opt/* /opt/kibana && \
     rm -rf /kibiter
 
