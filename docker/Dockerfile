@@ -2,7 +2,6 @@ FROM debian:stable
 
 MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.com>
 
-# ENV KIBANA_BRANCH integration-4.x
 ENV KIBANA_BRANCH integration-4.4.1-public
 
 # add our user and group first to make sure their IDs get assigned consistently
@@ -22,17 +21,6 @@ RUN arch="$(dpkg --print-architecture)" \
 	&& gpg --verify /usr/local/bin/gosu.asc \
 	&& rm /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu
-#
-# ENV KIBANA_VERSION 4.3.1
-# ENV KIBANA_SHA1 115ba22882df75eb5f07330b7ad8781a57569b00
-
-#RUN set -x \
-#	&& curl -fSL "https://download.elastic.co/kibana/kibana/kibana-${KIBANA_VERSION}-linux-x64.tar.gz" -o kibana.tar.gz \
-#	&& echo "${KIBANA_SHA1}  kibana.tar.gz" | sha1sum -c - \
-#	&& mkdir -p /opt/kibana \
-#	&& tar -xz --strip-components=1 -C /opt/kibana -f kibana.tar.gz \
-#	&& chown -R kibana:kibana /opt/kibana \
-#	&& rm kibana.tar.gz
 
 # Build the release tarball from sources
 
