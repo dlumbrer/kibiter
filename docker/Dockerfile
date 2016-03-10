@@ -1,6 +1,6 @@
 FROM debian:stable
 
-MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.com>
+MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.com>, David Muriel <dmuriel@bitergia.com>
 
 ENV KIBANA_BRANCH integration-4.4.1-public
 
