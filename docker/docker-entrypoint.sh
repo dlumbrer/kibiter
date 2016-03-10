@@ -21,14 +21,13 @@ if [ "$1" = 'kibana' ]; then
 
         if [ "$BASE_PATH" != "" ]; then
                 sed -e "s|^# server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/config/kibana.yml
-                sed -e "s|^# server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/src/config/kibana.yml
         fi
 
         if [ "$PROJECT_NAME" != "" ]; then
                 sed -e "s/'title': ''$/'title': '$PROJECT_NAME'/" -i /opt/kibana/src/plugins/kibana/public/kibana.js
                 sed -e "s/'title': ''$/'title': '$PROJECT_NAME'/" -i /opt/kibana/optimize/bundles/kibana.bundle.js
         fi
-	
+
 	set -- gosu kibana "$@"
 fi
 
