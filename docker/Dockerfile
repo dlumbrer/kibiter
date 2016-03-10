@@ -5,7 +5,8 @@ MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.co
 ENV KIBANA_BRANCH integration-4.4.1-public
 
 # add our user and group first to make sure their IDs get assigned consistently
-RUN groupadd -r kibana && useradd -r -m -g kibana kibana
+RUN groupadd --system kibana && \
+    useradd --system --create-home --gid kibana kibana
 
 RUN apt-get update && apt-get install -y \
     ca-certificates curl wget \
