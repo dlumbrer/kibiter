@@ -35,8 +35,6 @@ RUN . /root/.bashrc && cd kibiter && nvm install "${NODE_VERSION}" && \
     tar xfz target/kibana-4.*-linux-x64.tar.gz --directory /opt && mv /opt/* /opt/kibana && \
     rm -rf /kibiter
 
-ADD kibana.yml /opt/kibana/config/kibana.yml
-ADD kibana.yml /opt/kibana/src/config/kibana.yml
 RUN chown -R kibana:kibana /opt/kibana
 
 ENV PATH /opt/kibana/bin:$PATH
