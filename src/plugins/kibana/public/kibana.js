@@ -6,7 +6,7 @@ import chrome from 'ui/chrome';
 import routes from 'ui/routes';
 import modules from 'ui/modules';
 
-import kibanaLogoUrl from 'ui/images/bitergia.png'
+import kibanaLogoUrl from 'ui/images/bitergia-analytics-logo.png'
 
 import 'ui/autoload/all';
 import 'plugins/kibana/discover/index';
@@ -30,13 +30,14 @@ routes
 chrome
 .setBrand({
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
-  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
+  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat',
+  'title': ''
 })
 .setNavBackground('#333333')
 .setTabDefaults({
   resetWhenActive: true,
   lastUrlStore: window.sessionStore,
-  activeIndicatorColor: '#C43422;'
+  activeIndicatorColor: '#ED9C06;'
 })
 .setRootController('kibana', function ($scope, $rootScope, courier, config) {
   function setDefaultTimezone() {
