@@ -11,7 +11,7 @@ const chrome = require('ui/chrome');
 const routes = require('ui/routes');
 const modules = require('ui/modules');
 
-var kibanaLogoUrl = require('ui/images/bitergia.png');
+const kibanaLogoUrl = require('ui/images/bitergia-analytics-logo.png');
 
 routes.enable();
 
@@ -23,13 +23,14 @@ routes
 chrome
 .setBrand({
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
-  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat'
+  'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat',
+  'title': ''
 })
 .setNavBackground('#333333')
 .setTabDefaults({
   resetWhenActive: true,
   lastUrlStore: window.sessionStore,
-  activeIndicatorColor: '#C43422;'
+  activeIndicatorColor: '#ED9C06;'
 })
 .setRootController('kibana', function ($scope, $rootScope, courier, config) {
   function setDefaultTimezone() {
