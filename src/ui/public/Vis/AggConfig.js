@@ -292,6 +292,10 @@ define(function (require) {
     };
 
     AggConfig.prototype.fieldDisplayName = function () {
+      if (this.params.customLabel) {
+        return this.params.customLabel;
+      }
+
       var field = this.field();
       return field ? (field.displayName || this.fieldName()) : '';
     };
