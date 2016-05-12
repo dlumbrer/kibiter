@@ -2,7 +2,7 @@ FROM debian:stable
 
 MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.com>, David Muriel <dmuriel@bitergia.com>
 
-ENV KIBANA_BRANCH integration-4.4.1-public
+ENV KIBANA_BRANCH cauldronio-4.4.1
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
