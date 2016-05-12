@@ -29,20 +29,26 @@
           ng-style="{ 'background': chrome.getBrand('logo') }"
           aria-label="{{ chrome.getAppTitle() }} Logo"
           class="logo hidden-sm"
-          ></li>
+          ><a style='background:transparent;' href="https://cauldron.io"></a></li>
 
         <li
           ng-if="chrome.getBrand('smallLogo')"
           ng-style="{ 'background': chrome.getBrand('smallLogo') }"
           aria-label="{{ chrome.getAppTitle() }} Logo"
           class="logo-small visible-sm hidden-xs"
-          ></li>
+          ><a style='background:transparent;' href="https://cauldron.io"></a></li>
 
         <li ng-if="chrome.getBrand('title')" class="navbar-brand">{{ chrome.getBrand('title') }}</li>
 
         <li ng-repeat="tab in chrome.getTabs()" ng-class="{ active: tab.active }">
           <a ng-href="{{ tab.href() }}" ng-style="{ 'border-bottom-color': tab.activeIndicatorColor }">
             {{ tab.title }}
+          </a>
+        </li>
+
+        <li ng-class="{ active: tab.active }">
+          <a ng-href="https://bitergia.com" ng-style="{ 'border-bottom-color': tab.activeIndicatorColor }">
+            Powered by Bitergia
           </a>
         </li>
 

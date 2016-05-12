@@ -14,6 +14,8 @@ const Scanner = require('ui/utils/scanner');
 const _ = require('lodash');
 
 const kibanaLogoUrl = require('ui/images/bitergia-analytics-logo.png');
+const kibanaHomeUrl = 'https://cauldron.io';
+
 
 function setTabs(metadashboards) {
   var tabs = [];
@@ -34,7 +36,9 @@ chrome
 .setBrand({
   'logo': 'url(' + kibanaLogoUrl + ') left no-repeat',
   'smallLogo': 'url(' + kibanaLogoUrl + ') left no-repeat',
-  'title': ''
+  'title': '',
+  'logo_url': kibanaLogoUrl,
+  'url': kibanaHomeUrl
 })
 .setNavBackground('#333333')
 .setTabDefaults({
