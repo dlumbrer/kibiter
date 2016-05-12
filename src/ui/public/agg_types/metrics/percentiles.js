@@ -13,6 +13,10 @@ define(function (require) {
 
     var valueProps = {
       makeLabel: function () {
+        if (this.params.customLabel) {
+          return this.params.customLabel;
+        }
+
         return ordinalSuffix(this.key) + ' percentile of ' + this.fieldDisplayName();
       }
     };
