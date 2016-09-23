@@ -43,7 +43,7 @@ RUN apt-get update && \
     chown -R kibana:kibana /opt/kibana  && \
 
     # cleanup to thin the final image
-    apt-get clean && \
+    apt-get clean
 
 # grab gosu for easy step-down from root
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
