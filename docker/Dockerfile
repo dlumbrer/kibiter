@@ -3,8 +3,7 @@ FROM debian:stable
 MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.com>, David Muriel <dmuriel@bitergia.com>
 # Image for developing Kibiter/Kibana
 
-# ENV KIBANA_BRANCH master
-ENV KIBANA_BRANCH 5.x
+ENV KIBANA_BRANCH master
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
