@@ -9,7 +9,9 @@ ENV KIBANA_BRANCH master
 RUN groupadd --system kibana && \
     useradd --system --create-home --gid kibana kibana
 
-RUN apt-get update && \
+# backports used to install java 8 needed by elasticsearch 5
+RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/backports.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
             ca-certificates \
             curl \
@@ -19,8 +21,10 @@ RUN apt-get update && \
             zip \
             make \
             g++ \
+            openjdk-8-jre \
             && \
-
+    rm /etc/apt/sources.list.d/backports.list && \
+    apt-get update && \
     # install nvm
     curl -o /tmp/nvm-install.sh -sSL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh && \
     chmod +x /tmp/nvm-install.sh && \
