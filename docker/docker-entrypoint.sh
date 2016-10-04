@@ -18,6 +18,7 @@ if [ "$1" = 'kibana' ]; then
 		echo >&2 '  or -e ELASTICSEARCH_URL=http://some-elasticsearch:9200 ?'
 		echo >&2
 	fi
+        sed -e "s|^#server.host: .*$|server.host: 0.0.0.0|" -i /opt/kibana/config/kibana.yml
 
         if [ "$BASE_PATH" != "" ]; then
                 sed -e "s|^# server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/config/kibana.yml
