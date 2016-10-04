@@ -6,8 +6,14 @@ import _ from 'lodash';
 import RegistryVisTypesProvider from 'ui/registry/vis_types';
 import uiModules from 'ui/modules';
 import visualizeTemplate from 'ui/visualize/visualize.html';
+import 'angular-sanitize';
+
+import {
+  isTermSizeZeroError,
+} from '../elasticsearch_errors';
+
 uiModules
-.get('kibana/directive')
+.get('kibana/directive', ['ngSanitize'])
 .directive('visualize', function (Notifier, SavedVis, indexPatterns, Private, config, $timeout) {
 
 
@@ -29,8 +35,7 @@ uiModules
     },
     template: visualizeTemplate,
     link: function ($scope, $el, attr) {
-      let chart; // set in "vis" watcher
-      let minVisChartHeight = 180;
+      const minVisChartHeight = 180;
 
       if (_.isUndefined($scope.showSpyPanel)) {
         $scope.showSpyPanel = true;
@@ -53,6 +58,17 @@ uiModules
         let shouldShowMessage = !_.get($scope, 'vis.params.handleNoResults');
 
         return Boolean(requiresSearch && isZeroHits && shouldShowMessage);
+      };
+
+      const legendPositionToVisContainerClassMap = {
+        top: 'vis-container--legend-top',
+        bottom: 'vis-container--legend-bottom',
+        left: 'vis-container--legend-left',
+        right: 'vis-container--legend-right',
+      };
+
+      $scope.getVisContainerClasses = function () {
+        return legendPositionToVisContainerClassMap[$scope.vis.params.legendPosition];
       };
 
       $scope.spy = {};
@@ -143,7 +159,17 @@ uiModules
           return searchSource.onResults().then(onResults);
         }).catch(notify.fatal);
 
-        searchSource.onError(notify.error).catch(notify.fatal);
+        searchSource.onError(e => {
+          if (isTermSizeZeroError(e)) {
+            return notify.error(
+              `Your visualization ('${$scope.vis.title}') has an error: it has a term ` +
+              `aggregation with a size of 0. Please set it to a number greater than 0 to resolve ` +
+              `the error.`
+            );
+          }
+
+          notify.error(e);
+        }).catch(notify.fatal);
       }));
 
       $scope.$watch('esResp', prereq(function (resp, prevResp) {

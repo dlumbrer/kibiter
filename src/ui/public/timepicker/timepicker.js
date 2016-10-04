@@ -60,6 +60,18 @@ module.directive('kbnTimepicker', function (quickRanges, timeUnits, refreshInter
         {text: 'Years ago', value: 'y'},
       ];
 
+      $scope.$watch('from', function (date) {
+        if (moment.isMoment(date) && $scope.mode === 'absolute') {
+          $scope.absolute.from = date;
+        }
+      });
+
+      $scope.$watch('to', function (date) {
+        if (moment.isMoment(date) && $scope.mode === 'absolute') {
+          $scope.absolute.to = date;
+        }
+      });
+
       $scope.$watch('absolute.from', function (date) {
         if (_.isDate(date)) $scope.absolute.from = moment(date);
       });
@@ -102,7 +114,7 @@ module.directive('kbnTimepicker', function (quickRanges, timeUnits, refreshInter
 
             break;
           case 'absolute':
-            $scope.absolute.from = dateMath.parse($scope.from || moment().subtract('minutes', 15));
+            $scope.absolute.from = dateMath.parse($scope.from || moment().subtract(15, 'minutes'));
             $scope.absolute.to = dateMath.parse($scope.to || moment(), true);
             break;
         }

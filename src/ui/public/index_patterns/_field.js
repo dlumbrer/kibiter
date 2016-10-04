@@ -50,12 +50,16 @@ export default function FieldObjectProvider(Private, shortDotsFilter, $rootScope
     // scripted objs
     obj.fact('scripted', scripted);
     obj.writ('script', scripted ? spec.script : null);
-    obj.writ('lang', scripted ? (spec.lang || 'expression') : null);
+    obj.writ('lang', scripted ? (spec.lang || 'painless') : null);
 
     // mapping info
     obj.fact('indexed', indexed);
     obj.fact('analyzed', !!spec.analyzed);
     obj.fact('doc_values', !!spec.doc_values);
+
+    // stats
+    obj.fact('searchable', !!spec.searchable);
+    obj.fact('aggregatable', !!spec.aggregatable);
 
     // usage flags, read-only and won't be saved
     obj.comp('format', format);
@@ -71,7 +75,7 @@ export default function FieldObjectProvider(Private, shortDotsFilter, $rootScope
   }
 
   Field.prototype.routes = {
-    edit: '/settings/indices/{{indexPattern.id}}/field/{{name}}'
+    edit: '/management/kibana/indices/{{indexPattern.id}}/field/{{name}}'
   };
 
   return Field;

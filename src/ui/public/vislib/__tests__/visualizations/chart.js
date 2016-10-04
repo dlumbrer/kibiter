@@ -1,5 +1,4 @@
 import d3 from 'd3';
-import angular from 'angular';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import VislibVisProvider from 'ui/vislib/vis';
@@ -14,12 +13,12 @@ describe('Vislib _chart Test Suite', function () {
   let Data;
   let persistedState;
   let Vis;
-  let chartData = {};
+  const chartData = {};
   let vis;
   let el;
   let myChart;
   let config;
-  let data = {
+  const data = {
     hits      : 621,
     label     : '',
     ordered   : {

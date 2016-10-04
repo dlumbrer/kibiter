@@ -81,7 +81,8 @@ class UiExports {
       case 'spyModes':
       case 'chromeNavControls':
       case 'navbarExtensions':
-      case 'settingsSections':
+      case 'managementSections':
+      case 'devTools':
       case 'docViews':
       case 'hacks':
         return (plugin, spec) => {

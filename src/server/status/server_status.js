@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import states from './states';
 import Status from './status';
+import {version} from '../../../package.json';
 
 module.exports = class ServerStatus {
   constructor(server) {
@@ -9,8 +10,17 @@ module.exports = class ServerStatus {
     this._created = {};
   }
 
-  create(name) {
-    return (this._created[name] = new Status(name, this.server));
+  create(id) {
+    const status = new Status(id, this.server);
+    this._created[status.id] = status;
+    return status;
+  }
+
+  createForPlugin(plugin) {
+    if (plugin.version === 'kibana') plugin.version = version;
+    const status = this.create(`plugin:${plugin.id}@${plugin.version}`);
+    status.plugin = plugin;
+    return status;
   }
 
   each(fn) {
@@ -22,12 +32,26 @@ module.exports = class ServerStatus {
     });
   }
 
-  get(name) {
-    return this._created[name];
+  get(id) {
+    return this._created[id];
   }
 
-  getState(name) {
-    return _.get(this._created, [name, 'state'], 'uninitialized');
+  getForPluginId(pluginId) {
+    return _.find(this._created, s =>
+      s.plugin && s.plugin.id === pluginId
+    );
+  }
+
+  getState(id) {
+    const status = this.get(id);
+    if (!status) return undefined;
+    return status.state || 'uninitialized';
+  }
+
+  getStateForPluginId(pluginId) {
+    const status = this.getForPluginId(pluginId);
+    if (!status) return undefined;
+    return status.state || 'uninitialized';
   }
 
   overall() {

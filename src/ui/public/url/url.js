@@ -2,12 +2,13 @@ import _ from 'lodash';
 import 'ui/filters/uriescape';
 import 'ui/filters/rison';
 import uiModules from 'ui/modules';
-
+import rison from 'rison-node';
+import AppStateProvider from 'ui/state_management/app_state';
 
 uiModules.get('kibana/url')
 .service('kbnUrl', function (Private) { return Private(KbnUrlProvider); });
 
-function KbnUrlProvider($route, $location, $rootScope, globalState, $parse, getAppState) {
+function KbnUrlProvider($injector, $location, $rootScope, $parse, Private) {
   let self = this;
 
   /**
@@ -17,8 +18,8 @@ function KbnUrlProvider($route, $location, $rootScope, globalState, $parse, getA
    * @param  {Object} [paramObj] - optional set of parameters for the url template
    * @return {undefined}
    */
-  self.change = function (url, paramObj) {
-    self._changeLocation('url', url, paramObj);
+  self.change = function (url, paramObj, appState) {
+    self._changeLocation('url', url, paramObj, false, appState);
   };
 
   /**
@@ -40,8 +41,8 @@ function KbnUrlProvider($route, $location, $rootScope, globalState, $parse, getA
    * @param  {Object} [paramObj] - optional set of parameters for the url template
    * @return {undefined}
    */
-  self.redirect = function (url, paramObj) {
-    self._changeLocation('url', url, paramObj, true);
+  self.redirect = function (url, paramObj, appState) {
+    self._changeLocation('url', url, paramObj, true, appState);
   };
 
   /**
@@ -142,7 +143,7 @@ function KbnUrlProvider($route, $location, $rootScope, globalState, $parse, getA
   /////
   let reloading;
 
-  self._changeLocation = function (type, url, paramObj, replace) {
+  self._changeLocation = function (type, url, paramObj, replace, appState) {
     let prev = {
       path: $location.path(),
       search: $location.search()
@@ -152,26 +153,34 @@ function KbnUrlProvider($route, $location, $rootScope, globalState, $parse, getA
     $location[type](url);
     if (replace) $location.replace();
 
+    if (appState) {
+      $location.search(appState.getQueryParamName(), appState.toQueryParam());
+    }
+
     let next = {
       path: $location.path(),
       search: $location.search()
     };
 
-    if (self._shouldAutoReload(next, prev)) {
-      let appState = getAppState();
-      if (appState) appState.destroy();
+    if ($injector.has('$route')) {
+      const $route = $injector.get('$route');
 
-      reloading = $rootScope.$on('$locationChangeSuccess', function () {
-        // call the "unlisten" function returned by $on
-        reloading();
-        reloading = false;
+      if (self._shouldAutoReload(next, prev, $route)) {
+        const appState = Private(AppStateProvider).getAppState();
+        if (appState) appState.destroy();
 
-        $route.reload();
-      });
+        reloading = $rootScope.$on('$locationChangeSuccess', function () {
+          // call the "unlisten" function returned by $on
+          reloading();
+          reloading = false;
+
+          $route.reload();
+        });
+      }
     }
   };
 
-  self._shouldAutoReload = function (next, prev) {
+  self._shouldAutoReload = function (next, prev, $route) {
     if (reloading) return false;
 
     let route = $route.current && $route.current.$$route;

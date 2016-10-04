@@ -20,33 +20,32 @@ module.factory('Notifier', function () {
 });
 
 // teach Notifier how to use angular interval services
-module.run(function ($interval) {
+module.run(function (config, $interval, $compile) {
   Notifier.applyConfig({
     setInterval: $interval,
     clearInterval: $interval.cancel
   });
+  applyConfig(config);
+  Notifier.$compile = $compile;
 });
 
 // if kibana is not included then the notify service can't
 // expect access to config (since it's dependent on kibana)
 if (!!kbnIndex) {
   require('ui/config');
-  module.run(function ($rootScope, config) {
-    let configInitListener = $rootScope.$on('init:config', function () {
-      applyConfig();
-      configInitListener();
-    });
-
-    $rootScope.$on('change:config', applyConfig);
-
-    function applyConfig() {
-      Notifier.applyConfig({
-        errorLifetime: config.get('notifications:lifetime:error'),
-        warningLifetime: config.get('notifications:lifetime:warning'),
-        infoLifetime: config.get('notifications:lifetime:info')
-      });
-    }
+  module.run(function (config) {
+    config.watchAll(() => applyConfig(config));
   });
+}
+
+function applyConfig(config) {
+  Notifier.applyConfig({
+    bannerLifetime: config.get('notifications:lifetime:banner'),
+    errorLifetime: config.get('notifications:lifetime:error'),
+    warningLifetime: config.get('notifications:lifetime:warning'),
+    infoLifetime: config.get('notifications:lifetime:info')
+  });
+  rootNotifier.banner(config.get('notifications:banner'));
 }
 
 window.onerror = function (err, url, line) {

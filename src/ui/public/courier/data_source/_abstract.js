@@ -284,12 +284,13 @@ export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) 
 
         if (flatState.body.size > 0) {
           let computedFields = flatState.index.getComputedFields();
-          flatState.body.fields = computedFields.fields;
+          flatState.body.stored_fields = computedFields.storedFields;
+          flatState.body._source = computedFields._source;
           flatState.body.script_fields = flatState.body.script_fields || {};
-          flatState.body.fielddata_fields = flatState.body.fielddata_fields || [];
+          flatState.body.docvalue_fields = flatState.body.docvalue_fields || [];
 
           _.extend(flatState.body.script_fields, computedFields.scriptFields);
-          flatState.body.fielddata_fields = _.union(flatState.body.fielddata_fields, computedFields.fielddataFields);
+          flatState.body.docvalue_fields = _.union(flatState.body.docvalue_fields, computedFields.docvalueFields);
         }
 
         decorateQuery(flatState.body.query);
@@ -310,7 +311,7 @@ export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) 
 
         /**
         * Translate a filter into a query to support es 3+
-        * @param  {Object} filter - The fitler to translate
+        * @param  {Object} filter - The filter to translate
         * @return {Object} the query version of that filter
         */
         let translateToQuery = function (filter) {

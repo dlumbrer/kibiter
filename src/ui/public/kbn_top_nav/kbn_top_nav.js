@@ -3,7 +3,9 @@ import 'ui/watch_multi';
 import angular from 'angular';
 import 'ui/directives/input_focus';
 import uiModules from 'ui/modules';
+import template from './kbn_top_nav.html';
 import KbnTopNavControllerProvider from './kbn_top_nav_controller';
+import RegistryNavbarExtensionsProvider from 'ui/registry/navbar_extensions';
 
 const module = uiModules.get('kibana');
 
@@ -41,44 +43,41 @@ const module = uiModules.get('kibana');
  * Programatic control of the navbar can be acheived one of two ways
  */
 module.directive('kbnTopNav', function (Private) {
+  const KbnTopNavController = Private(KbnTopNavControllerProvider);
+  const navbarExtensions = Private(RegistryNavbarExtensionsProvider);
+  const getNavbarExtensions = _.memoize(function (name) {
+    if (!name) throw new Error('navbar directive requires a name attribute');
+    return _.sortBy(navbarExtensions.byAppName[name], 'order');
+  });
+
   return {
     restrict: 'E',
     transclude: true,
-    template($el, $attrs) {
-      // This is ugly
-      // This is necessary because of navbar-extensions
-      // It will no accept any programatic way of setting its name
-      // besides this because it happens so early in the digest cycle
-      return `
-        <navbar class="kibana-nav-options">
-          <div ng-transclude></div>
-          <div class="button-group kibana-nav-actions" role="toolbar">
-            <button
-              ng-repeat="menuItem in kbnTopNav.menuItems"
-              aria-label="{{::menuItem.description}}"
-              aria-haspopup="{{!menuItem.hasFunction}}"
-              aria-expanded="{{kbnTopNav.is(menuItem.key)}}"
-              ng-class="{active: kbnTopNav.is(menuItem.key)}"
-              ng-click="menuItem.run(menuItem)"
-              ng-bind="menuItem.label">
-            </button>
-            <navbar-extensions name="${$attrs.name}"></navbar-extensions>
-          </div>
-          <kbn-global-timepicker></kbn-global-timepicker>
-        </navbar>
-        <div class="config" ng-show="kbnTopNav.rendered">
-          <div id="template_wrapper" class="container-fluid"></div>
-          <div class="config-close remove">
-            <i class="fa fa-chevron-circle-up" ng-click="kbnTopNav.close()"></i>
-          </div>
-        </div>
-      `;
-    },
-    controller($scope, $compile, $attrs, $element) {
-      const KbnTopNavController = Private(KbnTopNavControllerProvider);
+    template,
 
-      $scope.kbnTopNav = new KbnTopNavController(_.get($scope, $attrs.config));
+    // TODO: The kbnTopNav currently requires that it share a scope with
+    // it's parent directive. This allows it to export the kbnTopNav controller
+    // and allows the config templates to use values from the parent scope.
+    //
+    // Moving this to an isolate scope will require modifying the config
+    // directive to support child directives, instead of templates, so that
+    // parent controllers can be imported/required rather than simply referenced
+    // directly in the template.
+    //
+    // scope: {}
+
+    controller($scope, $attrs, $element) {
+      const extensions = getNavbarExtensions($attrs.name);
+      let controls = _.get($scope, $attrs.config, []);
+      if (controls instanceof KbnTopNavController) {
+        controls.addItems(extensions);
+      } else {
+        controls = controls.concat(extensions);
+      }
+
+      $scope.kbnTopNav = new KbnTopNavController(controls);
       $scope.kbnTopNav._link($scope, $element);
+
       return $scope.kbnTopNav;
     }
   };

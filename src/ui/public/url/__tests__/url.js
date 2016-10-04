@@ -5,6 +5,7 @@ import ngMock from 'ng_mock';
 import faker from 'faker';
 import _ from 'lodash';
 import MockState from 'fixtures/mock_state';
+import AppStateProvider from 'ui/state_management/app_state';
 import 'ui/url';
 
 // global vars, injected and mocked in init()
@@ -12,32 +13,29 @@ let kbnUrl;
 let $route;
 let $location;
 let $rootScope;
-let globalStateMock;
 let appState;
 
+class StubAppState {
+  constructor() {
+    this.getQueryParamName = () => '_a';
+    this.toQueryParam = () => 'stateQueryParam';
+    this.destroy = sinon.stub();
+  }
+}
 
 function init() {
-  ngMock.module('kibana/url', 'kibana', function ($provide) {
+  ngMock.module('kibana/url', 'kibana', function ($provide, PrivateProvider) {
     $provide.service('$route', function () {
       return {
         reload: _.noop
       };
     });
 
-    appState = { destroy: sinon.stub() };
-    $provide.service('getAppState', function () {
-      return function () {
-        return appState;
-      };
-    });
-
-    $provide.service('globalState', function () {
-      globalStateMock = new MockState();
-      globalStateMock.removeFromUrl = function (url) {
-        return url;
-      };
-
-      return globalStateMock;
+    appState = new StubAppState();
+    PrivateProvider.swap(AppStateProvider, $decorate => {
+      const AppState = $decorate();
+      AppState.getAppState = () => appState;
+      return AppState;
     });
   });
 
@@ -272,6 +270,27 @@ describe('kbnUrl', function () {
       expect($location.search()).to.eql({});
       expect($location.hash()).to.be('');
     });
+
+    it('should allow setting app state on the target url', function () {
+      let path = '/test/path';
+      let search = {search: 'test'};
+      let hash = 'hash';
+      let newPath = '/new/location';
+
+      $location.path(path).search(search).hash(hash);
+
+      // verify the starting state
+      expect($location.path()).to.be(path);
+      expect($location.search()).to.eql(search);
+      expect($location.hash()).to.be(hash);
+
+      kbnUrl.change(newPath, null, new StubAppState());
+
+      // verify the ending state
+      expect($location.path()).to.be(newPath);
+      expect($location.search()).to.eql({ _a: 'stateQueryParam' });
+      expect($location.hash()).to.be('');
+    });
   });
 
   describe('changePath', function () {
@@ -316,6 +335,27 @@ describe('kbnUrl', function () {
       // verify the ending state
       expect($location.path()).to.be(newPath);
       expect($location.search()).to.eql({});
+      expect($location.hash()).to.be('');
+    });
+
+    it('should allow setting app state on the target url', function () {
+      let path = '/test/path';
+      let search = {search: 'test'};
+      let hash = 'hash';
+      let newPath = '/new/location';
+
+      $location.path(path).search(search).hash(hash);
+
+      // verify the starting state
+      expect($location.path()).to.be(path);
+      expect($location.search()).to.eql(search);
+      expect($location.hash()).to.be(hash);
+
+      kbnUrl.redirect(newPath, null, new StubAppState());
+
+      // verify the ending state
+      expect($location.path()).to.be(newPath);
+      expect($location.search()).to.eql({ _a: 'stateQueryParam' });
       expect($location.hash()).to.be('');
     });
 
@@ -391,7 +431,7 @@ describe('kbnUrl', function () {
 
     it('returns false if the passed url doesn\'t match the current route', function () {
       next.path = '/not current';
-      expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+      expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
     });
 
     describe('if the passed url does match the route', function () {
@@ -399,14 +439,14 @@ describe('kbnUrl', function () {
         describe('and the path is the same', function () {
           describe('and the search params are the same', function () {
             it('returns true', function () {
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(true);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(true);
             });
           });
           describe('but the search params are different', function () {
             it('returns false', function () {
               next.search = {};
               prev.search = { q: 'search term' };
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
             });
           });
         });
@@ -418,14 +458,14 @@ describe('kbnUrl', function () {
 
           describe('and the search params are the same', function () {
             it('returns false', function () {
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
             });
           });
           describe('but the search params are different', function () {
             it('returns false', function () {
               next.search = {};
               prev.search = { q: 'search term' };
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
             });
           });
         });
@@ -439,14 +479,14 @@ describe('kbnUrl', function () {
         describe('and the path is the same', function () {
           describe('and the search params are the same', function () {
             it('returns true', function () {
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(true);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(true);
             });
           });
           describe('but the search params are different', function () {
             it('returns true', function () {
               next.search = {};
               prev.search = { q: 'search term' };
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(true);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(true);
             });
           });
         });
@@ -458,14 +498,14 @@ describe('kbnUrl', function () {
 
           describe('and the search params are the same', function () {
             it('returns false', function () {
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
             });
           });
           describe('but the search params are different', function () {
             it('returns false', function () {
               next.search = {};
               prev.search = { q: 'search term' };
-              expect(kbnUrl._shouldAutoReload(next, prev)).to.be(false);
+              expect(kbnUrl._shouldAutoReload(next, prev, $route)).to.be(false);
             });
           });
         });

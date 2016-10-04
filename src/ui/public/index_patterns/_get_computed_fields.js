@@ -4,23 +4,24 @@ import _ from 'lodash';
 export default function () {
   let self = this;
   let scriptFields = {};
-  let fielddataFields = [];
+  let docvalueFields = [];
 
-  fielddataFields = _.pluck(self.fields.byType.date, 'name');
+  docvalueFields = _.map(_.reject(self.fields.byType.date, 'scripted'), 'name');
 
   _.each(self.getScriptedFields(), function (field) {
     scriptFields[field.name] = {
       script: {
-        script: field.script,
+        inline: field.script,
         lang: field.lang
       }
     };
   });
 
   return {
-    fields: ['*', '_source'],
+    storedFields: ['*'],
+    _source: true,
     scriptFields: scriptFields,
-    fielddataFields: fielddataFields
+    docvalueFields: docvalueFields
   };
 
 };

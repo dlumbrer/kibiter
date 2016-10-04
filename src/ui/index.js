@@ -8,7 +8,8 @@ import UiExports from './ui_exports';
 import UiBundle from './ui_bundle';
 import UiBundleCollection from './ui_bundle_collection';
 import UiBundlerEnv from './ui_bundler_env';
-module.exports = async (kbnServer, server, config) => {
+
+export default async (kbnServer, server, config) => {
 
   const loadingGif = readFile(fromRoot('src/ui/public/loading.gif'), { encoding: 'base64'});
 
@@ -59,8 +60,8 @@ module.exports = async (kbnServer, server, config) => {
     }
   });
 
-  server.decorate('reply', 'renderApp', function (app) {
-    const payload = {
+  async function getPayload(app) {
+    return {
       app: app,
       nav: uiExports.navLinks.inOrder,
       version: kbnServer.version,
@@ -68,14 +69,37 @@ module.exports = async (kbnServer, server, config) => {
       buildSha: config.get('pkg.buildSha'),
       basePath: config.get('server.basePath'),
       serverName: config.get('server.name'),
+      uiSettings: {
+        defaults: await server.uiSettings().getDefaults(),
+        user: {}
+      },
       vars: defaults(app.getInjectedVars() || {}, uiExports.defaultInjectedVars),
     };
+  }
 
+  function viewAppWithPayload(app, payload) {
     return this.view(app.templateName, {
       app: app,
       loadingGif: loadingGif,
       kibanaPayload: payload,
       bundlePath: `${config.get('server.basePath')}/bundles`,
     });
-  });
+  }
+
+  async function renderApp(app) {
+    const isElasticsearchPluginRed = server.plugins.elasticsearch.status.state === 'red';
+    const payload = await getPayload(app);
+    if (!isElasticsearchPluginRed) {
+      payload.uiSettings.user = await server.uiSettings().getUserProvided();
+    }
+    return viewAppWithPayload.call(this, app, payload);
+  }
+
+  async function renderAppWithDefaultConfig(app) {
+    const payload = await getPayload(app);
+    return viewAppWithPayload.call(this, app, payload);
+  }
+
+  server.decorate('reply', 'renderApp', renderApp);
+  server.decorate('reply', 'renderAppWithDefaultConfig', renderAppWithDefaultConfig);
 };
