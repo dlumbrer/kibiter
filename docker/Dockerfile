@@ -11,6 +11,7 @@ RUN groupadd --system kibana && \
     useradd --system --create-home --gid kibana kibana
 
 # backports used to install java 8 needed by elasticsearch 5
+# ruby gems are used for building binary packages
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/backports.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -23,6 +24,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
             make \
             g++ \
             openjdk-8-jre \
+            ruby-dev rpm rubygems \
             && \
     rm /etc/apt/sources.list.d/backports.list && \
     apt-get update && \
@@ -33,6 +35,9 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     . /root/.bashrc && \
 
     # install kibiter
+    # gems needed in Kibana > 5.x to build binary packages
+    gem install fpm -v 1.5.0 && \
+    gem install pleaserun -v 0.0.24 && \
     git clone --depth 1 --branch ${KIBANA_BRANCH} https://github.com/grimoirelab/kibiter.git && \
     cd kibiter && \
     bash -c "echo 4.3.0 > .node-version" && \
@@ -42,8 +47,8 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     sed -e "/return \[/,/\].map/ {/\(windows\|darwin\|x86\)/ d;s/,//g}" -i tasks/config/platforms.js && \
     grunt --no-color _build:downloadNodeBuilds:start _build:downloadNodeBuilds:finish && \
     grunt --no-color build && \
-    tar xfz target/kibana-*-linux-x64.tar.gz --directory /opt && \
-    mv /opt/kibana-*-linux-x64* /opt/kibana && \
+    tar xfz target/kibana-*-linux-x86_64.tar.gz --directory /opt && \
+    mv /opt/kibana-*-linux-x86_64* /opt/kibana && \
     cd /root && \
     chown -R kibana:kibana /opt/kibana  && \
 
