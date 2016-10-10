@@ -22,11 +22,11 @@ define(function (require) {
       var parts = [lastChange[0]];
       var activeTabTitle = chrome.getActiveTabTitle();
 
-      if (activeTabTitle) parts.push(activeTabTitle);
+      // if (activeTabTitle) parts.push(activeTabTitle);
 
       if (!lastChange[1]) parts.push(baseTitle);
 
-      return _(parts).flattenDeep().compact().join(' - ');
+      return '__PROJECT__ - ' + _(parts).flattenDeep().compact().join(' - ');
     }
 
     self.change = function (title, complete) {
