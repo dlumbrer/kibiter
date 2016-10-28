@@ -75,7 +75,7 @@ export default class VisualizePage {
   }
 
   getChartTypes() {
-    var types = [];
+
     return this.remote
     .setFindTimeout(defaultFindTimeout)
     .findAllByCssSelector('.wizard-type-heading h4')
@@ -296,7 +296,7 @@ export default class VisualizePage {
   clickNewVisualization() {
     return this.remote
     .setFindTimeout(defaultFindTimeout)
-    .findByCssSelector('button[aria-label="New Visualization"]')
+    .findByCssSelector('[aria-label="New Visualization"]')
     .click();
   }
 
@@ -304,7 +304,7 @@ export default class VisualizePage {
   saveVisualization(vizName) {
     return this.remote
     .setFindTimeout(defaultFindTimeout)
-    .findByCssSelector('button[aria-label="Save Visualization"]')
+    .findByCssSelector('[aria-label="Save Visualization"]')
     .click()
     .then(() => {
       return PageObjects.common.sleep(1000);
@@ -319,9 +319,7 @@ export default class VisualizePage {
     //   // click save button
     .then(() => {
       PageObjects.common.debug('click submit button');
-      return this.remote
-      .setFindTimeout(defaultFindTimeout)
-      .findByCssSelector('.config button[type="submit"]')
+      return PageObjects.common.findTestSubject('saveVisualizationButton')
       .click();
     })
     .then(function () {
@@ -343,7 +341,7 @@ export default class VisualizePage {
   clickLoadSavedVisButton() {
     return this.remote
       .setFindTimeout(defaultFindTimeout)
-      .findDisplayedByCssSelector('button[aria-label="Load Saved Visualization"]')
+      .findDisplayedByCssSelector('[aria-label="Open Saved Visualization"]')
       .click();
   }
 
@@ -440,7 +438,6 @@ export default class VisualizePage {
     var chartData = [];
     var tempArray = [];
     var chartSections = 0;
-    var chartMap = {};
     var height = 0;
     var yAxisLabel = 0;
     var yAxisHeight = 0;
@@ -529,7 +526,7 @@ export default class VisualizePage {
           // 5). for each chart element, find the green circle, then the cy position
           function getChartType(chart) {
             return chart
-            .findByCssSelector('circle[fill="#6eadc1"]')
+            .findByCssSelector(`circle[${cssPart}]`)
             .then(function (circleObject) {
               // PageObjects.common.debug('circleObject = ' + circleObject + ' yAxisHeight= ' + yAxisHeight + ' yAxisLabel= ' + yAxisLabel);
               return circleObject
@@ -619,8 +616,6 @@ export default class VisualizePage {
   }
 
   getPieChartData() {
-    var self = this.remote;
-
     // 1). get the maximim chart Y-Axis marker value
     return this.remote
     .setFindTimeout(defaultFindTimeout * 2)

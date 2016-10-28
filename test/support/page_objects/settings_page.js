@@ -30,20 +30,16 @@ export default class SettingsPage {
     return this.clickLinkText('Index Patterns');
   }
 
-  clickExistingData() {
-    return this.clickLinkText('Existing Data');
-  }
-
   getAdvancedSettings(propertyName) {
     PageObjects.common.debug('in setAdvancedSettings');
-    return PageObjects.common.findTestSubject('advancedSetting&' + propertyName + ' currentValue')
+    return PageObjects.common.findTestSubject('advancedSetting-' + propertyName + '-currentValue')
     .getVisibleText();
   }
 
   setAdvancedSettings(propertyName, propertyValue) {
     var self = this;
 
-    return PageObjects.common.findTestSubject('advancedSetting&' + propertyName + ' editButton')
+    return PageObjects.common.findTestSubject('advancedSetting-' + propertyName + '-editButton')
     .click()
     .then(() => {
       return PageObjects.header.getSpinnerDone();
@@ -60,7 +56,7 @@ export default class SettingsPage {
       return PageObjects.header.getSpinnerDone();
     })
     .then(function setAdvancedSettingsClickSaveButton() {
-      return PageObjects.common.findTestSubject('advancedSetting&' + propertyName + ' saveButton')
+      return PageObjects.common.findTestSubject('advancedSetting-' + propertyName + '-saveButton')
       .click();
     })
     .then(() => {
@@ -71,7 +67,7 @@ export default class SettingsPage {
   getAdvancedSettings(propertyName) {
     var self = this;
     PageObjects.common.debug('in setAdvancedSettings');
-    return PageObjects.common.findTestSubject('advancedSetting&' + propertyName + ' currentValue')
+    return PageObjects.common.findTestSubject('advancedSetting-' + propertyName + '-currentValue')
     .getVisibleText();
   }
 
@@ -309,7 +305,7 @@ export default class SettingsPage {
     return PageObjects.common.try(() => {
       return this.navigateTo()
         .then(() => {
-          return this.clickExistingData();
+          return this.clickKibanaIndicies();
         })
         .then(() => {
           return this.selectTimeFieldOption('@timestamp');
