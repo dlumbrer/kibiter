@@ -40,7 +40,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     gem install pleaserun -v 0.0.24 && \
     git clone --depth 1 --branch ${KIBANA_BRANCH} https://github.com/grimoirelab/kibiter.git && \
     cd kibiter && \
-    bash -c "echo 4.3.0 > .node-version" && \
+    # bash -c "echo 4.3.0 > .node-version" && \
     nvm install "$( cat .node-version )" && \
     npm install -g grunt-cli && \
     npm install && \
