@@ -60,6 +60,14 @@ uiModules
             panelSavedVis.setUiState($scope.uiState);
           }
 
+          if ($scope.uiState) {
+            $scope.panel.title = $scope.uiState.get('title');
+            // sync external uiState changes
+            var syncUIState = function () {$scope.panel.title = $scope.uiState.get('title');};
+            $scope.uiState.on('change', syncUIState);
+            $scope.$on('$destroy', function () {$scope.uiState.off('change', syncUIState);});
+          }
+
           $scope.filter = function (field, value, operator) {
             const index = $scope.savedObj.searchSource.get('index').id;
             filterManager.add(field, value, operator, index);
