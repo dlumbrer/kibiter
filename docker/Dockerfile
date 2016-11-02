@@ -4,7 +4,7 @@ MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.co
 # Image for developing Kibiter/Kibana
 
 # ENV KIBANA_BRANCH master
-ENV KIBANA_BRANCH 5.0.0
+ENV KIBANA_BRANCH integration-5.0.0
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
@@ -50,9 +50,16 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     mv /opt/kibana-*-linux-x86_64* /opt/kibana && \
     cd /root && \
     chown -R kibana:kibana /opt/kibana  && \
-
     # cleanup to thin the final image
-    apt-get clean
+    rm -rf /kibiter && \
+    apt-get purge -y g++ make python git zip wget && \
+    apt-get autoremove --purge -y && \
+    apt-get clean && \
+    find /var/lib/apt/lists -type f -delete && \
+    rm -rf /root/.npm /root/.node-gyp /root/.nvm /tmp/* /var/tmp/* && \
+    bash -c 'find /usr/share/locale -maxdepth 1 -mindepth 1 -type d | grep -v -e "en_US" | xargs rm -rfv' && \
+    bash -c 'localedef --list-archive | grep -v -e "en_US" | xargs localedef --delete-from-archive' && \
+    rm -rf /usr/share/doc/*
 
 # grab gosu for easy step-down from root
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
