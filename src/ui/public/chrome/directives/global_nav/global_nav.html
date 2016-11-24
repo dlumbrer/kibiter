@@ -28,7 +28,8 @@
   </div>
 
   <!-- Links -->
-  <!-- <div class="global-nav__links"> -->
+  <div class="global-nav__links">
+
     <!-- Main apps -->
     <!-- <div class="global-nav__links-section">
       <app-switcher
@@ -37,15 +38,29 @@
     </div> -->
 
     <!-- Metadashboard Links: Bitergia hack -->
-    <div>
-      <ul>
-        <li ng-repeat="panel in metadash">
-          <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
-            <li role="menuitem" ng-repeat="url in panel">{{url}}
+    <div class="global-nav__links-section">
+        <div class="global-nav-link" class="global-nav-link__title" ng-repeat="(name, panel) in metadash">
+          <a class='global-nav-link__anchor' href=''>
+            <div class='global-nav-link__icon'>
+            <!-- testing icon -->
+            <img class="global-nav-link__icon-image ng-scope"
+              kbn-src="/plugins/kibana/assets/discover.svg"
+              src="/plugins/kibana/assets/discover.svg">
+            </div>
+            <div class='global-nav-link__title'>{{name}}</div>
+          </a>
+
+          <ul style='display:None'>
+            <li ng-repeat="url in panel">{{url}}
+            </li>
           </ul>
-        </li>
-      </ul>
+
+          <!-- <ul aria-labelledby="split-button">
+            <li ng-repeat="url in panel">{{url}}</li>
+          </ul> -->
+      </div>
     </div>
+
 
     <!-- Bottom button -->
     <div class="global-nav__links-section">
