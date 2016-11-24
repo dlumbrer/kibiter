@@ -28,12 +28,23 @@
   </div>
 
   <!-- Links -->
-  <div class="global-nav__links">
+  <!-- <div class="global-nav__links"> -->
     <!-- Main apps -->
-    <div class="global-nav__links-section">
+    <!-- <div class="global-nav__links-section">
       <app-switcher
         chrome="chrome"
       ></app-switcher>
+    </div> -->
+
+    <!-- Metadashboard Links: Bitergia hack -->
+    <div>
+      <ul>
+        <li ng-repeat="panel in metadash">
+          <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+            <li role="menuitem" ng-repeat="url in panel">{{url}}
+          </ul>
+        </li>
+      </ul>
     </div>
 
     <!-- Bottom button -->
