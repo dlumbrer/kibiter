@@ -8,6 +8,17 @@ export default function VislibVisBuildChartData(Private) {
   return function (esResponse) {
     let vis = this.vis;
 
+    if (esResponse.aggregations) {
+      var aggs = esResponse.aggregations[_.keys(esResponse.aggregations)[0]];
+      if (aggs.sum_other_doc_count) {
+       // Add another bucket with sum_other_doc_count
+       aggs.buckets.push({
+         'key':'Others',
+         'doc_count': aggs.sum_other_doc_count
+       });
+      }
+     }
+
     if (vis.isHierarchical()) {
       // the hierarchical converter is very self-contained (woot!)
       return aggResponse.hierarchical(vis, esResponse);
