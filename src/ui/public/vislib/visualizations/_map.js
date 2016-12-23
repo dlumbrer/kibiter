@@ -72,7 +72,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
       if (this._boundingControl) return;
 
       const self = this;
-      const drawOptions = {draw: {}};
+      const drawOptions = { draw: {} };
 
       _.each(['polyline', 'polygon', 'circle', 'marker', 'rectangle'], function (drawShape) {
         if (self._events && !self._events.listenerCount(drawShape)) {
@@ -89,7 +89,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
 
       this._boundingControl = new L.Control.Draw(drawOptions);
       this.map.addControl(this._boundingControl);
-    };
+    }
 
     addFitControl() {
       if (this._fitControl) return;
@@ -118,7 +118,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
 
       this._fitControl = new FitControl();
       this.map.addControl(this._fitControl);
-    };
+    }
 
     /**
      * Adds label div to each map when data is split
@@ -143,7 +143,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
 
       // label.addTo(this.map);
       this.map.addControl(label);
-    };
+    }
 
     /**
      * remove css class for desat filters on map tiles
@@ -155,13 +155,13 @@ export default function MapFactory(Private, tilemap, $sanitize) {
       if (!this._attr.isDesaturated) {
         $('img.leaflet-tile-loaded').addClass('filters-off');
       }
-    };
+    }
 
     updateSize() {
       this.map.invalidateSize({
         debounceMoveend: true
       });
-    };
+    }
 
     destroy() {
       if (this._label) this._label.removeFrom(this.map);
@@ -170,7 +170,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
       if (this._markers) this._markers.destroy();
       this.map.remove();
       this.map = undefined;
-    };
+    }
 
     /**
      * Switch type of data overlay for map:
@@ -191,7 +191,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
       if (this._geoJson.features.length > 1) {
         this._markers.addLegend();
       }
-    };
+    }
 
     /**
      * Create the marker instance using the given options
@@ -203,7 +203,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
     _createMarkers(options) {
       const MarkerType = markerTypes[this._markerType];
       return new MarkerType(this.map, this._geoJson, options);
-    };
+    }
 
     _attachEvents() {
       const self = this;
@@ -251,25 +251,37 @@ export default function MapFactory(Private, tilemap, $sanitize) {
         // TODO: Different drawTypes need differ info. Need a switch on the object creation
         const bounds = e.layer.getBounds();
 
-        let SElng = bounds.getSouthEast().lng;
-        if (SElng > 180) {
-          SElng -= 360;
+        const southEast = bounds.getSouthEast();
+        const northWest = bounds.getNorthWest();
+        let southEastLng = southEast.lng;
+        if (southEastLng > 180) {
+          southEastLng -= 360;
         }
-        let NWlng = bounds.getNorthWest().lng;
-        if (NWlng < -180) {
-          NWlng += 360;
+        let northWestLng = northWest.lng;
+        if (northWestLng < -180) {
+          northWestLng += 360;
         }
+
+        const southEastLat = southEast.lat;
+        const northWestLat = northWest.lat;
+
+        //Bounds cannot be created unless they form a box with larger than 0 dimensions
+        //Invalid areas are rejected by ES.
+        if (southEastLat === northWestLat || southEastLng === northWestLng) {
+          return;
+        }
+
         self._events.emit(drawType, {
           e: e,
           chart: self._chartData,
           bounds: {
-            top_left: {
-              lat: bounds.getNorthWest().lat,
-              lon: NWlng
-            },
             bottom_right: {
-              lat: bounds.getSouthEast().lat,
-              lon: SElng
+              lat: southEastLat,
+              lon: southEastLng
+            },
+            top_left: {
+              lat: northWestLat,
+              lon: northWestLng
             }
           }
         });
@@ -286,7 +298,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
           zoom: self._mapZoom,
         });
       });
-    };
+    }
 
     _createMap(mapOptions) {
       if (this.map) this.destroy();
@@ -310,7 +322,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
       this.map = L.map(this._container, mapOptions);
       this._attachEvents();
       this._addMarkers();
-    };
+    }
 
     /**
      * zoom map to fit all features in featureLayer
@@ -321,7 +333,7 @@ export default function MapFactory(Private, tilemap, $sanitize) {
      */
     _fitBounds() {
       this.map.fitBounds(this._getDataRectangles());
-    };
+    }
 
     /**
      * Get the Rectangles representing the geohash grid
@@ -331,8 +343,8 @@ export default function MapFactory(Private, tilemap, $sanitize) {
     _getDataRectangles() {
       if (!this._geoJson) return [];
       return _.pluck(this._geoJson.features, 'properties.rectangle');
-    };
+    }
   }
 
   return TileMapMap;
-};
+}

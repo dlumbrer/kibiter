@@ -3,16 +3,16 @@
   <kbn-top-nav name="timelion" config="topNavMenu">
     <!-- Transcluded elements. -->
     <div data-transclude-slots>
-      <div data-transclude-slot="topLeftCorner" class="kibana-nav-info">
-        <span class="kibana-nav-info-title">
-          <span ng-show="opts.savedSheet.id">
-            {{opts.savedSheet.title}}
-            <i class="fa fa-bolt" ng-click="showStats = !showStats"></i>
-          </span>
-          <small class="timelion-stats" ng-show="showStats">
+      <div data-transclude-slot="topLeftCorner">
+        <span class="kuiLocalTitle" ng-show="opts.savedSheet.id">
+          {{opts.savedSheet.lastSavedTitle}}
+          &nbsp;
+          <span class="fa fa-bolt" ng-click="showStats = !showStats"></span>
+          &nbsp;
+          <span class="timelion-stats" ng-show="showStats">
             Query Time {{stats.queryTime - stats.invokeTime}}ms /
             Processing Time {{stats.sheetTime - stats.queryTime}}ms
-          </small>
+          </span>
         </span>
       </div>
 
@@ -23,7 +23,7 @@
         role="form"
         ng-submit="search()"
       >
-        <div class="localSearch timelionLocalSearch">
+        <div class="kuiLocalSearch timelionLocalSearch">
           <input
             input-focus
             ng-model="state.sheet[state.selected]"
@@ -31,7 +31,7 @@
             placeholder="Expression..."
             aria-label="Expression input"
             type="text"
-            class="localSearchInput timelion-expression"
+            class="kuiLocalSearchInput timelion-expression"
           >
 
           <timelion-interval model="state.interval"></timelion-interval>
@@ -39,7 +39,7 @@
           <button
             type="submit"
             aria-label="Search"
-            class="localSearchButton"
+            class="kuiLocalSearchButton"
           >
             <span class="fa fa-play"></span>
           </button>

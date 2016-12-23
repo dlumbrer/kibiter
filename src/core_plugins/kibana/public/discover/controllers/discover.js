@@ -115,19 +115,23 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
   $scope.topNavMenu = [{
     key: 'new',
     description: 'New Search',
-    run: function () { kbnUrl.change('/discover'); }
+    run: function () { kbnUrl.change('/discover'); },
+    testId: 'discoverNewButton',
   }, {
     key: 'save',
     description: 'Save Search',
-    template: require('plugins/kibana/discover/partials/save_search.html')
+    template: require('plugins/kibana/discover/partials/save_search.html'),
+    testId: 'discoverSaveButton',
   }, {
     key: 'open',
-    description: 'Load Saved Search',
-    template: require('plugins/kibana/discover/partials/load_search.html')
+    description: 'Open Saved Search',
+    template: require('plugins/kibana/discover/partials/load_search.html'),
+    testId: 'discoverOpenButton',
   }, {
     key: 'share',
     description: 'Share Search',
-    template: require('plugins/kibana/discover/partials/share_search.html')
+    template: require('plugins/kibana/discover/partials/share_search.html'),
+    testId: 'discoverShareButton',
   }];
   $scope.timefilter = timefilter;
 
@@ -314,7 +318,6 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
   $scope.opts.saveDataSource = function () {
     return $scope.updateDataSource()
     .then(function () {
-      savedSearch.id = savedSearch.title;
       savedSearch.columns = $scope.state.columns;
       savedSearch.sort = $scope.state.sort;
 
@@ -330,6 +333,7 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
           } else {
             // Update defaults so that "reload saved query" functions correctly
             $state.setDefaults(getStateDefaults());
+            docTitle.change(savedSearch.lastSavedTitle);
           }
         }
       });
@@ -482,7 +486,7 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
       $scope.searchSource.highlight({
         pre_tags: [highlightTags.pre],
         post_tags: [highlightTags.post],
-        fields: {'*': {}},
+        fields: { '*': {} },
         require_field_match: false,
         fragment_size: 2147483647 // Limit of an integer.
       });
@@ -543,7 +547,7 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
           timefilter.time.to = moment(e.point.x + e.data.ordered.interval);
           timefilter.time.mode = 'absolute';
         },
-        brush: brushEvent
+        brush: brushEvent($scope.state)
       },
       aggs: visStateAggs
     });
@@ -589,4 +593,4 @@ function discoverController($scope, config, courier, $route, $window, Notifier,
   }
 
   init();
-};
+}

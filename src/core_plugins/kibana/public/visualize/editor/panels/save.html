@@ -2,15 +2,18 @@
   role="form"
   ng-submit="opts.doSave()"
 >
-  <div class="localDropdownTitle">Save Visualization</div>
+  <div class="kuiLocalDropdownTitle">Save Visualization</div>
   <input
-    class="localDropdownInput"
+    class="kuiLocalDropdownInput"
     input-focus="select"
     type="text"
     name="visTitle"
     ng-model="opts.savedVis.title"
     required
   >
+
+  <saved-object-save-as-check-box saved-object="opts.savedVis"></saved-object-save-as-check-box>
+
   <button
     data-test-subj="saveVisualizationButton"
     type="submit"

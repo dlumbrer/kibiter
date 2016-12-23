@@ -60,11 +60,17 @@ import SegmentedRequestProvider from '../fetch/request/segmented';
 import SearchStrategyProvider from '../fetch/strategy/search';
 
 export default function SearchSourceFactory(Promise, Private, config) {
-  let SourceAbstract = Private(AbstractDataSourceProvider);
-  let SearchRequest = Private(SearchRequestProvider);
-  let SegmentedRequest = Private(SegmentedRequestProvider);
-  let searchStrategy = Private(SearchStrategyProvider);
-  let normalizeSortRequest = Private(NormalizeSortRequestProvider);
+  const SourceAbstract = Private(AbstractDataSourceProvider);
+  const SearchRequest = Private(SearchRequestProvider);
+  const SegmentedRequest = Private(SegmentedRequestProvider);
+  const searchStrategy = Private(SearchStrategyProvider);
+  const normalizeSortRequest = Private(NormalizeSortRequestProvider);
+
+  const forIp = Symbol('for which index pattern?');
+
+  function isIndexPattern(val) {
+    return Boolean(val && typeof val.toIndexList === 'function');
+  }
 
   _.class(SearchSource).inherits(SourceAbstract);
   function SearchSource(initialState) {
@@ -94,13 +100,31 @@ export default function SearchSourceFactory(Promise, Private, config) {
   ];
 
   SearchSource.prototype.index = function (indexPattern) {
-    if (indexPattern === undefined) return this._state.index;
-    if (indexPattern === null) return delete this._state.index;
-    if (!indexPattern || typeof indexPattern.toIndexList !== 'function') {
+    const state = this._state;
+
+    const hasSource = state.source;
+    const sourceCameFromIp = hasSource && state.source.hasOwnProperty(forIp);
+    const sourceIsForOurIp = sourceCameFromIp && state.source[forIp] === state.index;
+    if (sourceIsForOurIp) {
+      delete state.source;
+    }
+
+    if (indexPattern === undefined) return state.index;
+    if (indexPattern === null) return delete state.index;
+    if (!isIndexPattern(indexPattern)) {
       throw new TypeError('expected indexPattern to be an IndexPattern duck.');
     }
 
-    this._state.index = indexPattern;
+    state.index = indexPattern;
+    if (!state.source) {
+      // imply source filtering based on the index pattern, but allow overriding
+      // it by simply setting another value for "source". When index is changed
+      state.source = function () {
+        return indexPattern.getSourceFiltering();
+      };
+      state.source[forIp] = indexPattern;
+    }
+
     return this;
   };
 
@@ -123,7 +147,7 @@ export default function SearchSourceFactory(Promise, Private, config) {
    * @return {undefined|searchSource}
    */
   SearchSource.prototype.getParent = function (onlyHardLinked) {
-    let self = this;
+    const self = this;
     if (self._parent === false) return;
     if (self._parent) return self._parent;
     return onlyHardLinked ? undefined : Private(rootSearchSource).get();
@@ -144,9 +168,9 @@ export default function SearchSourceFactory(Promise, Private, config) {
   };
 
   SearchSource.prototype.onBeginSegmentedFetch = function (initFunction) {
-    let self = this;
+    const self = this;
     return Promise.try(function addRequest() {
-      let req = new SegmentedRequest(self, Promise.defer(), initFunction);
+      const req = new SegmentedRequest(self, Promise.defer(), initFunction);
 
       // return promises created by the completion handler so that
       // errors will bubble properly
@@ -191,7 +215,7 @@ export default function SearchSourceFactory(Promise, Private, config) {
    */
   SearchSource.prototype._mergeProp = function (state, val, key) {
     if (typeof val === 'function') {
-      let source = this;
+      const source = this;
       return Promise.cast(val(this))
       .then(function (newVal) {
         return source._mergeProp(state, newVal, key);
@@ -249,7 +273,7 @@ export default function SearchSourceFactory(Promise, Private, config) {
       // ignore if we already have a value
       if (state.body[key] == null) {
         if (key === 'query' && _.isString(val)) {
-          val = { query_string: { query: val }};
+          val = { query_string: { query: val } };
         }
 
         state.body[key] = val;
@@ -258,4 +282,4 @@ export default function SearchSourceFactory(Promise, Private, config) {
   };
 
   return SearchSource;
-};
+}

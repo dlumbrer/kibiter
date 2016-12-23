@@ -6,7 +6,7 @@ import 'plugins/kibana/discover/saved_searches/saved_searches';
 import routes from 'ui/routes';
 import RegistryVisTypesProvider from 'ui/registry/vis_types';
 import uiModules from 'ui/modules';
-
+import './wizard.less';
 
 const templateStep = function (num, txt) {
   return '<div ng-controller="VisualizeWizardStep' + num + '" class="container-fluid vis-wizard">' + txt + '</div>';
@@ -47,7 +47,7 @@ module.controller('VisualizeWizardStep2', function ($route, $scope, $location, t
   const type = $route.current.params.type;
 
   $scope.step2WithSearchUrl = function (hit) {
-    return kbnUrl.eval('#/visualize/create?&type={{type}}&savedSearchId={{id}}', {type: type, id: hit.id});
+    return kbnUrl.eval('#/visualize/create?&type={{type}}&savedSearchId={{id}}', { type: type, id: hit.id });
   };
 
   timefilter.enabled = false;
