@@ -39,7 +39,7 @@
 
     <!-- Metadashboard Links: Bitergia hack -->
     <div class="global-nav__links-section">
-        <div class="global-nav-link" class="global-nav-link__title" ng-repeat="(name, panel) in metadash">
+        <div ng-click="showMenu=!showMenu" class="global-nav-link" ng-repeat="(name, panel) in metadash">
           <a class='global-nav-link__anchor' href=''>
             <div class='global-nav-link__icon'>
             <!-- testing icon -->
@@ -47,13 +47,16 @@
               kbn-src="/plugins/kibana/assets/discover.svg"
               src="/plugins/kibana/assets/discover.svg">
             </div>
-            <div class='global-nav-link__title'>{{name}}</div>
+            <div class='global-nav-link__title'>
+              {{name}}
+            </div>
           </a>
-
-          <ul style='display:None'>
-            <li ng-repeat="url in panel">{{url}}
-            </li>
-          </ul>
+          <div ng-if="showMenu" class='legend-value-details'>
+            <ul style='list-style: none; display1: none'>
+              <li ng-repeat="url in panel">{{url}}
+              </li>
+            </ul>
+          </div>
 
           <!-- <ul aria-labelledby="split-button">
             <li ng-repeat="url in panel">{{url}}</li>
