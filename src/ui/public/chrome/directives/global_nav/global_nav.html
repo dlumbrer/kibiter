@@ -29,12 +29,37 @@
 
   <!-- Links -->
   <div class="global-nav__links">
+
     <!-- Main apps -->
-    <div class="global-nav__links-section">
+    <!-- <div class="global-nav__links-section">
       <app-switcher
         chrome="chrome"
       ></app-switcher>
+    </div> -->
+
+    <!-- Metadashboard Links: Bitergia hack -->
+    <div class="global-nav__links-section">
+        <div ng-click="showMenu=!showMenu" class="global-nav-link" ng-repeat="(name, panel) in metadash">
+          <a class='global-nav-link__anchor' href=''>
+            <div class='global-nav-link__icon'>
+            <!-- testing icon -->
+            <img class="global-nav-link__icon-image ng-scope"
+              kbn-src="/plugins/kibana/assets/discover.svg"
+              src="/plugins/kibana/assets/discover.svg">
+            </div>
+            <div class='global-nav-link__title'>
+              {{name}}
+            </div>
+          </a>
+          <div ng-if="showMenu" class='legend-value-details'>
+            <ul style='list-style: none; display1: none'>
+              <li ng-repeat="url in panel">{{url}}
+              </li>
+            </ul>
+          </div>
+      </div>
     </div>
+
 
     <!-- Bottom button -->
     <div class="global-nav__links-section">
