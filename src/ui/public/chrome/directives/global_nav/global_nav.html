@@ -39,8 +39,8 @@
 
     <!-- Metadashboard Links: Bitergia hack -->
     <div class="global-nav__links-section">
-        <div ng-click="showMenu=!showMenu" class="global-nav-link" ng-repeat="(name, panel) in metadash">
-          <a class='global-nav-link__anchor' href=''>
+        <div class="global-nav-link" ng-repeat="(name, panel) in metadash">
+          <a ng-click="showMenu=!showMenu" class='global-nav-link__anchor' href=''>
             <div class='global-nav-link__icon'>
             <!-- testing icon -->
             <img class="global-nav-link__icon-image ng-scope"
@@ -51,9 +51,9 @@
               {{name}}
             </div>
           </a>
-          <div ng-if="showMenu" class='legend-value-details'>
-            <ul style='list-style: none; display1: none'>
-              <li ng-repeat="url in panel">{{url}}
+          <div ng-if="showMenu">
+            <ul style='list-style: none;'>
+              <li ng-repeat="url in panel"><a  class='global-nav-link__anchor' href='#/dashboard/{{url}}'>{{url}}</a>
               </li>
             </ul>
           </div>
