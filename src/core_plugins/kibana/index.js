@@ -24,7 +24,7 @@ module.exports = function (kibana) {
     uiExports: {
       app: {
         id: 'kibana',
-        title: 'CoreOS',
+        title: 'Kibana',
         listed: false,
         description: 'the kibana you know and love',
         main: 'plugins/kibana/kibana',
