@@ -53,7 +53,7 @@
           </a>
           <div ng-if="showMenu">
             <ul style='list-style: none;'>
-              <li ng-repeat="url in panel"><a  class='global-nav-link__anchor' href='#/dashboard/{{url}}'>{{url}}</a>
+              <li ng-repeat="(name, url) in panel"><a  class='global-nav-link__anchor' href='#/dashboard/{{url}}'>{{name}}</a>
               </li>
             </ul>
           </div>
