@@ -1,87 +1,6 @@
 <div class="localDropdownPanels">
-  <!-- Left panel -->
-  <div class="localDropdownPanel localDropdownPanel--left">
-    <!-- Title -->
-    <div
-      data-test-subj="shareUiTitle"
-      class="localDropdownTitle"
-    >
-      Share saved {{share.objectType}}
-    </div>
-
-    <!-- Help text -->
-    <div ng-if="share.urls.original" class="localDropdownHelpText">
-      You can share this URL with people to let them load the most recent saved version of this {{share.objectType}}.
-    </div>
-
-    <div ng-if="!share.urls.original" class="localDropdownWarning">
-      Please save this {{share.objectType}} to enable this sharing option.
-    </div>
-
-    <div ng-if="share.urls.original">
-      <!-- iframe -->
-      <div class="localDropdownSection" ng-if="share.allowEmbed">
-        <!-- Header -->
-        <div class="localDropdownHeader">
-          <div class="localDropdownHeader__label">
-            Embedded iframe
-          </div>
-          <div class="localDropdownHeader__actions">
-            <a
-              class="localDropdownHeader__action"
-              ng-click="share.copyToClipboard('#originalIframeUrl')"
-            >
-              Copy
-            </a>
-          </div>
-        </div>
-
-        <!-- Input -->
-        <input
-          id="originalIframeUrl"
-          class="localDropdownInput"
-          type="text"
-          readonly
-          value="{{share.makeIframeTag(share.urls.original)}}"
-        />
-
-        <!-- Notes -->
-        <div class="localDropdownFormNote">
-          Add to your HTML source. Note that all clients must be able to access Kibana.
-        </div>
-      </div>
-
-      <!-- Link -->
-      <div class="localDropdownSection">
-        <!-- Header -->
-        <div class="localDropdownHeader">
-          <div class="localDropdownHeader__label">
-            Link
-          </div>
-          <div class="localDropdownHeader__actions">
-            <a
-              class="localDropdownHeader__action"
-              ng-click="share.copyToClipboard('#originalUrl')"
-            >
-              Copy
-            </a>
-          </div>
-        </div>
-
-        <!-- Input -->
-        <input
-          id="originalUrl"
-          class="localDropdownInput"
-          type="text"
-          readonly
-          value="{{share.urls.original}}"
-        />
-      </div>
-    </div>
-  </div>
-
   <!-- Right panel -->
-  <div class="localDropdownPanel localDropdownPanel--right">
+  <div class="localDropdownPanel">
     <!-- Title -->
     <div class="localDropdownTitle">
       Share Snapshot
@@ -115,7 +34,6 @@
           >
             Long URL
           </a>
-
           <a
             class="localDropdownHeader__action"
             ng-click="share.copyToClipboard('#snapshotIframeUrl')"
@@ -163,6 +81,10 @@
             ng-click="share.toggleShortSnapshotUrl()"
           >
             Long URL
+          </a>
+
+          <a ng-click="share.tweet('#snapshotUrl')" class="kuiLocalDropdownHeader__action" style="margin 0 5px 0 15px;">
+            <i class="fa fa-twitter"></i> <span>Tweet this</span>
           </a>
 
           <a

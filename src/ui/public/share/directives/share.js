@@ -164,6 +164,13 @@ app.directive('share', function (Private) {
           notify.info('URL selected. Press Ctrl+C to copy.');
         }
       };
+
+      this.tweet = selector => {
+        // Select the text to be tweeted.
+        const dashboardLink = $document.find(selector)[0];
+        dashboardLink.select();
+        window.location.href = 'https://twitter.com/share?url='+encodeURIComponent(dashboardLink.value)+'&amp;hashtags=DevAnalytics&amp;via=bitergia';
+      };
     }
   };
 });
