@@ -4,7 +4,7 @@ MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.co
 # Image for developing Kibiter/Kibana
 
 # ENV KIBANA_BRANCH master
-ENV KIBANA_BRANCH 5.1.1
+ENV KIBANA_BRANCH cauldron-5.1.1
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
@@ -12,8 +12,7 @@ RUN groupadd --system kibana && \
 
 # backports used to install java 8 needed by elasticsearch 5
 # ruby gems are used for building binary packages
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/backports.list && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
             ca-certificates \
             curl \
@@ -23,11 +22,8 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
             zip \
             make \
             g++ \
-            openjdk-8-jre \
             ruby-dev rpm rubygems \
             && \
-    rm /etc/apt/sources.list.d/backports.list && \
-    apt-get update && \
     # install nvm
     curl -o /tmp/nvm-install.sh -sSL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh && \
     chmod +x /tmp/nvm-install.sh && \
@@ -52,7 +48,15 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     chown -R kibana:kibana /opt/kibana  && \
 
     # cleanup to thin the final image
-    apt-get clean
+    rm -rf /kibiter && \
+    apt-get purge -y g++ make python git zip wget && \
+    apt-get autoremove --purge -y && \
+    apt-get clean && \
+    find /var/lib/apt/lists -type f -delete && \
+    rm -rf /root/.npm /root/.node-gyp /root/.nvm /tmp/* /var/tmp/* && \
+    bash -c 'find /usr/share/locale -maxdepth 1 -mindepth 1 -type d | grep -v -e "en_US" | xargs rm -rfv' && \
+    bash -c 'localedef --list-archive | grep -v -e "en_US" | xargs localedef --delete-from-archive' && \
+    rm -rf /usr/share/doc/*
 
 # grab gosu for easy step-down from root
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
