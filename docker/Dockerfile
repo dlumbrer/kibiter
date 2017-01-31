@@ -39,17 +39,23 @@ RUN apt-get update && \
     nvm install "$( cat .node-version )" && \
     npm install -g grunt-cli && \
     npm install && \
+    # Build the kibiter package
     sed -e "/return \[/,/\].map/ {/\(windows\|darwin\|x86\)/ d;s/,//g}" -i tasks/config/platforms.js && \
     grunt --no-color _build:downloadNodeBuilds:start _build:downloadNodeBuilds:finish && \
     grunt --no-color build && \
     tar xfz target/kibana-*-linux-x86_64.tar.gz --directory /opt && \
     mv /opt/kibana-*-linux-x86_64* /opt/kibana && \
-    cd /root && \
     chown -R kibana:kibana /opt/kibana  && \
-
+    # Install network plugin: https://dlumbrer.github.io/kbn_network/
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_network.git network_vis && \
+    cd network_vis && \
+    sed -e "s|5.0.0-rc1|5.1.1|" -i package.json && \
+    npm install  && \
+    cd /root && \
     # cleanup to thin the final image
     rm -rf /kibiter && \
-    apt-get purge -y g++ make python git zip wget && \
+    apt-get purge -y g++ git make python zip wget && \
     apt-get autoremove --purge -y && \
     apt-get clean && \
     find /var/lib/apt/lists -type f -delete && \
