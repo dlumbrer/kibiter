@@ -21,7 +21,7 @@ if [ "$1" = 'kibana' ]; then
         sed -e "s|^#server.host: .*$|server.host: 0.0.0.0|" -i /opt/kibana/config/kibana.yml
 
         if [ "$BASE_PATH" != "" ]; then
-                sed -e "s|^# server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/config/kibana.yml
+                sed -e "s|^#server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/config/kibana.yml
         fi
 
         if [ "$PROJECT_NAME" != "" ]; then
