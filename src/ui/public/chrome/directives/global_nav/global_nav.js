@@ -56,7 +56,7 @@ module.directive('globalNav', globalNavState => {
         },
         {
           'name':'Issues',
-          'link':'Github-Issues'
+          'link':'GitHub-Issues'
         },
         {
           'name': 'Issues Timing',
