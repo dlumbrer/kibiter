@@ -55,6 +55,10 @@ module.directive('globalNav', globalNavState => {
           'link':'Overview'
         },
         {
+          'name':'Git',
+          'link':'Git'
+        },
+        {
           'name':'Issues',
           'link':'GitHub-Issues'
         },
