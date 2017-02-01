@@ -6,11 +6,12 @@ import globalNavTemplate from './global_nav.html';
 import './global_nav.less';
 import uiModules from 'ui/modules';
 
-import Scanner from 'ui/utils/scanner';
+//import Scanner from 'ui/utils/scanner';
 
 const module = uiModules.get('kibana');
 
-module.directive('globalNav', (es, kbnIndex, globalNavState) => {
+//module.directive('globalNav', (es, kbnIndex, globalNavState) => {
+module.directive('globalNav', globalNavState => {
   return {
     restrict: 'E',
     replace: true,
@@ -48,6 +49,38 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
         globalNavState.setOpen(!globalNavState.isOpen());
       };
 
+      scope.cauldron_links = [
+        {
+          'name':'Overview',
+          'link':'Overview'
+        },
+        {
+          'name':'Issues',
+          'link':'Github-Issues'
+        },
+        {
+          'name': 'Issues Timing',
+          'link': 'GitHub-Issues-Timing'
+        },
+        {
+          'name': 'Pull Requests',
+          'link': 'GitHub-Pull-Requests'
+        },
+        {
+          'name': 'PRs Timing',
+          'link': 'GitHub-Pull-Requests-Timing'
+        },
+        {
+          'name': 'Backlog',
+          'link': 'GitHub-Backlog'
+        },
+        {
+          'name': 'About',
+          'link': 'About'
+        }
+      ];
+
+      /*
       function getMetaDashboards() {
         var queryString = '';
         var pageSize = 1000;
@@ -66,7 +99,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
       getMetaDashboards().then(function (results) {
         scope.metadash = results.hits[0]._source;
       });
-
+      */
     }
   };
 });
