@@ -9,11 +9,21 @@ define(function (require) {
       if (esResponse.aggregations) {
         var aggs = esResponse.aggregations[_.keys(esResponse.aggregations)[0]];
         if (aggs.sum_other_doc_count) {
-          // Add another bucket with sum_other_doc_count
-          aggs.buckets.push({
-            'key':'Others',
-            'doc_count': aggs.sum_other_doc_count
-          });
+          if (aggs.buckets[0][1]) {
+            // Unique count
+            aggs.buckets.push({
+              '1': {"value": aggs.sum_other_doc_count},
+              'key':'Others',
+              'doc_count': aggs.sum_other_doc_count
+            });
+          }
+          else {
+            // Add another bucket with sum_other_doc_count
+            aggs.buckets.push({
+              'key':'Others',
+              'doc_count': aggs.sum_other_doc_count
+            });
+          }
         }
       }
 
