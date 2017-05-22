@@ -1,9 +1,8 @@
 import d3 from 'd3';
-import angular from 'angular';
 import _ from 'lodash';
 import ngMock from 'ng_mock';
 import expect from 'expect.js';
-import VislibLibLayoutLayoutTypesProvider from 'ui/vislib/lib/layout/layout_types';
+import { VislibLibLayoutLayoutTypesProvider } from 'ui/vislib/lib/layout/layout_types';
 
 describe('Vislib Column Layout Test Suite', function () {
   let layoutType;

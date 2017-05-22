@@ -1,12 +1,12 @@
 import { SavedObjectNotFound } from 'ui/errors';
 import _ from 'lodash';
 import editorHtml from 'ui/agg_types/controls/field.html';
-import AggTypesParamTypesBaseProvider from 'ui/agg_types/param_types/base';
+import { AggTypesParamTypesBaseProvider } from 'ui/agg_types/param_types/base';
 import 'ui/filters/field_type';
-import IndexedArray from 'ui/indexed_array';
-import Notifier from 'ui/notify/notifier';
+import { IndexedArray } from 'ui/indexed_array';
+import { Notifier } from 'ui/notify/notifier';
 
-export default function FieldAggParamFactory(Private, $filter) {
+export function AggTypesParamTypesFieldProvider(Private, $filter) {
   const BaseAggParam = Private(AggTypesParamTypesBaseProvider);
   const notifier = new Notifier();
 
@@ -18,6 +18,10 @@ export default function FieldAggParamFactory(Private, $filter) {
   FieldAggParam.prototype.editor = editorHtml;
   FieldAggParam.prototype.scriptable = true;
   FieldAggParam.prototype.filterFieldTypes = '*';
+  // retain only the fields with the aggregatable property if the onlyAggregatable option is true
+  FieldAggParam.prototype.onlyAggregatable = true;
+  // show a warning about the field being analyzed
+  FieldAggParam.prototype.showAnalyzedWarning = true;
 
   /**
    * Called to serialize values for saving an aggConfig object
@@ -36,14 +40,20 @@ export default function FieldAggParamFactory(Private, $filter) {
     const indexPattern = aggConfig.getIndexPattern();
     let fields = indexPattern.fields.raw;
 
-    fields = fields.filter(f => f.aggregatable);
+    if (this.onlyAggregatable) {
+      fields = fields.filter(f => f.aggregatable);
+    }
 
     if (!this.scriptable) {
       fields = fields.filter(field => !field.scripted);
     }
 
     if (this.filterFieldTypes) {
-      fields = $filter('fieldType')(fields, this.filterFieldTypes);
+      let filters = this.filterFieldTypes;
+      if (_.isFunction(this.filterFieldTypes)) {
+        filters = this.filterFieldTypes.bind(this, aggConfig.vis);
+      }
+      fields = $filter('fieldType')(fields, filters);
       fields = $filter('orderBy')(fields, ['type', 'name']);
     }
 

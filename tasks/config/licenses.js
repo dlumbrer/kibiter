@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function () {
   return {
     options: {
       licenses: [
@@ -31,6 +31,7 @@ module.exports = function (grunt) {
         'Public domain',
         'Unlicense',
         'WTFPL',
+        'WTFPL OR ISC',
         'new BSD, and MIT'
       ],
       overrides: {
@@ -49,6 +50,7 @@ module.exports = function (grunt) {
         'ripemd160@0.2.0': ['MIT'],
         'select@1.0.6': ['MIT'],
         'uglify-js@2.2.5': ['BSD'],
+        'ua-parser-js@0.7.12': ['MIT']
       }
     }
   };

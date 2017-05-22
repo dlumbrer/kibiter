@@ -6,7 +6,7 @@ import rimraf from 'rimraf';
 import mkdirp from 'mkdirp';
 import Logger from '../../lib/logger';
 import { UnsupportedProtocolError } from '../../lib/errors';
-import { download, _downloadSingle } from '../download';
+import { download, _downloadSingle, _getFilePath, _checkFilePathDeprecation } from '../download';
 import { join } from 'path';
 
 describe('kibana cli', function () {
@@ -62,7 +62,7 @@ describe('kibana cli', function () {
       describe('http downloader', function () {
 
         it('should throw an ENOTFOUND error for a http ulr that returns 404', function () {
-          const couchdb = nock('http://example.com')
+          nock('http://example.com')
             .get('/plugin.tar.gz')
             .reply(404);
 
@@ -88,7 +88,7 @@ describe('kibana cli', function () {
         it('should download a file from a valid http url', function () {
           const filePath = join(__dirname, 'replies/banana.jpg');
 
-          const couchdb = nock('http://example.com')
+          nock('http://example.com')
             .defaultReplyHeaders({
               'content-length': '341965',
               'content-type': 'application/zip'
@@ -133,6 +133,37 @@ describe('kibana cli', function () {
 
     });
 
+    describe('_getFilePath', function () {
+      it('should decode paths', function () {
+        expect(_getFilePath('Test%20folder/file.zip')).to.equal('Test folder/file.zip');
+      });
+
+      it('should remove the leading slash from windows paths', function () {
+        const platform = Object.getOwnPropertyDescriptor(process, 'platform');
+        Object.defineProperty(process, 'platform', { value: 'win32' });
+
+        expect(_getFilePath('/C:/foo/bar')).to.equal('C:/foo/bar');
+
+        Object.defineProperty(process, 'platform', platform);
+      });
+
+    });
+
+    describe('Windows file:// deprecation', function () {
+      it('should log a warning if a file:// path is used', function () {
+        const platform = Object.getOwnPropertyDescriptor(process, 'platform');
+        Object.defineProperty(process, 'platform', { value: 'win32' });
+        const logger = {
+          log: sinon.spy()
+        };
+        _checkFilePathDeprecation('file://foo/bar', logger);
+        _checkFilePathDeprecation('file:///foo/bar', logger);
+        expect(logger.log.callCount).to.be(1);
+        expect(logger.log.calledWith('Install paths with file:// are deprecated, use file:/// instead')).to.be(true);
+        Object.defineProperty(process, 'platform', platform);
+      });
+    });
+
     describe('download', function () {
       it('should loop through bad urls until it finds a good one.', function () {
         const filePath = join(__dirname, 'replies/test_plugin.zip');
@@ -143,7 +174,7 @@ describe('kibana cli', function () {
           'http://example.com/goodfile.tar.gz'
         ];
 
-        const couchdb = nock('http://example.com')
+        nock('http://example.com')
         .defaultReplyHeaders({
           'content-length': '10'
         })
@@ -173,7 +204,7 @@ describe('kibana cli', function () {
           'http://example.com/badfile3.tar.gz'
         ];
 
-        const couchdb = nock('http://example.com')
+        nock('http://example.com')
         .defaultReplyHeaders({
           'content-length': '10'
         })
@@ -202,7 +233,7 @@ describe('kibana cli', function () {
           'http://example.com/badfile3.tar.gz'
         ];
 
-        const couchdb = nock('http://example.com')
+        nock('http://example.com')
         .defaultReplyHeaders({
           'content-length': '10'
         })

@@ -1,7 +1,7 @@
 
 import _ from 'lodash';
 import ngMock from 'ng_mock';
-import fieldCalculator from 'plugins/kibana/discover/components/field_chooser/lib/field_calculator';
+import { fieldCalculator } from 'plugins/kibana/discover/components/field_chooser/lib/field_calculator';
 import expect from 'expect.js';
 import 'ui/private';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
@@ -39,6 +39,15 @@ describe('fieldCalculator', function () {
     it('should throw an error if any value is a plain object', function () {
       expect(function () { fieldCalculator._groupValues([{}, true, false], params); })
         .to.throwError();
+    });
+
+    it('should handle values with dots in them', function () {
+      values = ['0', '0.........', '0.......,.....'];
+      params = {};
+      groups = fieldCalculator._groupValues(values, params);
+      expect(groups[values[0]].count).to.be(1);
+      expect(groups[values[1]].count).to.be(1);
+      expect(groups[values[2]].count).to.be(1);
     });
 
     it('should have a a key for value in the array when not grouping array terms', function () {

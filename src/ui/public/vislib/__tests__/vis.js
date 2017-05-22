@@ -8,7 +8,7 @@ import rows from 'fixtures/vislib/mock_data/date_histogram/_rows';
 import stackedSeries from 'fixtures/vislib/mock_data/date_histogram/_stacked_series';
 import $ from 'jquery';
 import FixturesVislibVisFixtureProvider from 'fixtures/vislib/_vis_fixture';
-import PersistedStatePersistedStateProvider from 'ui/persisted_state/persisted_state';
+import 'ui/persisted_state';
 
 const dataArray = [
   series,
@@ -35,9 +35,9 @@ dataArray.forEach(function (data, i) {
     let numberOfCharts;
 
     beforeEach(ngMock.module('kibana'));
-    beforeEach(ngMock.inject(function (Private) {
+    beforeEach(ngMock.inject(function (Private, $injector) {
       vis = Private(FixturesVislibVisFixtureProvider)();
-      persistedState = new (Private(PersistedStatePersistedStateProvider))();
+      persistedState = new ($injector.get('PersistedState'))();
       secondVis = Private(FixturesVislibVisFixtureProvider)();
     }));
 
@@ -127,18 +127,12 @@ dataArray.forEach(function (data, i) {
     });
 
     describe('on Method', function () {
-      const events = [
-        beforeEvent,
-        afterEvent
-      ];
       let listeners;
-      let listener1;
-      let listener2;
 
       beforeEach(function () {
         listeners = [
-          listener1 = function () {},
-          listener2 = function () {}
+          function () {},
+          function () {}
         ];
 
         // Add event and listeners to chart
@@ -173,7 +167,7 @@ dataArray.forEach(function (data, i) {
       it('should cause a listener for each event to be attached to each chart', function () {
         const charts = vis.handler.charts;
 
-        charts.forEach(function (chart, i) {
+        charts.forEach(function (chart) {
           expect(chart.events.listenerCount(beforeEvent)).to.be.above(0);
           expect(chart.events.listenerCount(afterEvent)).to.be.above(0);
         });

@@ -1,24 +1,19 @@
 
-import angular from 'angular';
 import _ from 'lodash';
 import sinon from 'auto-release-sinon';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import 'ui/private';
-import EventsProvider from 'ui/events';
+import { EventsProvider } from 'ui/events';
 
 describe('Events', function () {
   require('test_utils/no_digest_promises').activateForSuite();
 
-  let $rootScope;
   let Events;
-  let Notifier;
   let Promise;
 
   beforeEach(ngMock.module('kibana'));
   beforeEach(ngMock.inject(function ($injector, Private) {
-    $rootScope = $injector.get('$rootScope');
-    Notifier = $injector.get('Notifier');
     Promise = $injector.get('Promise');
     Events = Private(EventsProvider);
   }));
@@ -89,7 +84,7 @@ describe('Events', function () {
     });
   });
 
-  it('should handle mulitple identical emits in the same tick', function () {
+  it('should handle multiple identical emits in the same tick', function () {
     const obj = new Events();
     const handler1 = sinon.stub();
 
@@ -187,7 +182,7 @@ describe('Events', function () {
     const expected = 'some value';
     let testValue;
 
-    function handler(arg1, arg2) {
+    function handler() {
       testValue = this.getVal();
     }
     handler.getVal = _.constant(expected);

@@ -1,6 +1,9 @@
-const _ = require('lodash');
-const logoUrl = require('./logo.png');
-const moment = require('moment-timezone');
+import _ from 'lodash';
+import moment from 'moment-timezone';
+
+import { DocTitleProvider } from 'ui/doc_title';
+import { SavedObjectRegistryProvider } from 'ui/saved_objects/saved_object_registry';
+import { notify } from 'ui/notify';
 
 require('plugins/timelion/directives/cells/cells');
 require('plugins/timelion/directives/fullscreen/fullscreen');
@@ -24,10 +27,9 @@ require('plugins/kibana/visualize/saved_visualizations/saved_visualizations');
 require('plugins/kibana/discover/saved_searches/saved_searches');
 require('./vis');
 
-require('ui/saved_objects/saved_object_registry').register(require('plugins/timelion/services/saved_sheet_register'));
+SavedObjectRegistryProvider.register(require('plugins/timelion/services/saved_sheet_register'));
 
-// TODO: Expose an api for dismissing notifications
-const unsafeNotifications = require('ui/notify')._notifs;
+const unsafeNotifications = notify._notifs;
 
 require('ui/routes').enable();
 
@@ -47,7 +49,7 @@ require('ui/routes')
 
 app.controller('timelion', function (
     $scope, $http, timefilter, AppState, courier, $route, $routeParams,
-    kbnUrl, Notifier, config, $timeout, Private, savedVisualizations, safeConfirm) {
+    kbnUrl, Notifier, config, $timeout, Private, savedVisualizations, confirmModal) {
 
   // TODO: For some reason the Kibana core doesn't correctly do this for all apps.
   moment.tz.setDefault(config.get('dateFormat:tz'));
@@ -58,7 +60,7 @@ app.controller('timelion', function (
   });
 
   const timezone = Private(require('plugins/timelion/services/timezone'))();
-  const docTitle = Private(require('ui/doc_title'));
+  const docTitle = Private(DocTitleProvider);
 
   const defaultExpression = '.es(*)';
   const savedSheet = $route.current.locals.savedSheet;
@@ -86,12 +88,19 @@ app.controller('timelion', function (
     },
     run: function () {
       const title = savedSheet.title;
-      safeConfirm('Are you sure you want to delete the sheet ' + title + ' ?').then(function () {
+      function doDelete() {
         savedSheet.delete().then(() => {
           notify.info('Deleted ' + title);
           kbnUrl.change('/');
         }).catch(notify.fatal);
-      });},
+      }
+
+      const confirmModalOptions = {
+        onConfirm: doDelete,
+        confirmButtonText: 'Delete sheet'
+      };
+      confirmModal(`Are you sure you want to delete the sheet ${title}?`, confirmModalOptions);
+    },
     testId: 'timelionDeleteButton',
   }, {
     key: 'open',

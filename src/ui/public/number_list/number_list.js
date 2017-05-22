@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import parseRange from 'ui/utils/range';
+import { parseRange } from 'ui/utils/range';
 import 'ui/number_list/number_list_input';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 import numberListTemplate from 'ui/number_list/number_list.html';
 
 uiModules
@@ -29,7 +29,7 @@ uiModules
 
         $scope.$watch(function () {
           return $attrs.range;
-        }, function (range, prev) {
+        }, function (range) {
           if (!range) {
             self.range = defaultRange;
             return;

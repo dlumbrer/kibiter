@@ -7,19 +7,24 @@ import _ from 'lodash';
  *
  * @returns {function} - the filter function which can be registered with angular
  */
-function propFilter(prop) {
+export function propFilter(prop) {
   /**
    * List filtering function which accepts an array or list of values that a property
    * must contain
    *
    * @param  {array} list - array of items to filter
-   * @param  {array|string} filters - the values to match against the list. Can be
-   *                                an array, a single value as a string, or a comma
-   *                                -seperated list of items
+   * @param  {function|array|string} filters - the values to match against the list
+   *   - if a function, it is expected to take the field property as argument and returns true to keep it.
+   *   - Can be also an array, a single value as a string, or a comma-seperated list of items
    * @return {array} - the filtered list
    */
   return function (list, filters) {
     if (!filters) return filters;
+
+    if (_.isFunction(filters)) {
+      return list.filter((item) => filters(item[prop]));
+    }
+
     if (!_.isArray(filters)) filters = filters.split(',');
     if (_.contains(filters, '*')) return list;
 
@@ -50,5 +55,3 @@ function propFilter(prop) {
     });
   };
 }
-
-export default propFilter;

@@ -1,24 +1,22 @@
 import _ from 'lodash';
 
-import errors from 'ui/errors';
 import 'ui/es';
 import 'ui/promises';
-import 'ui/safe_confirm';
 import 'ui/index_patterns';
-import uiModules from 'ui/modules';
-import Notifier from 'ui/notify/notifier';
+import { uiModules } from 'ui/modules';
+import { Notifier } from 'ui/notify/notifier';
 
-import DocSourceProvider from './data_source/doc_source';
-import SearchSourceProvider from './data_source/search_source';
-import SearchStrategyProvider from './fetch/strategy/search';
-import RequestQueueProvider from './_request_queue';
-import ErrorHandlersProvider from './_error_handlers';
-import FetchProvider from './fetch';
-import DocLooperProvider from './looper/doc';
-import SearchLooperProvider from './looper/search';
-import RootSearchSourceProvider from './data_source/_root_search_source';
-import SavedObjectProvider from './saved_object';
-import RedirectWhenMissingProvider from './_redirect_when_missing';
+import { DocSourceProvider } from './data_source/doc_source';
+import { SearchSourceProvider } from './data_source/search_source';
+import { SearchStrategyProvider } from './fetch/strategy/search';
+import { RequestQueueProvider } from './_request_queue';
+import { FetchProvider } from './fetch';
+import { DocDataLooperProvider } from './looper/doc_data';
+import { DocAdminLooperProvider } from './looper/doc_admin';
+import { SearchLooperProvider } from './looper/search';
+import { RootSearchSourceProvider } from './data_source/_root_search_source';
+import { SavedObjectProvider } from './saved_object';
+import { RedirectWhenMissingProvider } from './_redirect_when_missing';
 
 
 uiModules.get('kibana/courier')
@@ -31,10 +29,10 @@ uiModules.get('kibana/courier')
     const searchStrategy = Private(SearchStrategyProvider);
 
     const requestQueue = Private(RequestQueueProvider);
-    const errorHandlers = Private(ErrorHandlersProvider);
 
     const fetch = Private(FetchProvider);
-    const docLooper = self.docLooper = Private(DocLooperProvider);
+    const docDataLooper = self.docLooper = Private(DocDataLooperProvider);
+    const docAdminLooper = self.docLooper = Private(DocAdminLooperProvider);
     const searchLooper = self.searchLooper = Private(SearchLooperProvider);
 
     // expose some internal modules
@@ -46,8 +44,6 @@ uiModules.get('kibana/courier')
 
     self.DocSource = DocSource;
     self.SearchSource = SearchSource;
-
-    const HastyRefresh = errors.HastyRefresh;
 
     /**
      * update the time between automatic search requests
@@ -65,7 +61,8 @@ uiModules.get('kibana/courier')
      */
     self.start = function () {
       searchLooper.start();
-      docLooper.start();
+      docDataLooper.start();
+      docAdminLooper.start();
       return this;
     };
 
@@ -124,7 +121,8 @@ uiModules.get('kibana/courier')
      */
     self.close = function () {
       searchLooper.stop();
-      docLooper.stop();
+      docAdminLooper.stop();
+      docDataLooper.stop();
 
       _.invoke(requestQueue, 'abort');
 

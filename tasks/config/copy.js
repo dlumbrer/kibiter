@@ -1,12 +1,9 @@
-module.exports = function (grunt) {
+module.exports = function () {
   return {
     devSource: {
       options: { mode: true },
       src: [
         'src/**',
-        'bin/**',
-        'webpackShims/**',
-        'config/kibana.yml',
         '!src/**/__tests__/**',
         '!src/test_utils/**',
         '!src/fixtures/**',
@@ -15,6 +12,14 @@ module.exports = function (grunt) {
         '!src/core_plugins/console/public/tests/**',
         '!src/cli/cluster/**',
         '!src/ui_framework/doc_site/**',
+        '!src/es_archiver/**',
+        '!src/functional_test_runner/**',
+        'bin/**',
+        'ui_framework/components/**',
+        'ui_framework/services/**',
+        'ui_framework/dist/**',
+        'webpackShims/**',
+        'config/kibana.yml',
       ],
       dest: 'build/kibana',
       expand: true

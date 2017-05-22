@@ -10,17 +10,22 @@ import esResponse from './fixtures/es_response';
 import Promise from 'bluebird';
 import _ from 'lodash';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import invoke from './helpers/invoke_series_fn.js';
 
 function stubResponse(response) {
   return {
-    server: { plugins:{
-      elasticsearch: {
-        callWithRequest: function () {
-          return Promise.resolve(response);
+    server: {
+      plugins:{
+        elasticsearch: {
+          getCluster: sinon.stub().withArgs('data').returns({
+            callWithRequest: function () {
+              return Promise.resolve(response);
+            }
+          })
         }
       }
-    } }
+    }
   };
 }
 
@@ -50,7 +55,6 @@ describe(filename, () => {
 
 
   describe('createDateAgg', () => {
-    const createDateAgg = require('../es/lib/create_date_agg');
     let tlConfig;
     let config;
     let agg;
@@ -102,7 +106,6 @@ describe(filename, () => {
         expect(agg.time_buckets.aggs.count.bucket_script.buckets_path).to.eql('_count');
       });
     });
-
   });
 
   describe('buildRequest', () => {
@@ -175,7 +178,6 @@ describe(filename, () => {
       it('does not include filters if config.kibana = false', () => {
         config.kibana = false;
         const request = fn(config, tlConfig);
-        const filter = request.body.query.bool.filter;
         expect(request.body.query.bool.filter).to.eql(undefined);
       });
 

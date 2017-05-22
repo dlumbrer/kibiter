@@ -9,14 +9,15 @@
  */
 
 import _ from 'lodash';
-import modules from 'ui/modules';
-import StateManagementStateProvider from 'ui/state_management/state';
-import PersistedStatePersistedStateProvider from 'ui/persisted_state/persisted_state';
+import { uiModules } from 'ui/modules';
+import { StateProvider } from 'ui/state_management/state';
+import 'ui/persisted_state';
+
 const urlParam = '_a';
 
-function AppStateProvider(Private, $rootScope, $location) {
-  const State = Private(StateManagementStateProvider);
-  const PersistedState = Private(PersistedStatePersistedStateProvider);
+export function AppStateProvider(Private, $rootScope, $location, $injector) {
+  const State = Private(StateProvider);
+  const PersistedState = $injector.get('PersistedState');
   let persistedStates;
   let eventUnsubscribers;
 
@@ -106,7 +107,7 @@ function AppStateProvider(Private, $rootScope, $location) {
   return AppState;
 }
 
-modules.get('kibana/global_state')
+uiModules.get('kibana/global_state')
 .factory('AppState', function (Private) {
   return Private(AppStateProvider);
 })
@@ -114,4 +115,3 @@ modules.get('kibana/global_state')
   return Private(AppStateProvider).getAppState;
 });
 
-export default AppStateProvider;

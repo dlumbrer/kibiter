@@ -1,6 +1,5 @@
-import _ from 'lodash';
 // adopted from http://stackoverflow.com/questions/3109978/php-display-number-with-ordinal-suffix
-export default function addOrdinalSuffix(num) {
+export function ordinalSuffix(num) {
   return num + '' + suffix(num);
 }
 

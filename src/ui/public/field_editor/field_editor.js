@@ -2,19 +2,18 @@ import 'ui/field_format_editor';
 import 'angular-bootstrap-colorpicker';
 import 'angular-bootstrap-colorpicker/css/colorpicker.css';
 import _ from 'lodash';
-import RegistryFieldFormatsProvider from 'ui/registry/field_formats';
-import IndexPatternsFieldProvider from 'ui/index_patterns/_field';
-import uiModules from 'ui/modules';
+import { RegistryFieldFormatsProvider } from 'ui/registry/field_formats';
+import { IndexPatternsFieldProvider } from 'ui/index_patterns/_field';
+import { uiModules } from 'ui/modules';
 import fieldEditorTemplate from 'ui/field_editor/field_editor.html';
-import chrome from 'ui/chrome';
-import IndexPatternsCastMappingTypeProvider from 'ui/index_patterns/_cast_mapping_type';
+import { IndexPatternsCastMappingTypeProvider } from 'ui/index_patterns/_cast_mapping_type';
 import { scriptedFields as docLinks } from '../documentation_links/documentation_links';
 import './field_editor.less';
 import { GetEnabledScriptingLanguagesProvider, getSupportedScriptingLanguages } from '../scripting_languages';
 
 uiModules
 .get('kibana', ['colorpicker.module'])
-.directive('fieldEditor', function (Private, $sce) {
+.directive('fieldEditor', function (Private, $sce, confirmModal) {
   const fieldFormats = Private(RegistryFieldFormatsProvider);
   const Field = Private(IndexPatternsFieldProvider);
   const getEnabledScriptingLanguages = Private(GetEnabledScriptingLanguagesProvider);
@@ -33,7 +32,7 @@ uiModules
       getField: '&field'
     },
     controllerAs: 'editor',
-    controller: function ($scope, Notifier, kbnUrl, $http, $q) {
+    controller: function ($scope, Notifier, kbnUrl) {
       const self = this;
       const notify = new Notifier({ location: 'Field Editor' });
 
@@ -52,6 +51,7 @@ uiModules
 
       // only init on first create
       self.creating = !self.indexPattern.fields.byName[self.field.name];
+      self.existingFieldNames = self.indexPattern.fields.map(field => field.name); //used for mapping conflict validation
       self.selectedFormatId = _.get(self.indexPattern, ['fieldFormatMap', self.field.name, 'type', 'id']);
       self.defFormatType = initDefaultFormat();
 
@@ -78,15 +78,25 @@ uiModules
       };
 
       self.delete = function () {
-        const indexPattern = self.indexPattern;
-        const field = self.field;
+        function doDelete() {
+          const indexPattern = self.indexPattern;
+          const field = self.field;
 
-        indexPattern.fields.remove({ name: field.name });
-        return indexPattern.save()
-        .then(function () {
-          notify.info('Deleted Field "' + field.name + '"');
-          redirectAway();
-        });
+          indexPattern.fields.remove({ name: field.name });
+          return indexPattern.save()
+            .then(function () {
+              notify.info('Deleted Field "' + field.name + '"');
+              redirectAway();
+            });
+        }
+        const confirmModalOptions = {
+          confirmButtonText: 'Delete field',
+          onConfirm: doDelete
+        };
+        confirmModal(
+          `Are you sure want to delete '${self.field.name}'? This action is irreversible!`,
+          confirmModalOptions
+        );
       };
 
       $scope.$watch('editor.selectedFormatId', function (cur, prev) {

@@ -64,8 +64,9 @@ export default async (kbnServer, server, config) => {
     }
   });
 
-  async function getKibanaPayload({ app, request, includeUserProvidedConfig }) {
+  async function getKibanaPayload({ app, request, includeUserProvidedConfig, injectedVarsOverrides }) {
     const uiSettings = server.uiSettings();
+    const translations = await uiI18n.getTranslationsForRequest(request);
 
     return {
       app: app,
@@ -76,6 +77,7 @@ export default async (kbnServer, server, config) => {
       basePath: config.get('server.basePath'),
       serverName: config.get('server.name'),
       devMode: config.get('env.dev'),
+      translations: translations,
       uiSettings: await props({
         defaults: uiSettings.getDefaults(),
         user: includeUserProvidedConfig && uiSettings.getUserProvided(request)
@@ -83,12 +85,12 @@ export default async (kbnServer, server, config) => {
       vars: await reduceAsync(
         uiExports.injectedVarsReplacers,
         async (acc, replacer) => await replacer(acc, request, server),
-        defaults(await app.getInjectedVars() || {}, uiExports.defaultInjectedVars)
+        defaults(injectedVarsOverrides, await app.getInjectedVars() || {}, uiExports.defaultInjectedVars)
       ),
     };
   }
 
-  async function renderApp({ app, reply, includeUserProvidedConfig = true }) {
+  async function renderApp({ app, reply, includeUserProvidedConfig = true, injectedVarsOverrides = {} }) {
     try {
       const request = reply.request;
       const translations = await uiI18n.getTranslationsForRequest(request);
@@ -98,7 +100,8 @@ export default async (kbnServer, server, config) => {
         kibanaPayload: await getKibanaPayload({
           app,
           request,
-          includeUserProvidedConfig
+          includeUserProvidedConfig,
+          injectedVarsOverrides
         }),
         bundlePath: `${config.get('server.basePath')}/bundles`,
         i18n: key => _.get(translations, key, ''),
@@ -108,11 +111,12 @@ export default async (kbnServer, server, config) => {
     }
   }
 
-  server.decorate('reply', 'renderApp', function (app) {
+  server.decorate('reply', 'renderApp', function (app, injectedVarsOverrides) {
     return renderApp({
       app,
       reply: this,
       includeUserProvidedConfig: true,
+      injectedVarsOverrides,
     });
   });
 

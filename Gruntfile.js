@@ -1,5 +1,4 @@
-const camelCase = require('lodash').camelCase;
-require('babel/register')(require('./src/optimize/babel_options').node);
+require('./src/optimize/babel/register');
 
 module.exports = function (grunt) {
   // set the config once before calling load-grunt-config
@@ -13,7 +12,6 @@ module.exports = function (grunt) {
     plugins: __dirname + '/src/core_plugins',
     server: __dirname + '/src/server',
     target: __dirname + '/target', // location of the compressed build targets
-    testUtilsDir: __dirname + '/src/test_utils',
     configFile: __dirname + '/src/config/kibana.yml',
 
     karmaBrowser: (function () {
@@ -58,7 +56,7 @@ module.exports = function (grunt) {
     init: true,
     config: config,
     loadGruntTasks: {
-      pattern: ['grunt-*', '@*/grunt-*', 'gruntify-*', '@*/gruntify-*', 'intern']
+      pattern: ['grunt-*', '@*/grunt-*', 'gruntify-*', '@*/gruntify-*']
     }
   });
 

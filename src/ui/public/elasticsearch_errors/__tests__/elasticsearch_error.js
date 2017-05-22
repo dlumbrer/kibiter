@@ -1,6 +1,5 @@
-import sinon from 'auto-release-sinon';
 import expect from 'expect.js';
-import ElasticsearchError from '../elasticsearch_error';
+import { ElasticsearchError } from '../elasticsearch_error';
 
 describe('ElasticsearchError', () => {
   function createError(rootCauses = []) {

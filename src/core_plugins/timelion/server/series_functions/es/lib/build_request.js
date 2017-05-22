@@ -1,9 +1,9 @@
-const  _ = require('lodash');
-const createDateAgg = require('./create_date_agg');
+import _ from 'lodash';
+import createDateAgg from './create_date_agg';
 
 module.exports =  function buildRequest(config, tlConfig) {
 
-  const bool = { must: [], must_not: [] };
+  const bool = { must: [] };
 
   const timeFilter = { range:{} };
   timeFilter.range[config.timefield] = { gte: tlConfig.time.from, lte: tlConfig.time.to, format: 'epoch_millis' };
@@ -11,7 +11,7 @@ module.exports =  function buildRequest(config, tlConfig) {
 
   // Use the kibana filter bar filters
   if (config.kibana) {
-    bool.filter = _.get(tlConfig, 'request.payload.extended.es.filter') || {};
+    bool.filter = _.get(tlConfig, 'request.payload.extended.es.filter');
   }
 
   const aggs = {
@@ -28,7 +28,7 @@ module.exports =  function buildRequest(config, tlConfig) {
 
   let aggCursor = aggs.q.aggs;
 
-  _.each(config.split, function (clause, i) {
+  _.each(config.split, function (clause) {
     clause = clause.split(':');
     if (clause[0] && clause[1]) {
       aggCursor[clause[0]] = {

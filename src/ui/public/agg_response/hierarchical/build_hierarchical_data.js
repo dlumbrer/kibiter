@@ -1,13 +1,14 @@
 import _ from 'lodash';
-import extractBuckets from 'ui/agg_response/hierarchical/_extract_buckets';
-import createRawData from 'ui/agg_response/hierarchical/_create_raw_data';
-import arrayToLinkedList from 'ui/agg_response/hierarchical/_array_to_linked_list';
+import { extractBuckets } from 'ui/agg_response/hierarchical/_extract_buckets';
+import { createRawData } from 'ui/agg_response/hierarchical/_create_raw_data';
+import { arrayToLinkedList } from 'ui/agg_response/hierarchical/_array_to_linked_list';
 import AggConfigResult from 'ui/vis/agg_config_result';
-import AggResponseHierarchicalBuildSplitProvider from 'ui/agg_response/hierarchical/_build_split';
-import AggResponseHierarchicalHierarchicalTooltipFormatterProvider from 'ui/agg_response/hierarchical/_hierarchical_tooltip_formatter';
-export default function buildHierarchicalDataProvider(Private, Notifier) {
+import { AggResponseHierarchicalBuildSplitProvider } from 'ui/agg_response/hierarchical/_build_split';
+import { HierarchicalTooltipFormatterProvider } from 'ui/agg_response/hierarchical/_hierarchical_tooltip_formatter';
+
+export function BuildHierarchicalDataProvider(Private, Notifier) {
   const buildSplit = Private(AggResponseHierarchicalBuildSplitProvider);
-  const tooltipFormatter = Private(AggResponseHierarchicalHierarchicalTooltipFormatterProvider);
+  const tooltipFormatter = Private(HierarchicalTooltipFormatterProvider);
 
 
   const notify = new Notifier({
@@ -17,7 +18,6 @@ export default function buildHierarchicalDataProvider(Private, Notifier) {
   return function (vis, resp) {
     // Create a refrenece to the buckets
     let buckets = vis.aggs.bySchemaGroup.buckets;
-
 
     // Find the metric so it's easier to reference.
     // TODO: Change this to support multiple metrics.
@@ -51,7 +51,7 @@ export default function buildHierarchicalDataProvider(Private, Notifier) {
     }
 
     const firstAgg = buckets[0];
-    const aggData = resp.aggregations[firstAgg.id];
+    const aggData = resp.aggregations ? resp.aggregations[firstAgg.id] : null;
 
     if (!firstAgg._next && firstAgg.schema.name === 'split') {
       notify.error('Splitting charts without splitting slices is not supported. Pretending that we are just splitting slices.');

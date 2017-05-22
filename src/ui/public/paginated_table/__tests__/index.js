@@ -1,6 +1,5 @@
 
 import _ from 'lodash';
-import sinon from 'sinon';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import 'ui/paginated_table';
@@ -11,8 +10,6 @@ describe('paginated table', function () {
   let $rootScope;
   let $compile;
   let $scope;
-  let $elScope;
-  let $orderBy;
   const defaultPerPage = 10;
 
   const makeData = function (colCount, rowCount) {
@@ -47,22 +44,31 @@ describe('paginated table', function () {
     };
   };
 
-  const renderTable = function (cols, rows, perPage, sort) {
+  const renderTable = function (cols, rows, perPage, sort, showBlankRows, linkToTop) {
     $scope.cols = cols || [];
     $scope.rows = rows || [];
     $scope.perPage = perPage || defaultPerPage;
     $scope.sort = sort || {};
+    $scope.showBlankRows = showBlankRows;
+    $scope.linkToTop = linkToTop;
 
-    $el = $compile('<paginated-table columns="cols" rows="rows" per-page="perPage" sort="sort">')($scope);
+    const template = `
+      <paginated-table
+        columns="cols"
+        rows="rows"
+        per-page="perPage"
+        sort="sort"
+        link-to-top="linkToTop"
+        show-blank-rows="showBlankRows">`;
+    $el = $compile(template)($scope);
 
     $scope.$digest();
   };
 
   beforeEach(ngMock.module('kibana'));
-  beforeEach(ngMock.inject(function (_$rootScope_, _$compile_, $filter) {
+  beforeEach(ngMock.inject(function (_$rootScope_, _$compile_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;
-    $orderBy = $filter('orderBy');
     $scope = $rootScope.$new();
   }));
 
@@ -107,6 +113,33 @@ describe('paginated table', function () {
       // add 2 for the first and last page links
       expect($el.find('paginate-controls a').size()).to.be(pageCount + 2);
     });
+
+    it('should not show blank rows on last page when so specified', function () {
+      const rowCount = 7;
+      const perPageCount = 10;
+      const data = makeData(3, rowCount);
+
+      renderTable(data.columns, data.rows, perPageCount, null, false);
+      const tableRows = $el.find('tbody tr');
+      expect(tableRows.size()).to.be(rowCount);
+    });
+
+    it('should not show link to top when not set', function () {
+      const data = makeData(5, 5);
+      renderTable(data.columns, data.rows, 10, null, false);
+
+      const linkToTop = $el.find('[data-test-subj="paginateControlsLinkToTop"]');
+      expect(linkToTop.size()).to.be(0);
+    });
+
+    it('should show link to top when set', function () {
+      const data = makeData(5, 5);
+      renderTable(data.columns, data.rows, 10, null, false, true);
+
+      const linkToTop = $el.find('[data-test-subj="paginateControlsLinkToTop"]');
+      expect(linkToTop.size()).to.be(1);
+    });
+
   });
 
   describe('sorting', function () {

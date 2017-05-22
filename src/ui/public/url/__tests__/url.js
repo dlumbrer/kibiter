@@ -4,8 +4,7 @@ import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import faker from 'faker';
 import _ from 'lodash';
-import MockState from 'fixtures/mock_state';
-import AppStateProvider from 'ui/state_management/app_state';
+import { AppStateProvider } from 'ui/state_management/app_state';
 import 'ui/url';
 
 // global vars, injected and mocked in init()
@@ -136,6 +135,32 @@ describe('kbnUrl', function () {
       expect($rootScope.$on.callCount).to.be(1);
       kbnUrl.change('/url');
       expect($rootScope.$on.callCount).to.be(2);
+    });
+  });
+
+  describe('remove', function () {
+    it('removes a parameter with a value from the url', function () {
+      $location.url('/myurl?exist&WithAParamToRemove=2&anothershouldexist=5');
+      kbnUrl.removeParam('WithAParamToRemove');
+      expect($location.url()).to.be('/myurl?exist&anothershouldexist=5');
+    });
+
+    it('removes a parameter with no value from the url', function () {
+      $location.url('/myurl?removeme&hi=5');
+      kbnUrl.removeParam('removeme');
+      expect($location.url()).to.be('/myurl?hi=5');
+    });
+
+    it('is noop if the given parameter doesn\t exist in the url', function () {
+      $location.url('/myurl?hi&bye');
+      kbnUrl.removeParam('noexist');
+      expect($location.url()).to.be('/myurl?hi&bye');
+    });
+
+    it('is noop if given empty string param', function () {
+      $location.url('/myurl?hi&bye');
+      kbnUrl.removeParam('');
+      expect($location.url()).to.be('/myurl?hi&bye');
     });
   });
 

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Promise from 'bluebird';
 import sinon from 'sinon';
 import expect from 'expect.js';
@@ -9,8 +8,7 @@ describe('plugins/elasticsearch', function () {
   describe('lib/upgrade_config', function () {
     let get;
     let server;
-    let client;
-    let config;
+    let callWithInternalUser;
     let upgrade;
 
     beforeEach(function () {
@@ -18,7 +16,9 @@ describe('plugins/elasticsearch', function () {
       get.withArgs('kibana.index').returns('.my-kibana');
       get.withArgs('pkg.version').returns('4.0.1');
       get.withArgs('pkg.buildNum').returns(Math.random());
-      client = { create: sinon.stub() };
+
+      callWithInternalUser = sinon.stub();
+
       server = {
         log: sinon.stub(),
         config: function () {
@@ -26,7 +26,13 @@ describe('plugins/elasticsearch', function () {
             get: get
           };
         },
-        plugins: { elasticsearch: { client: client } }
+        plugins: {
+          elasticsearch: {
+            getCluster: sinon.stub().withArgs('admin').returns({
+              callWithInternalUser: callWithInternalUser
+            })
+          }
+        }
       };
       upgrade = upgradeConfig(server);
     });
@@ -35,7 +41,7 @@ describe('plugins/elasticsearch', function () {
       const response = { hits: { hits:[] } };
 
       beforeEach(function () {
-        client.create.returns(Promise.resolve());
+        callWithInternalUser.withArgs('create', sinon.match.any).returns(Promise.resolve());
       });
 
       describe('production', function () {
@@ -46,16 +52,16 @@ describe('plugins/elasticsearch', function () {
         });
 
         it('should resolve buildNum to pkg.buildNum config', function () {
-          return upgrade(response).then(function (resp) {
-            sinon.assert.calledOnce(client.create);
-            const params = client.create.args[0][0];
+          return upgrade(response).then(function () {
+            sinon.assert.calledOnce(callWithInternalUser);
+            const params = callWithInternalUser.args[0][1];
             expect(params.body).to.have.property('buildNum', get('pkg.buildNum'));
           });
         });
 
         it('should resolve version to pkg.version config', function () {
-          return upgrade(response).then(function (resp) {
-            const params = client.create.args[0][0];
+          return upgrade(response).then(function () {
+            const params = callWithInternalUser.args[0][1];
             expect(params).to.have.property('id', get('pkg.version'));
           });
         });
@@ -69,15 +75,15 @@ describe('plugins/elasticsearch', function () {
         });
 
         it('should resolve buildNum to pkg.buildNum config', function () {
-          return upgrade(response).then(function (resp) {
-            const params = client.create.args[0][0];
+          return upgrade(response).then(function () {
+            const params = callWithInternalUser.args[0][1];
             expect(params.body).to.have.property('buildNum', get('pkg.buildNum'));
           });
         });
 
         it('should resolve version to pkg.version config', function () {
-          return upgrade(response).then(function (resp) {
-            const params = client.create.args[0][0];
+          return upgrade(response).then(function () {
+            const params = callWithInternalUser.args[0][1];
             expect(params).to.have.property('id', get('pkg.version'));
           });
         });
@@ -93,11 +99,12 @@ describe('plugins/elasticsearch', function () {
 
     it('should create new config if the nothing is upgradeable', function () {
       get.withArgs('pkg.buildNum').returns(9833);
-      client.create.returns(Promise.resolve());
+      callWithInternalUser.withArgs('create', sinon.match.any).returns(Promise.resolve());
+
       const response = { hits: { hits: [ { _id: '4.0.1-alpha3' }, { _id: '4.0.1-beta1' }, { _id: '4.0.0-SNAPSHOT1' } ] } };
-      return upgrade(response).then(function (resp) {
-        sinon.assert.calledOnce(client.create);
-        const params = client.create.args[0][0];
+      return upgrade(response).then(function () {
+        sinon.assert.calledOnce(callWithInternalUser);
+        const params = callWithInternalUser.args[0][1];
         expect(params).to.have.property('body');
         expect(params.body).to.have.property('buildNum', 9833);
         expect(params).to.have.property('index', '.my-kibana');
@@ -108,11 +115,13 @@ describe('plugins/elasticsearch', function () {
 
     it('should update the build number on the new config', function () {
       get.withArgs('pkg.buildNum').returns(5801);
-      client.create.returns(Promise.resolve());
+      callWithInternalUser.withArgs('create', sinon.match.any).returns(Promise.resolve());
+
       const response = { hits: { hits: [ { _id: '4.0.0', _source: { buildNum: 1 } } ] } };
-      return upgrade(response).then(function (resp) {
-        sinon.assert.calledOnce(client.create);
-        const params = client.create.args[0][0];
+
+      return upgrade(response).then(function () {
+        sinon.assert.calledOnce(callWithInternalUser);
+        const params = callWithInternalUser.args[0][1];
         expect(params).to.have.property('body');
         expect(params.body).to.have.property('buildNum', 5801);
         expect(params).to.have.property('index', '.my-kibana');
@@ -123,9 +132,11 @@ describe('plugins/elasticsearch', function () {
 
     it('should log a message for upgrades', function () {
       get.withArgs('pkg.buildNum').returns(5801);
-      client.create.returns(Promise.resolve());
+      callWithInternalUser.withArgs('create', sinon.match.any).returns(Promise.resolve());
+
       const response = { hits: { hits: [ { _id: '4.0.0', _source: { buildNum: 1 } } ] } };
-      return upgrade(response).then(function (resp) {
+
+      return upgrade(response).then(function () {
         sinon.assert.calledOnce(server.log);
         expect(server.log.args[0][0]).to.eql(['plugin', 'elasticsearch']);
         const msg = server.log.args[0][1];
@@ -137,15 +148,16 @@ describe('plugins/elasticsearch', function () {
 
     it('should copy attributes from old config', function () {
       get.withArgs('pkg.buildNum').returns(5801);
-      client.create.returns(Promise.resolve());
+      callWithInternalUser.withArgs('create', sinon.match.any).returns(Promise.resolve());
+
       const response = { hits: { hits: [ { _id: '4.0.0', _source: { buildNum: 1, defaultIndex: 'logstash-*' } } ] } };
-      return upgrade(response).then(function (resp) {
-        sinon.assert.calledOnce(client.create);
-        const params = client.create.args[0][0];
+
+      return upgrade(response).then(function () {
+        sinon.assert.calledOnce(callWithInternalUser);
+        const params = callWithInternalUser.args[0][1];
         expect(params).to.have.property('body');
         expect(params.body).to.have.property('defaultIndex', 'logstash-*');
       });
     });
-
   });
 });

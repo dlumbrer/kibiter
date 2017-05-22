@@ -1,6 +1,5 @@
+import { flatten } from 'lodash';
 module.exports = function (grunt) {
-  const { flatten } = require('lodash');
-
   grunt.registerTask('build', 'Build packages', function () {
     grunt.task.run(flatten([
       'clean:build',
@@ -8,6 +7,7 @@ module.exports = function (grunt) {
       '_build:downloadNodeBuilds',
       '_build:extractNodeBuilds',
       'copy:devSource',
+      'clean:devSourceForTestbed',
       'babel:build',
       '_build:babelOptions',
       '_build:plugins',
@@ -17,6 +17,7 @@ module.exports = function (grunt) {
       '_build:readme',
       '_build:babelCache',
       '_build:installNpmDeps',
+      '_build:notice',
       '_build:removePkgJsonDeps',
       'clean:testsFromModules',
       'run:optimizeBuild',

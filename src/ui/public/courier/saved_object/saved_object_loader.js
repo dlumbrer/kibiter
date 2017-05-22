@@ -1,17 +1,17 @@
 import _ from 'lodash';
-import Scanner from 'ui/utils/scanner';
+import { Scanner } from 'ui/utils/scanner';
 import { StringUtils } from 'ui/utils/string_utils';
 
 export class SavedObjectLoader {
-  constructor(SavedObjectClass, kbnIndex, es, kbnUrl) {
+  constructor(SavedObjectClass, kbnIndex, esAdmin, kbnUrl) {
     this.type = SavedObjectClass.type;
     this.Class = SavedObjectClass;
     this.lowercaseType = this.type.toLowerCase();
     this.kbnIndex = kbnIndex;
     this.kbnUrl = kbnUrl;
-    this.es = es;
+    this.esAdmin = esAdmin;
 
-    this.scanner = new Scanner(es, {
+    this.scanner = new Scanner(esAdmin, {
       index: kbnIndex,
       type: this.lowercaseType
     });
@@ -92,9 +92,9 @@ export class SavedObjectLoader {
       body = { query: { match_all: {} } };
     }
 
-    return this.es.search({
+    return this.esAdmin.search({
       index: this.kbnIndex,
-      type: this.type.toLowerCase(),
+      type: this.lowercaseType,
       body,
       size
     })

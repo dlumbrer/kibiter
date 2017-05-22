@@ -1,7 +1,7 @@
 import 'ui/private';
 import ngMock from 'ng_mock';
 import expect from 'expect.js';
-import NormalizeSortRequestProvider from 'ui/courier/data_source/_normalize_sort_request';
+import { NormalizeSortRequestProvider } from 'ui/courier/data_source/_normalize_sort_request';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
 import _ from 'lodash';
 
@@ -78,7 +78,6 @@ describe('SearchSource#normalizeSortRequest', function () {
   it('should use script based sorting only on sortable types', function () {
     const fieldName = 'script murmur3';
     const direction = 'asc';
-    const indexField = indexPattern.fields.byName[fieldName];
 
     const sortState = {};
     sortState[fieldName] = direction;

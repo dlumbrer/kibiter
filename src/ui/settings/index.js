@@ -1,4 +1,4 @@
-import { defaultsDeep, partial } from 'lodash';
+import { defaultsDeep } from 'lodash';
 import defaultsProvider from './defaults';
 import Bluebird from 'bluebird';
 
@@ -66,7 +66,7 @@ export default function setupSettings(kbnServer, server, config) {
 
   async function getUserProvided(req, { ignore401Errors = false } = {}) {
     assertRequest(req);
-    const { callWithRequest, errors } = server.plugins.elasticsearch;
+    const { callWithRequest, errors } = server.plugins.elasticsearch.getCluster('admin');
 
     // If the ui settings status isn't green, we shouldn't be attempting to get
     // user settings, since we can't be sure that all the necessary conditions
@@ -80,14 +80,14 @@ export default function setupSettings(kbnServer, server, config) {
     if (ignore401Errors) allowedErrors.push(errors[401]);
 
     return Bluebird.resolve(callWithRequest(req, 'get', params, { wrap401Errors: !ignore401Errors }))
-      .catch(...allowedErrors, err => ({}))
+      .catch(...allowedErrors, () => ({}))
       .then(resp => resp._source || {})
       .then(source => hydrateUserSettings(source));
   }
 
   async function setMany(req, changes) {
     assertRequest(req);
-    const { callWithRequest } = server.plugins.elasticsearch;
+    const { callWithRequest } = server.plugins.elasticsearch.getCluster('admin');
     const clientParams = {
       ...getClientSettings(config),
       body: { doc: changes }

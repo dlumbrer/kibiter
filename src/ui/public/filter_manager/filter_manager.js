@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import FilterBarQueryFilterProvider from 'ui/filter_bar/query_filter';
+import { FilterBarQueryFilterProvider } from 'ui/filter_bar/query_filter';
 import { buildInlineScriptForPhraseFilter } from './lib/phrase';
 
 // Adds a filter to a passed state
-export default function (Private) {
+export function FilterManagerProvider(Private) {
   const queryFilter = Private(FilterBarQueryFilterProvider);
   const filterManager = {};
 
@@ -25,7 +25,7 @@ export default function (Private) {
           return filter.exists.field === value;
         }
 
-        if (_.get(filter, 'query.match')) {
+        if (_.has(filter, 'query.match')) {
           return filter.query.match[fieldName] && filter.query.match[fieldName].query === value;
         }
 
@@ -84,4 +84,5 @@ export default function (Private) {
 
   return filterManager;
 }
+
 

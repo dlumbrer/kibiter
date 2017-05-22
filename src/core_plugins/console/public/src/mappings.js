@@ -1,6 +1,5 @@
 let $ = require('jquery');
 let _ = require('lodash');
-let utils = require('./utils');
 let es = require('./es');
 let settings = require('./settings');
 
@@ -89,7 +88,7 @@ function getTypes(indices) {
     }
 
     // filter what we need
-    $.each(type_dict, function (type, fields) {
+    $.each(type_dict, function (type) {
       ret.push(type);
     });
 
@@ -287,5 +286,5 @@ module.exports = _.assign(mappingObj, {
   loadAliases: loadAliases,
   expandAliases: expandAliases,
   clear: clear,
-  retrieveAutocompleteInfoFromServer: retrieveAutocompleteInfoFromServer
+  startRetrievingAutoCompleteInfo: autocomplete_retriever
 });

@@ -4,11 +4,10 @@ import ngMock from 'ng_mock';
 import expect from 'expect.js';
 import sinon from 'auto-release-sinon';
 import VislibProvider from 'ui/vislib';
-import VislibVisProvider from 'ui/vislib/vis';
-import VisRenderbotProvider from 'ui/vis/renderbot';
+import { VislibVisProvider } from 'ui/vislib/vis';
+import { VisRenderbotProvider } from 'ui/vis/renderbot';
 import VislibVisTypeVislibRenderbotProvider from 'ui/vislib_vis_type/vislib_renderbot';
-import PersistedStatePersistedStateProvider from 'ui/persisted_state/persisted_state';
-import AggResponseIndexProvider from 'ui/agg_response/index';
+import 'ui/persisted_state';
 import noDigestPromises from 'test_utils/no_digest_promises';
 
 describe('renderbot', function exportWrapper() {
@@ -17,7 +16,6 @@ describe('renderbot', function exportWrapper() {
   let Renderbot;
   let VislibRenderbot;
   let persistedState;
-  let normalizeChartData;
   const mockVisType = {
     name: 'test'
   };
@@ -30,8 +28,7 @@ describe('renderbot', function exportWrapper() {
       Vis = Private(VislibVisProvider);
       Renderbot = Private(VisRenderbotProvider);
       VislibRenderbot = Private(VislibVisTypeVislibRenderbotProvider);
-      persistedState = new (Private(PersistedStatePersistedStateProvider))();
-      normalizeChartData = Private(AggResponseIndexProvider);
+      persistedState = new ($injector.get('PersistedState'))();
     });
   }
 
@@ -122,7 +119,6 @@ describe('renderbot', function exportWrapper() {
 
     const vis = { type: mockVisType, isHierarchical: _.constant(false) };
     const $el = $('<div>testing</div>');
-    const stubs = {};
 
     beforeEach(function () {
       sinon.stub(VislibRenderbot.prototype, '_getVislibParams', _.constant({}));

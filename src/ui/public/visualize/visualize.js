@@ -1,10 +1,8 @@
 import 'ui/visualize/spy';
 import 'ui/visualize/visualize.less';
 import 'ui/visualize/visualize_legend';
-import $ from 'jquery';
 import _ from 'lodash';
-import RegistryVisTypesProvider from 'ui/registry/vis_types';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 import visualizeTemplate from 'ui/visualize/visualize.html';
 import 'angular-sanitize';
 
@@ -15,10 +13,6 @@ import {
 uiModules
 .get('kibana/directive', ['ngSanitize'])
 .directive('visualize', function (Notifier, SavedVis, indexPatterns, Private, config, $timeout) {
-
-
-  const visTypes = Private(RegistryVisTypesProvider);
-
   const notify = new Notifier({
     location: 'Visualize'
   });
@@ -49,9 +43,9 @@ uiModules
         };
       }
 
-      const getVisEl = getter('.visualize-chart');
-      const getVisContainer = getter('.vis-container');
-      const getSpyContainer = getter('.visualize-spy-container');
+      const getVisEl = getter('[data-visualize-chart]');
+      const getVisContainer = getter('[data-visualize-chart-container]');
+      const getSpyContainer = getter('[data-spy-content-container]');
 
       // Show no results message when isZeroHits is true and it requires search
       $scope.showNoResultsMessage = function () {
@@ -80,19 +74,19 @@ uiModules
       $scope.spy = {};
       $scope.spy.mode = ($scope.uiState) ? $scope.uiState.get('spy.mode', {}) : {};
 
-      const applyClassNames = function () {
-        const $visEl = getVisContainer();
+      const updateSpy = function () {
+        const $visContainer = getVisContainer();
         const $spyEl = getSpyContainer();
         if (!$spyEl) return;
 
         const fullSpy = ($scope.spy.mode && ($scope.spy.mode.fill || $scope.fullScreenSpy));
 
-        $visEl.toggleClass('spy-only', Boolean(fullSpy));
+        $visContainer.toggleClass('spy-only', Boolean(fullSpy));
         $spyEl.toggleClass('only', Boolean(fullSpy));
 
         $timeout(function () {
           if (shouldHaveFullSpy()) {
-            $visEl.addClass('spy-only');
+            $visContainer.addClass('spy-only');
             $spyEl.addClass('only');
           }
         }, 0);
@@ -135,12 +129,22 @@ uiModules
       }
 
       // spy watchers
-      $scope.$watch('fullScreenSpy', applyClassNames);
+      $scope.$watch('fullScreenSpy', updateSpy);
 
       $scope.$watchCollection('spy.mode', function () {
         $scope.fullScreenSpy = shouldHaveFullSpy();
-        applyClassNames();
+        updateSpy();
       });
+
+      function updateVisAggs() {
+        const enabledState = $scope.editableVis.getEnabledState();
+        const shouldUpdate = enabledState.aggs.length !== $scope.vis.aggs.length;
+
+        if (shouldUpdate) {
+          $scope.vis.setState(enabledState);
+          $scope.editableVis.dirty = false;
+        }
+      }
 
       $scope.$watch('vis', prereq(function (vis, oldVis) {
         const $visEl = getVisEl();
@@ -157,36 +161,39 @@ uiModules
       }));
 
       $scope.$watchCollection('vis.params', prereq(function () {
+        updateVisAggs();
         if ($scope.renderbot) $scope.renderbot.updateParams();
       }));
 
-      $scope.$watch('searchSource', prereq(function (searchSource) {
-        if (!searchSource || attr.esResp) return;
+      if (_.get($scope, 'vis.type.requiresSearch')) {
+        $scope.$watch('searchSource', prereq(function (searchSource) {
+          if (!searchSource || attr.esResp) return;
 
-        // TODO: we need to have some way to clean up result requests
-        searchSource.onResults().then(function onResults(resp) {
-          if ($scope.searchSource !== searchSource) return;
+          // TODO: we need to have some way to clean up result requests
+          searchSource.onResults().then(function onResults(resp) {
+            if ($scope.searchSource !== searchSource) return;
 
-          $scope.esResp = resp;
+            $scope.esResp = resp;
 
-          return searchSource.onResults().then(onResults);
-        }).catch(notify.fatal);
+            return searchSource.onResults().then(onResults);
+          }).catch(notify.fatal);
 
-        searchSource.onError(e => {
-          $el.trigger('renderComplete');
-          if (isTermSizeZeroError(e)) {
-            return notify.error(
-              `Your visualization ('${$scope.vis.title}') has an error: it has a term ` +
-              `aggregation with a size of 0. Please set it to a number greater than 0 to resolve ` +
-              `the error.`
-            );
-          }
+          searchSource.onError(e => {
+            $el.trigger('renderComplete');
+            if (isTermSizeZeroError(e)) {
+              return notify.error(
+                `Your visualization ('${$scope.vis.title}') has an error: it has a term ` +
+                `aggregation with a size of 0. Please set it to a number greater than 0 to resolve ` +
+                `the error.`
+              );
+            }
 
-          notify.error(e);
-        }).catch(notify.fatal);
-      }));
+            notify.error(e);
+          }).catch(notify.fatal);
+        }));
+      }
 
-      $scope.$watch('esResp', prereq(function (resp, prevResp) {
+      $scope.$watch('esResp', prereq(function (resp) {
         if (!resp) return;
         $scope.renderbot.render(resp);
       }));

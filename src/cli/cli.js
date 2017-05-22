@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import pkg from '../utils/package_json';
+import { pkg } from '../utils';
 import Command from './command';
 import serveCommand from './serve/serve';
 
@@ -27,7 +27,7 @@ program
 
 program
 .command('*', null, { noHelp: true })
-.action(function (cmd, options) {
+.action(function (cmd) {
   program.error(`unknown command ${cmd}`);
 });
 

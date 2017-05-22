@@ -3,17 +3,20 @@ import angular from 'angular';
 
 import 'ui/promises';
 
-import RequestQueueProvider from '../_request_queue';
-import ErrorHandlersProvider from '../_error_handlers';
-import FetchProvider from '../fetch';
-import DecorateQueryProvider from './_decorate_query';
-import FieldWildcardProvider from '../../field_wildcard';
+import { RequestQueueProvider } from '../_request_queue';
+import { ErrorHandlersProvider } from '../_error_handlers';
+import { FetchProvider } from '../fetch';
+import { DecorateQueryProvider } from './_decorate_query';
+import { FieldWildcardProvider } from '../../field_wildcard';
+import { getHighlightRequestProvider } from '../../highlight';
+import { migrateFilter } from './_migrate_filter';
 
-export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) {
+export function AbstractDataSourceProvider(Private, Promise, PromiseEmitter) {
   const requestQueue = Private(RequestQueueProvider);
   const errorHandlers = Private(ErrorHandlersProvider);
   const courierFetch = Private(FetchProvider);
   const { fieldWildcardFilter } = Private(FieldWildcardProvider);
+  const getHighlightRequest = Private(getHighlightRequestProvider);
 
   function SourceAbstract(initialState, strategy) {
     const self = this;
@@ -183,7 +186,7 @@ export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) 
 
     courierFetch.these([req]);
 
-    return req.defer.promise;
+    return req.getCompletePromise();
   };
 
   /**
@@ -357,6 +360,7 @@ export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) 
                     .filter(filterNegate(false))
                     .map(translateToQuery)
                     .map(cleanFilter)
+                    .map(migrateFilter)
                   )
                 ),
                 must_not: (
@@ -364,11 +368,19 @@ export default function SourceAbstractFactory(Private, Promise, PromiseEmitter) 
                   .filter(filterNegate(true))
                   .map(translateToQuery)
                   .map(cleanFilter)
+                  .map(migrateFilter)
                 )
               }
             };
           }
           delete flatState.filters;
+        }
+
+        if (flatState.highlightAll != null) {
+          if (flatState.highlightAll && flatState.body.query) {
+            flatState.body.highlight = getHighlightRequest(flatState.body.query);
+          }
+          delete flatState.highlightAll;
         }
 
         // re-write filters within filter aggregations

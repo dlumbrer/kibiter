@@ -12,7 +12,7 @@ import histogramRows from 'fixtures/vislib/mock_data/histogram/_rows';
 import stackedSeries from 'fixtures/vislib/mock_data/date_histogram/_stacked_series';
 import $ from 'jquery';
 import FixturesVislibVisFixtureProvider from 'fixtures/vislib/_vis_fixture';
-import PersistedStatePersistedStateProvider from 'ui/persisted_state/persisted_state';
+import 'ui/persisted_state';
 
 // tuple, with the format [description, mode, data]
 const dataTypesArray = [
@@ -24,7 +24,7 @@ const dataTypesArray = [
   ['stackedSeries', 'stacked', stackedSeries],
 ];
 
-dataTypesArray.forEach(function (dataType, i) {
+dataTypesArray.forEach(function (dataType) {
   const name = dataType[0];
   const mode = dataType[1];
   const data = dataType[2];
@@ -42,9 +42,9 @@ dataTypesArray.forEach(function (dataType, i) {
     };
 
     beforeEach(ngMock.module('kibana'));
-    beforeEach(ngMock.inject(function (Private) {
+    beforeEach(ngMock.inject(function (Private, $injector) {
       vis = Private(FixturesVislibVisFixtureProvider)(visLibParams);
-      persistedState = new (Private(PersistedStatePersistedStateProvider))();
+      persistedState = new ($injector.get('PersistedState'))();
       vis.on('brush', _.noop);
       vis.render(data, persistedState);
     }));
@@ -69,8 +69,16 @@ dataTypesArray.forEach(function (dataType, i) {
         });
       });
 
-      it('should stack values', function () {
-        expect(isStacked).to.be(true);
+      it('should stack values when mode is stacked', function () {
+        if (mode === 'stacked') {
+          expect(isStacked).to.be(true);
+        }
+      });
+
+      it('should stack values when mode is percentage', function () {
+        if (mode === 'percentage') {
+          expect(isStacked).to.be(true);
+        }
       });
     });
 

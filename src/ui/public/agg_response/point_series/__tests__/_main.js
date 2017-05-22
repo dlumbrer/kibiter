@@ -3,10 +3,11 @@ import moment from 'moment';
 import AggConfigResult from 'ui/vis/agg_config_result';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import VisProvider from 'ui/vis';
-import AggResponseTabifyTableProvider from 'ui/agg_response/tabify/_table';
+import { VisProvider } from 'ui/vis';
+import { AggResponseTabifyTableProvider } from 'ui/agg_response/tabify/_table';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
-import AggResponsePointSeriesPointSeriesProvider from 'ui/agg_response/point_series/point_series';
+import { AggResponsePointSeriesProvider } from 'ui/agg_response/point_series/point_series';
+
 describe('pointSeriesChartDataFromTable', function () {
   this.slow(1000);
 
@@ -21,7 +22,7 @@ describe('pointSeriesChartDataFromTable', function () {
     Vis = Private(VisProvider);
     Table = Private(AggResponseTabifyTableProvider);
     indexPattern = Private(FixturesStubbedLogstashIndexPatternProvider);
-    pointSeriesChartDataFromTable = Private(AggResponsePointSeriesPointSeriesProvider);
+    pointSeriesChartDataFromTable = Private(AggResponsePointSeriesProvider);
   }));
 
   it('handles a table with just a count', function () {
@@ -147,7 +148,7 @@ describe('pointSeriesChartDataFromTable', function () {
 
       expect(siri).to.have.property('label', metric.col.label);
       expect(siri.values).to.have.length(rowCount);
-      siri.values.forEach(function (point, i) {
+      siri.values.forEach(function (point) {
         expect(point).to.have.property('x');
         expect(point.x).to.be.a('number');
 
@@ -223,7 +224,7 @@ describe('pointSeriesChartDataFromTable', function () {
     expect(chartData.series).to.be.an('array');
     // one series for each extension, and then one for each metric inside
     expect(chartData.series).to.have.length(extensions.length * metricCount);
-    chartData.series.forEach(function (siri, i) {
+    chartData.series.forEach(function (siri) {
       // figure out the metric used to create this series
       const metricAgg = siri.values[0].aggConfigResult.aggConfig;
       const metric = avg.agg === metricAgg ? avg : max;

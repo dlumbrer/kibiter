@@ -9,17 +9,15 @@
  */
 
 import _ from 'lodash';
-import AggTypesIndexProvider from 'ui/agg_types/index';
-import RegistryVisTypesProvider from 'ui/registry/vis_types';
-import VisAggConfigsProvider from 'ui/vis/agg_configs';
-import PersistedStateProvider from 'ui/persisted_state/persisted_state';
-import EventsProvider from 'ui/events';
+import { AggTypesIndexProvider } from 'ui/agg_types/index';
+import { VisTypesRegistryProvider } from 'ui/registry/vis_types';
+import { VisAggConfigsProvider } from 'ui/vis/agg_configs';
+import { PersistedState } from 'ui/persisted_state';
 
-export default function VisFactory(Notifier, Private) {
+export function VisProvider(Notifier, Private) {
   const aggTypes = Private(AggTypesIndexProvider);
-  const visTypes = Private(RegistryVisTypesProvider);
+  const visTypes = Private(VisTypesRegistryProvider);
   const AggConfigs = Private(VisAggConfigsProvider);
-  const PersistedState = Private(PersistedStateProvider);
 
   const notify = new Notifier({
     location: 'Vis'
@@ -85,8 +83,15 @@ export default function VisFactory(Notifier, Private) {
 
   Vis.prototype.setState = function (state) {
     this.title = state.title || '';
-    this.type = state.type || this.type;
-    if (_.isString(this.type)) this.type = visTypes.byName[this.type];
+    const type = state.type || this.type;
+    if (_.isString(type)) {
+      this.type = visTypes.byName[type];
+      if (!this.type) {
+        throw new Error(`Invalid type "${type}"`);
+      }
+    } else {
+      this.type = type;
+    }
 
     this.listeners = _.assign({}, state.listeners, this.type.listeners);
     this.params = _.defaults({},

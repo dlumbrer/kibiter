@@ -70,10 +70,21 @@ export default function defaultSettingsProvider() {
       value: 500,
       description: 'The number of rows to show in the table',
     },
+    'discover:aggs:terms:size': {
+      value: 20,
+      type: 'number',
+      description: 'Determines how many terms will be visualized when clicking the "visualize" ' +
+      'button, in the field drop downs, in the discover sidebar.'
+    },
     'doc_table:highlight': {
       value: true,
       description: 'Highlight results in Discover and Saved Searches Dashboard.' +
         'Highlighting makes requests slow when working on big documents.',
+    },
+    'doc_table:highlight:all_fields': {
+      value: true,
+      description: 'Improves highlighting by using a separate "highlight_query" that uses "all_fields" mode on "query_string" queries. ' +
+        'Set to false if you are using a "default_field" in your index.',
     },
     'courier:maxSegmentCount': {
       value: 30,
@@ -111,14 +122,14 @@ export default function defaultSettingsProvider() {
     'visualization:tileMap:WMSdefaults': {
       value: JSON.stringify({
         enabled: false,
-        url: 'https://basemap.nationalmap.gov/arcgis/services/USGSTopo/MapServer/WMSServer',
+        url: undefined,
         options: {
-          version: '1.3.0',
-          layers: '0',
+          version: undefined,
+          layers: undefined,
           format: 'image/png',
           transparent: true,
-          attribution: 'Maps provided by USGS',
-          styles: '',
+          attribution: undefined,
+          styles: undefined,
         }
       }, null, 2),
       type: 'json',
@@ -206,6 +217,11 @@ export default function defaultSettingsProvider() {
       value: 5,
       description: 'Number of objects to show per page in the load dialog'
     },
+    'savedObjects:listingLimit': {
+      type: 'number',
+      value: 1000,
+      description: 'Number of objects to fetch for the listing pages'
+    },
     'timepicker:timeDefaults': {
       type: 'json',
       value:
@@ -259,6 +275,10 @@ export default function defaultSettingsProvider() {
       description: 'The time in milliseconds which an information notification ' +
         'will be displayed on-screen for. Setting to Infinity will disable.'
     },
+    'metrics:max_buckets': {
+      value: 2000,
+      description: 'The maximum number of buckets a single datasource can return'
+    },
     // Timelion stuff
     'timelion:showTutorial': {
       value: false,
@@ -288,6 +308,10 @@ export default function defaultSettingsProvider() {
       value: 2,
       description: 'Number of rows on a timelion sheet by default'
     },
+    'timelion:min_interval': {
+      value: '1ms',
+      description: 'The smallest interval that will be calculated when using "auto"'
+    },
     'timelion:graphite.url': {
       value: 'https://www.hostedgraphite.com/UID/ACCESS_KEY/graphite',
       description: '<em>[experimental]</em> The URL of your graphite host'
@@ -301,6 +325,18 @@ export default function defaultSettingsProvider() {
       description: 'The URL can sometimes grow to be too large for some browsers to ' +
         'handle. To counter-act this we are testing if storing parts of the URL in ' +
         'sessions storage could help. Please let us know how it goes!'
+    },
+    'indexPattern:placeholder': {
+      value: 'logstash-*',
+      description: 'The placeholder for the field "Index name or pattern" in the "Settings > Indices" tab.',
+    },
+    'context:defaultSize': {
+      value: 5,
+      description: 'The number of surrounding entries to show in the context view',
+    },
+    'context:step': {
+      value: 5,
+      description: 'The step size to increment or decrement the context size by',
     }
   };
 }

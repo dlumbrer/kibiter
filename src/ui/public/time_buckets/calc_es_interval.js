@@ -1,6 +1,6 @@
-import moment from 'moment';
 import dateMath from '@elastic/datemath';
-export default function () {
+
+export function TimeBucketsCalcEsIntervalProvider() {
 
   const unitsDesc = dateMath.unitsDesc;
   const largeMax = unitsDesc.indexOf('M');

@@ -52,14 +52,14 @@
 
 import _ from 'lodash';
 
-import NormalizeSortRequestProvider from './_normalize_sort_request';
-import rootSearchSource from './_root_search_source';
-import AbstractDataSourceProvider from './_abstract';
-import SearchRequestProvider from '../fetch/request/search';
-import SegmentedRequestProvider from '../fetch/request/segmented';
-import SearchStrategyProvider from '../fetch/strategy/search';
+import { NormalizeSortRequestProvider } from './_normalize_sort_request';
+import { RootSearchSourceProvider } from './_root_search_source';
+import { AbstractDataSourceProvider } from './_abstract';
+import { SearchRequestProvider } from '../fetch/request/search';
+import { SegmentedRequestProvider } from '../fetch/request/segmented';
+import { SearchStrategyProvider } from '../fetch/strategy/search';
 
-export default function SearchSourceFactory(Promise, Private, config) {
+export function SearchSourceProvider(Promise, Private, config) {
   const SourceAbstract = Private(AbstractDataSourceProvider);
   const SearchRequest = Private(SearchRequestProvider);
   const SegmentedRequest = Private(SegmentedRequestProvider);
@@ -93,10 +93,13 @@ export default function SearchSourceFactory(Promise, Private, config) {
     'filter',
     'sort',
     'highlight',
+    'highlightAll',
     'aggs',
     'from',
+    'searchAfter',
     'size',
-    'source'
+    'source',
+    'version',
   ];
 
   SearchSource.prototype.index = function (indexPattern) {
@@ -150,7 +153,7 @@ export default function SearchSourceFactory(Promise, Private, config) {
     const self = this;
     if (self._parent === false) return;
     if (self._parent) return self._parent;
-    return onlyHardLinked ? undefined : Private(rootSearchSource).get();
+    return onlyHardLinked ? undefined : Private(RootSearchSourceProvider).get();
   };
 
   /**
@@ -174,10 +177,9 @@ export default function SearchSourceFactory(Promise, Private, config) {
 
       // return promises created by the completion handler so that
       // errors will bubble properly
-      return req.defer.promise.then(addRequest);
+      return req.getCompletePromise().then(addRequest);
     });
   };
-
 
   /******
    * PRIVATE APIS
@@ -249,10 +251,15 @@ export default function SearchSourceFactory(Promise, Private, config) {
       case 'index':
       case 'type':
       case 'id':
+      case 'highlightAll':
         if (key && state[key] == null) {
           state[key] = val;
         }
         return;
+      case 'searchAfter':
+        key = 'search_after';
+        addToBody();
+        break;
       case 'source':
         key = '_source';
         addToBody();
@@ -266,7 +273,7 @@ export default function SearchSourceFactory(Promise, Private, config) {
     }
 
     /**
-     * Add the key and val to the body of the resuest
+     * Add the key and val to the body of the request
      */
     function addToBody() {
       state.body = state.body || {};

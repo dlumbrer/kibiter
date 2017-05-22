@@ -7,11 +7,10 @@ import HitSortFnProv from 'plugins/kibana/discover/_hit_sort_fn';
 import NoDigestPromises from 'test_utils/no_digest_promises';
 import StubbedSearchSourceProvider from 'fixtures/stubbed_search_source';
 
-import SegmentedRequestProvider from '../segmented';
+import { SegmentedRequestProvider } from '../segmented';
 
 describe('Segmented Request Index Selection', function () {
   let Promise;
-  let $rootScope;
   let SegmentedReq;
   let MockSource;
   let HitSortFn;
@@ -22,7 +21,6 @@ describe('Segmented Request Index Selection', function () {
   beforeEach(ngMock.inject((Private, $injector) => {
     Promise = $injector.get('Promise');
     HitSortFn = Private(HitSortFnProv);
-    $rootScope = $injector.get('$rootScope');
     SegmentedReq = Private(SegmentedRequestProvider);
 
     MockSource = class {

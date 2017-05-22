@@ -2,19 +2,18 @@ import _ from 'lodash';
 import fixtures from 'fixtures/fake_hierarchical_data';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import AggResponseTabifyTabifyProvider from 'ui/agg_response/tabify/tabify';
-import VisProvider from 'ui/vis';
+import { AggResponseTabifyProvider } from 'ui/agg_response/tabify/tabify';
+import { VisProvider } from 'ui/vis';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
-describe('tabifyAggResponse Integration', function () {
 
+describe('tabifyAggResponse Integration', function () {
   let Vis;
-  let Buckets;
   let indexPattern;
   let tabifyAggResponse;
 
   beforeEach(ngMock.module('kibana'));
-  beforeEach(ngMock.inject(function (Private, $injector) {
-    tabifyAggResponse = Private(AggResponseTabifyTabifyProvider);
+  beforeEach(ngMock.inject(function (Private) {
+    tabifyAggResponse = Private(AggResponseTabifyProvider);
     Vis = Private(VisProvider);
     indexPattern = Private(FixturesStubbedLogstashIndexPatternProvider);
   }));
@@ -251,7 +250,7 @@ describe('tabifyAggResponse Integration', function () {
         minimalColumns: false
       });
 
-      expectRootGroup(tabbed, function expectTable(table, splitKey) {
+      expectRootGroup(tabbed, function expectTable(table) {
         expectColumns(table, [src, os, avg]);
 
         table.rows.forEach(function (row) {

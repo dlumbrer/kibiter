@@ -1,14 +1,9 @@
-import { memoize, values } from 'lodash';
+import { values } from 'lodash';
 import { format as formatUrl } from 'url';
 import { Agent as HttpsAgent } from 'https';
 import { readFileSync } from 'fs';
 
 import { WildcardMatcher } from './wildcard_matcher';
-
-const makeHttpsAgent = memoize(
-  opts => new HttpsAgent(opts),
-  opts => JSON.stringify(opts)
-);
 
 export class ProxyConfig {
   constructor(config) {
@@ -50,6 +45,7 @@ export class ProxyConfig {
     };
 
     if (values(sslAgentOpts).filter(Boolean).length) {
+      sslAgentOpts.rejectUnauthorized = this.verifySsl == null ? true : this.verifySsl;
       return new HttpsAgent(sslAgentOpts);
     }
   }
@@ -63,7 +59,7 @@ export class ProxyConfig {
     if (!match) return {};
     return {
       timeout: this.timeout,
-      rejectUnauthorized: this.sslAgent ? true : this.verifySsl,
+      rejectUnauthorized: this.sslAgent ? undefined : this.verifySsl,
       agent: protocol === 'https:' ? this.sslAgent : undefined
     };
   }

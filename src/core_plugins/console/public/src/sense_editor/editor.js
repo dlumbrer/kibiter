@@ -10,10 +10,6 @@ import chrome from 'ui/chrome';
 
 const smartResize = require('../smart_resize');
 
-function isInt(x) {
-  return !isNaN(parseInt(x, 10));
-}
-
 function createInstance($el) {
   var aceEditor = ace.edit($el[0]);
 
@@ -546,7 +542,7 @@ function SenseEditor($el) {
 
         var ret = 'curl -X' + es_method + ' "' + url + '"';
         if (es_data && es_data.length) {
-          ret += " -d'\n";
+          ret += " -H 'Content-Type: application/json' -d'\n";
           var data_as_string = utils.collapseLiteralStrings(es_data.join("\n"))
           // since Sense doesn't allow single quote json string any single qoute is within a string.
           ret += data_as_string.replace(/'/g, '\\"');
@@ -562,11 +558,11 @@ function SenseEditor($el) {
     });
   };
 
-  editor.getSession().on('tokenizerUpdate', function (e) {
+  editor.getSession().on('tokenizerUpdate', function () {
     editor.highlightCurrentRequestsAndUpdateActionBar();
   });
 
-  editor.getSession().selection.on('changeCursor', function (e) {
+  editor.getSession().selection.on('changeCursor', function () {
     editor.highlightCurrentRequestsAndUpdateActionBar();
   });
 

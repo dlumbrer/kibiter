@@ -3,12 +3,13 @@ import _ from 'lodash';
 import moment from 'moment';
 import 'ui/filters/field_type';
 import 'ui/validate_date_interval';
-import AggTypesBucketsBucketAggTypeProvider from 'ui/agg_types/buckets/_bucket_agg_type';
-import TimeBucketsProvider from 'ui/time_buckets';
-import AggTypesBucketsCreateFilterDateHistogramProvider from 'ui/agg_types/buckets/create_filter/date_histogram';
-import AggTypesBucketsIntervalOptionsProvider from 'ui/agg_types/buckets/_interval_options';
+import { AggTypesBucketsBucketAggTypeProvider } from 'ui/agg_types/buckets/_bucket_agg_type';
+import { TimeBucketsProvider } from 'ui/time_buckets';
+import { AggTypesBucketsCreateFilterDateHistogramProvider } from 'ui/agg_types/buckets/create_filter/date_histogram';
+import { AggTypesBucketsIntervalOptionsProvider } from 'ui/agg_types/buckets/_interval_options';
 import intervalTemplate from 'ui/agg_types/controls/interval.html';
-export default function DateHistogramAggType(timefilter, config, Private) {
+
+export function AggTypesBucketsDateHistogramProvider(timefilter, config, Private) {
   const BucketAggType = Private(AggTypesBucketsBucketAggTypeProvider);
   const TimeBuckets = Private(TimeBucketsProvider);
   const createFilter = Private(AggTypesBucketsCreateFilterDateHistogramProvider);
@@ -40,7 +41,6 @@ export default function DateHistogramAggType(timefilter, config, Private) {
     },
     makeLabel: function (agg) {
       const output = this.params.write(agg);
-      const params = output.params;
       const field = agg.getFieldDisplayName();
       return field + ' per ' + (output.metricScaleText || output.bucketInterval.description);
     },

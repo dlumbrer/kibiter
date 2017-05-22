@@ -3,7 +3,7 @@ import expect from 'expect.js';
 import moment from 'moment';
 import ngMock from 'ng_mock';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
-import UtilsBrushEventProvider from 'ui/utils/brush_event';
+import { UtilsBrushEventProvider } from 'ui/utils/brush_event';
 
 describe('brushEvent', function () {
   let brushEventFn;
@@ -34,7 +34,7 @@ describe('brushEvent', function () {
       },
     };
 
-    beforeEach(ngMock.inject(function (Private, $injector) {
+    beforeEach(ngMock.inject(function (Private) {
       baseEvent.data.indexPattern = Private(FixturesStubbedLogstashIndexPatternProvider);
       $state = _.cloneDeep(baseState);
       brushEvent = brushEventFn($state);
@@ -58,7 +58,7 @@ describe('brushEvent', function () {
         type: 'date'
       };
 
-      beforeEach(ngMock.inject(function (Private, $injector) {
+      beforeEach(ngMock.inject(function () {
         dateEvent = _.cloneDeep(baseEvent);
         dateEvent.data.xAxisField = dateField;
       }));
@@ -97,7 +97,7 @@ describe('brushEvent', function () {
         type: 'number'
       };
 
-      beforeEach(ngMock.inject(function (Private, $injector) {
+      beforeEach(ngMock.inject(function () {
         numberEvent = _.cloneDeep(baseEvent);
         numberEvent.data.xAxisField = numberField;
       }));

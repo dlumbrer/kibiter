@@ -3,15 +3,13 @@ import _ from 'lodash';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import sinon from 'auto-release-sinon';
-import tabifyPm from 'ui/agg_response/tabify/tabify';
-import AggResponseTabifyTableGroupProvider from 'ui/agg_response/tabify/_table_group';
-import VisProvider from 'ui/vis';
+import { AggResponseTabifyProvider } from 'ui/agg_response/tabify/tabify';
+import { VisProvider } from 'ui/vis';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
-import StateManagementAppStateProvider from 'ui/state_management/app_state';
-describe('Controller', function () {
+import { AppStateProvider } from 'ui/state_management/app_state';
 
+describe('Controller', function () {
   let $rootScope;
-  let TableGroup;
   let $compile;
   let Private;
   let $scope;
@@ -26,8 +24,7 @@ describe('Controller', function () {
     $rootScope = $injector.get('$rootScope');
     $compile = $injector.get('$compile');
     fixtures = require('fixtures/fake_hierarchical_data');
-    AppState = Private(StateManagementAppStateProvider);
-    TableGroup = Private(AggResponseTabifyTableGroupProvider);
+    AppState = Private(AppStateProvider);
     Vis = Private(VisProvider);
   }));
 
@@ -139,8 +136,8 @@ describe('Controller', function () {
 
   it('passes partialRows:true to tabify based on the vis params', function () {
     // spy on the tabify private module
-    const spiedTabify = sinon.spy(Private(tabifyPm));
-    Private.stub(tabifyPm, spiedTabify);
+    const spiedTabify = sinon.spy(Private(AggResponseTabifyProvider));
+    Private.stub(AggResponseTabifyProvider, spiedTabify);
 
     const vis = new OneRangeVis({ showPartialRows: true });
     initController(vis);
@@ -152,8 +149,8 @@ describe('Controller', function () {
 
   it('passes partialRows:false to tabify based on the vis params', function () {
     // spy on the tabify private module
-    const spiedTabify = sinon.spy(Private(tabifyPm));
-    Private.stub(tabifyPm, spiedTabify);
+    const spiedTabify = sinon.spy(Private(AggResponseTabifyProvider));
+    Private.stub(AggResponseTabifyProvider, spiedTabify);
 
     const vis = new OneRangeVis({ showPartialRows: false });
     initController(vis);
@@ -165,8 +162,8 @@ describe('Controller', function () {
 
   it('passes partialRows:true to tabify based on the vis params', function () {
     // spy on the tabify private module
-    const spiedTabify = sinon.spy(Private(tabifyPm));
-    Private.stub(tabifyPm, spiedTabify);
+    const spiedTabify = sinon.spy(Private(AggResponseTabifyProvider));
+    Private.stub(AggResponseTabifyProvider, spiedTabify);
 
     const vis = new OneRangeVis({ showPartialRows: true });
     initController(vis);
@@ -178,8 +175,8 @@ describe('Controller', function () {
 
   it('passes partialRows:false to tabify based on the vis params', function () {
     // spy on the tabify private module
-    const spiedTabify = sinon.spy(Private(tabifyPm));
-    Private.stub(tabifyPm, spiedTabify);
+    const spiedTabify = sinon.spy(Private(AggResponseTabifyProvider));
+    Private.stub(AggResponseTabifyProvider, spiedTabify);
 
     const vis = new OneRangeVis({ showPartialRows: false });
     initController(vis);

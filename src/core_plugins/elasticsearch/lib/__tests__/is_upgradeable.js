@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import expect from 'expect.js';
-import sinon from 'sinon';
 
 import isUpgradeable from '../is_upgradeable';
-import pkg from '../../../../utils/package_json';
+import { pkg } from '../../../../utils';
 let version = pkg.version;
 
 describe('plugins/elasticsearch', function () {

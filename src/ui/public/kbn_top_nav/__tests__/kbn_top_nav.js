@@ -4,9 +4,7 @@ import { assign, pluck } from 'lodash';
 import $ from 'jquery';
 
 import '../kbn_top_nav';
-import KbnTopNavControllerProvider from '../kbn_top_nav_controller';
-import navbarExtensionsRegistry from 'ui/registry/navbar_extensions';
-import Registry from 'ui/registry/_registry';
+import { KbnTopNavControllerProvider } from '../kbn_top_nav_controller';
 
 describe('kbnTopNav directive', function () {
   let build;

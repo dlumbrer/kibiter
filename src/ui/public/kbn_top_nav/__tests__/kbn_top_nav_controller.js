@@ -2,7 +2,7 @@ import ngMock from 'ng_mock';
 import expect from 'expect.js';
 import { pluck } from 'lodash';
 import sinon from 'sinon';
-import KbnTopNavControllerProvider from '../kbn_top_nav_controller';
+import { KbnTopNavControllerProvider } from '../kbn_top_nav_controller';
 
 describe('KbnTopNavController', function () {
   let KbnTopNavController;
@@ -14,17 +14,17 @@ describe('KbnTopNavController', function () {
 
   describe('opts', function () {
     it('supports giving it no options', function () {
-      const controller = new KbnTopNavController();
+      new KbnTopNavController();
     });
 
     it('support empty options list', function () {
-      const controller = new KbnTopNavController([]);
+      new KbnTopNavController([]);
     });
 
     describe('key:', function () {
       it('requires every opt to have a key', function () {
         expect(function () {
-          const controller = new KbnTopNavController([
+          new KbnTopNavController([
             { foo: 'bar' }
           ]);
         }).to.throwError(TypeError);

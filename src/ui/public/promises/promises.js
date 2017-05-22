@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 
 const module = uiModules.get('kibana');
 
@@ -93,6 +93,13 @@ module.service('Promise', function ($q, $timeout) {
         else if (results.length > 1) resolve(results);
         else resolve(results[0]);
       });
+    });
+  };
+  Promise.race = function (iterable) {
+    return new Promise((resolve, reject) => {
+      for (const i of iterable) {
+        Promise.resolve(i).then(resolve, reject);
+      }
     });
   };
 

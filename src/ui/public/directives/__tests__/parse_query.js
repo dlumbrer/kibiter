@@ -1,14 +1,11 @@
 import angular from 'angular';
-import sinon from 'auto-release-sinon';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 
 // Load the kibana app dependencies.
 
 let $rootScope;
-let $timeout;
 let $compile;
-let Promise;
 let Private;
 let config;
 let $elemScope;
@@ -17,22 +14,17 @@ let $elem;
 let cycleIndex = 0;
 const markup = '<input ng-model="mockModel" parse-query input-focus type="text">';
 let fromUser;
-import toUser from 'ui/parse_query/lib/to_user';
+import { toUser } from 'ui/parse_query/lib/to_user';
 import 'ui/parse_query';
-import ParseQueryLibFromUserProvider from 'ui/parse_query/lib/from_user';
+import { ParseQueryLibFromUserProvider } from 'ui/parse_query/lib/from_user';
 
 const init = function () {
   // Load the application
   ngMock.module('kibana');
 
-  ngMock.module('kibana', function ($provide) {
-  });
-
   // Create the scope
-  ngMock.inject(function ($injector, _$rootScope_, _$compile_, _$timeout_, _Promise_, _Private_, _config_) {
-    $timeout = _$timeout_;
+  ngMock.inject(function ($injector, _$rootScope_, _$compile_, _$timeout_, _Private_, _config_) {
     $compile = _$compile_;
-    Promise = _Promise_;
     Private = _Private_;
     config = _config_;
 

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import _ from 'lodash';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 
 const SCROLLER_HEIGHT = 20;
 
@@ -110,18 +110,22 @@ uiModules
         const newWidth = $el.width();
 
         if (scrollWidth !== newScrollWidth || width !== newWidth) {
-          setup();
+          $scope.$apply(setup);
 
           scrollWidth = newScrollWidth;
           width = newWidth;
         }
       }
 
-      $scope.$watch(debounce(checkWidth, 100));
+      const debouncedCheckWidth = debounce(checkWidth, 100, {
+        invokeApply: false,
+      });
+      $scope.$watch(debouncedCheckWidth);
 
       // cleanup when the scope is destroyed
       $scope.$on('$destroy', function () {
         cleanUp();
+        debouncedCheckWidth.cancel();
         $scroller = $window = null;
       });
     }

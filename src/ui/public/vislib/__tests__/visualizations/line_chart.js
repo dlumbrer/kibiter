@@ -1,5 +1,4 @@
 import d3 from 'd3';
-import angular from 'angular';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
 import _ from 'lodash';
@@ -13,7 +12,7 @@ import rangeRows from 'fixtures/vislib/mock_data/range/_rows';
 import termSeries from 'fixtures/vislib/mock_data/terms/_series';
 import $ from 'jquery';
 import FixturesVislibVisFixtureProvider from 'fixtures/vislib/_vis_fixture';
-import PersistedStatePersistedStateProvider from 'ui/persisted_state/persisted_state';
+import 'ui/persisted_state';
 
 const dataTypes = [
   ['series pos', seriesPos],
@@ -25,7 +24,7 @@ const dataTypes = [
 ];
 
 describe('Vislib Line Chart', function () {
-  dataTypes.forEach(function (type, i) {
+  dataTypes.forEach(function (type) {
     const name = type[0];
     const data = type[1];
 
@@ -34,7 +33,7 @@ describe('Vislib Line Chart', function () {
       let persistedState;
 
       beforeEach(ngMock.module('kibana'));
-      beforeEach(ngMock.inject(function (Private) {
+      beforeEach(ngMock.inject(function (Private, $injector) {
         const visLibParams = {
           type: 'line',
           addLegend: true,
@@ -43,7 +42,7 @@ describe('Vislib Line Chart', function () {
         };
 
         vis = Private(FixturesVislibVisFixtureProvider)(visLibParams);
-        persistedState = new (Private(PersistedStatePersistedStateProvider))();
+        persistedState = new ($injector.get('PersistedState'))();
         vis.on('brush', _.noop);
         vis.render(data, persistedState);
       }));

@@ -1,7 +1,8 @@
 import _ from 'lodash';
-import AggTypesAggTypeProvider from 'ui/agg_types/agg_type';
-import RegistryFieldFormatsProvider from 'ui/registry/field_formats';
-export default function MetricAggTypeProvider(Private) {
+import { AggTypesAggTypeProvider } from 'ui/agg_types/agg_type';
+import { RegistryFieldFormatsProvider } from 'ui/registry/field_formats';
+
+export function AggTypesMetricsMetricAggTypeProvider(Private) {
   const AggType = Private(AggTypesAggTypeProvider);
   const fieldFormats = Private(RegistryFieldFormatsProvider);
 
@@ -17,6 +18,7 @@ export default function MetricAggTypeProvider(Private) {
     }, this);
   }
 
+  MetricAggType.prototype.subtype = 'Metric Aggregations';
   /**
    * Read the values for this metric from the
    * @param  {[type]} bucket [description]

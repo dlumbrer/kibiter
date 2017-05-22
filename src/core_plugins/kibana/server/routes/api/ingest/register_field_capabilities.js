@@ -6,7 +6,7 @@ export function registerFieldCapabilities(server) {
     path: '/api/kibana/{indices}/field_capabilities',
     method: ['GET'],
     handler: function (req, reply) {
-      const callWithRequest = server.plugins.elasticsearch.callWithRequest;
+      const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
       const indices = req.params.indices || '';
 
       return callWithRequest(req, 'fieldStats', {
@@ -22,7 +22,12 @@ export function registerFieldCapabilities(server) {
             return _.pick(value, ['searchable', 'aggregatable']);
           });
 
-          reply({ fields: fieldsFilteredValues });
+          const retVal = { fields: fieldsFilteredValues };
+          if (res._shards && res._shards.failed) {
+            retVal.shard_failure_response = res;
+          }
+
+          reply(retVal);
         },
         (error) => {
           reply(handleESError(error));

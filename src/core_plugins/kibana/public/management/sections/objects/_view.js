@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import angular from 'angular';
 import rison from 'rison-node';
-import registry from 'plugins/kibana/management/saved_object_registry';
+import { savedObjectManagementRegistry } from 'plugins/kibana/management/saved_object_registry';
 import objectViewHTML from 'plugins/kibana/management/sections/objects/_view.html';
-import IndexPatternsCastMappingTypeProvider from 'ui/index_patterns/_cast_mapping_type';
+import { IndexPatternsCastMappingTypeProvider } from 'ui/index_patterns/_cast_mapping_type';
 import uiRoutes from 'ui/routes';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 
 uiRoutes
 .when('/management/kibana/objects/:service/:id', {
@@ -13,13 +13,13 @@ uiRoutes
 });
 
 uiModules.get('apps/management')
-.directive('kbnManagementObjectsView', function (kbnIndex, Notifier) {
+.directive('kbnManagementObjectsView', function (kbnIndex, Notifier, confirmModal) {
   return {
     restrict: 'E',
-    controller: function ($scope, $injector, $routeParams, $location, $window, $rootScope, es, Private) {
+    controller: function ($scope, $injector, $routeParams, $location, $window, $rootScope, esAdmin, Private) {
       const notify = new Notifier({ location: 'SavedObject view' });
       const castMappingType = Private(IndexPatternsCastMappingTypeProvider);
-      const serviceObj = registry.get($routeParams.service);
+      const serviceObj = savedObjectManagementRegistry.get($routeParams.service);
       const service = $injector.get(serviceObj.service);
 
       /**
@@ -104,7 +104,7 @@ uiModules.get('apps/management')
 
       $scope.title = service.type;
 
-      es.get({
+      esAdmin.get({
         index: kbnIndex,
         type: service.type,
         id: $routeParams.id
@@ -115,7 +115,14 @@ uiModules.get('apps/management')
 
         const fields =  _.reduce(obj._source, createField, []);
         if (service.Class) readObjectClass(fields, service.Class);
-        $scope.fields = _.sortBy(fields, 'name');
+
+        // sorts twice since we want numerical sort to prioritize over name,
+        // and sortBy will do string comparison if trying to match against strings
+        const nameSortedFields = _.sortBy(fields, 'name');
+        $scope.fields = _.sortBy(nameSortedFields, (field) => {
+          const orderIndex = service.Class.fieldOrder ? service.Class.fieldOrder.indexOf(field.name) : -1;
+          return (orderIndex > -1) ? orderIndex : Infinity;
+        });
       })
       .catch(notify.fatal);
 
@@ -163,15 +170,25 @@ uiModules.get('apps/management')
        * @returns {type} description
        */
       $scope.delete = function () {
-        es.delete({
-          index: kbnIndex,
-          type: service.type,
-          id: $routeParams.id
-        })
-        .then(function (resp) {
-          return redirectHandler('deleted');
-        })
-        .catch(notify.fatal);
+        function doDelete() {
+          esAdmin.delete({
+            index: kbnIndex,
+            type: service.type,
+            id: $routeParams.id
+          })
+            .then(function () {
+              return redirectHandler('deleted');
+            })
+            .catch(notify.fatal);
+        }
+        const confirmModalOptions = {
+          onConfirm: doDelete,
+          confirmButtonText: 'Delete object'
+        };
+        confirmModal(
+          'Are you sure want to delete this object? This action is irreversible!',
+          confirmModalOptions
+        );
       };
 
       $scope.submit = function () {
@@ -191,23 +208,23 @@ uiModules.get('apps/management')
           _.set(source, field.name, value);
         });
 
-        es.index({
+        esAdmin.index({
           index: kbnIndex,
           type: service.type,
           id: $routeParams.id,
           body: source
         })
-        .then(function (resp) {
+        .then(function () {
           return redirectHandler('updated');
         })
         .catch(notify.fatal);
       };
 
       function redirectHandler(action) {
-        return es.indices.refresh({
+        return esAdmin.indices.refresh({
           index: kbnIndex
         })
-        .then(function (resp) {
+        .then(function () {
           const msg = 'You successfully ' + action + ' the "' + $scope.obj._source.title + '" ' + $scope.title.toLowerCase() + ' object';
 
           $location.path('/management/kibana/objects').search({

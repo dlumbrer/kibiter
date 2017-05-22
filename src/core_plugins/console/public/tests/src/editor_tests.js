@@ -1,11 +1,12 @@
+import $ from 'jquery';
+import _ from 'lodash';
 let ace = require('ace');
-let es = require('../../src/es');
 import { initializeInput } from '../../src/input';
 let editor_input1 = require('raw!./editor_input1.txt');
 let utils = require('../../src/utils');
 
 var aceRange = ace.require("ace/range");
-var { test, module, ok, fail, asyncTest, deepEqual, equal, start } = QUnit;
+var { module, asyncTest, deepEqual, equal, start } = window.QUnit;
 
 let input;
 
@@ -386,7 +387,7 @@ curl -XGET "http://localhost:9200/_stats?level=shards"
 
 #in between comment
 
-curl -XPUT "http://localhost:9200/index_1/type1/1" -d'
+curl -XPUT "http://localhost:9200/index_1/type1/1" -H 'Content-Type: application/json' -d'
 {
   "f": 1
 }'`.trim()

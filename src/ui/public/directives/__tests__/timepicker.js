@@ -4,7 +4,6 @@ import expect from 'expect.js';
 import _ from 'lodash';
 import sinon from 'auto-release-sinon';
 import ngMock from 'ng_mock';
-import $ from 'jquery';
 import 'plugins/kibana/visualize/index';
 import 'plugins/kibana/dashboard/index';
 import 'plugins/kibana/discover/index';
@@ -18,14 +17,13 @@ let $scope;
 
 let $elem;
 const anchor = '2014-01-01T06:06:06.666Z';
-let clock;
 
 const init = function () {
   // Load the application
   ngMock.module('kibana');
 
   // Stub out the clock so 'now' doesn't move
-  clock = sinon.useFakeTimers(moment(anchor).valueOf());
+  sinon.useFakeTimers(moment(anchor).valueOf());
 
   // Create the scope
   ngMock.inject(function ($rootScope, $compile) {
@@ -46,6 +44,8 @@ const init = function () {
       }
     };
     $parentScope.timefilter = timefilter;
+    $parentScope.updateInterval = sinon.spy();
+    $parentScope.updateFilter = sinon.spy();
 
     // Create the element
     $elem = angular.element(
@@ -54,7 +54,9 @@ const init = function () {
       ' to="timefilter.time.to"' +
       ' mode="timefilter.time.mode"' +
       ' active-tab="timefilter.timepickerActiveTab"' +
-      ' interval="timefilter.refreshInterval">' +
+      ' interval="timefilter.refreshInterval"' +
+      ' on-interval-select="updateInterval(interval)"' +
+      ' on-filter-select="updateFilter(from, to)">' +
       '</kbn-timepicker>'
     );
 
@@ -85,11 +87,9 @@ describe('timepicker directive', function () {
   });
 
   describe('refresh interval', function () {
-    let $courier;
     beforeEach(function () {
       init();
-      ngMock.inject(function (courier, $rootScope) {
-        $courier = courier;
+      ngMock.inject(function ($rootScope) {
         $rootScope.$apply();
       });
     });
@@ -99,62 +99,32 @@ describe('timepicker directive', function () {
       done();
     });
 
-    it('should have a $scope.setRefreshInterval() that sets interval variable', function (done) {
+    it('should have a $scope.setRefreshInterval() that calls handler', function (done) {
       $scope.setRefreshInterval({ value : 10000  });
-      expect($scope.interval).to.have.property('value', 10000);
-      done();
-    });
-
-    it('should set the interval on the courier', function (done) {
-      // Change refresh interval and digest
-      $scope.setRefreshInterval({ value : 1000 });
-      $elem.scope().$digest();
-      expect($courier.searchLooper.loopInterval()).to.be(1000);
-      done();
-    });
-
-    it('should disable the looper when paused', function (done) {
-      $scope.setRefreshInterval({ value : 1000, pause: true });
-      $elem.scope().$digest();
-      expect($courier.searchLooper.loopInterval()).to.be(0);
-      expect($scope.interval.value).to.be(1000);
-      done();
-    });
-
-    it('but keep interval.value set', function (done) {
-      $scope.setRefreshInterval({ value : 1000, pause: true });
-      $elem.scope().$digest();
-      expect($scope.interval.value).to.be(1000);
+      sinon.assert.calledOnce($parentScope.updateInterval);
+      expect($parentScope.updateInterval.firstCall.args[0]).to.have.property('value', 10000);
       done();
     });
 
     it('should unpause when setRefreshInterval is called without pause:true', function (done) {
       $scope.setRefreshInterval({ value : 1000, pause: true });
-      expect($scope.interval.pause).to.be(true);
+      expect($parentScope.updateInterval.getCall(0).args[0]).to.have.property('pause', true);
 
       $scope.setRefreshInterval({ value : 1000, pause: false });
-      expect($scope.interval.pause).to.be(false);
+      expect($parentScope.updateInterval.getCall(1).args[0]).to.have.property('pause', false);
 
       $scope.setRefreshInterval({ value : 1000 });
-      expect($scope.interval.pause).to.be(false);
+      expect($parentScope.updateInterval.getCall(2).args[0]).to.have.property('pause', false);
 
       done();
     });
 
 
     it('should highlight the current active interval', function (done) {
-      $scope.setRefreshInterval({ value: 300000 });
+      $scope.interval = { value: 300000 };
       $elem.scope().$digest();
       expect($elem.find('.refresh-interval-active').length).to.be(1);
       expect($elem.find('.refresh-interval-active').text().trim()).to.be('5 minutes');
-      done();
-    });
-
-    it('should default the interval on the courier with incorrect values', function (done) {
-      // Change refresh interval and digest
-      $scope.setRefreshInterval();
-      $elem.scope().$digest();
-      expect($courier.searchLooper.loopInterval()).to.be(0);
       done();
     });
   });
@@ -198,10 +168,11 @@ describe('timepicker directive', function () {
       done();
     });
 
-    it('should have a $scope.setQuick() that sets the to and from variables to strings', function (done) {
+    it('should have a $scope.setQuick() that calls handler', function (done) {
       $scope.setQuick('now', 'now');
-      expect($scope.from).to.be('now');
-      expect($scope.to).to.be('now');
+      sinon.assert.calledOnce($parentScope.updateFilter);
+      expect($parentScope.updateFilter.firstCall.args[0]).to.be('now');
+      expect($parentScope.updateFilter.firstCall.args[1]).to.be('now');
       done();
     });
   });
@@ -215,13 +186,13 @@ describe('timepicker directive', function () {
     });
 
     it('has a preview of the "from" input', function (done) {
-      const preview = $elem.find('.kbn-timepicker-section span[ng-show="relative.preview"]');
+      const preview = $elem.find('.kbn-timepicker-section span[ng-show="relative.from.preview"]');
       expect(preview.text()).to.be(moment().subtract(15, 'minutes').format($scope.format));
       done();
     });
 
     it('has a disabled "to" field that contains "Now"', function (done) {
-      expect($elem.find('.kbn-timepicker-section input[disabled]').val()).to.be('Now');
+      expect($elem.find('.kbn-timepicker-section span[ng-show="relative.to.preview"]').text()).to.be('Now');
       done();
     });
 
@@ -237,8 +208,8 @@ describe('timepicker directive', function () {
       expect(button.length).to.be(0);
 
       // Make the form invalid
-      $scope.relative.count = -3;
-      $scope.formatRelative();
+      $scope.relative.from.count = -3;
+      $scope.formatRelative('from');
       $scope.$digest();
 
       button = $elem.find('button[disabled]');
@@ -246,10 +217,10 @@ describe('timepicker directive', function () {
       done();
     });
 
-    it('has a dropdown bound to relative.unit that contains all of the intervals', function (done) {
-      const select = $elem.find('.kbn-timepicker-section select[ng-model="relative.unit"]');
+    it('has a dropdown bound to relative.from.unit that contains all of the intervals', function (done) {
+      const select = $elem.find('.kbn-timepicker-section select[ng-model="relative.from.unit"]');
       expect(select.length).to.be(1);
-      expect(select.find('option').length).to.be(7);
+      expect(select.find('option').length).to.be(14);
 
       // Check each relative option, make sure it is in the list
       _.each($scope.relativeOptions, function (unit, i) {
@@ -259,14 +230,14 @@ describe('timepicker directive', function () {
     });
 
     it('has a checkbox that is checked when rounding is enabled', function (done) {
-      const checkbox = $elem.find('.kbn-timepicker-section input[ng-model="relative.round"]');
+      const checkbox = $elem.find('.kbn-timepicker-section input[ng-model="relative.from.round"]');
       expect(checkbox.length).to.be(1);
 
       // Rounding is disabled by default
       expect(checkbox.prop('checked')).to.be(false);
 
       // Enable rounding
-      $scope.relative.round = true;
+      $scope.relative.from.round = true;
       $scope.$digest();
       expect(checkbox.prop('checked')).to.be(true);
 
@@ -275,16 +246,16 @@ describe('timepicker directive', function () {
 
     it('rounds the preview down to the unit when rounding is enabled', function (done) {
       // Enable rounding
-      $scope.relative.round = true;
-      $scope.relative.count = 0;
+      $scope.relative.from.round = true;
+      $scope.relative.from.count = 0;
 
       _.each($scope.units, function (longUnit, shortUnit) {
-        $scope.relative.count = 0;
-        $scope.relative.unit = shortUnit;
-        $scope.formatRelative();
+        $scope.relative.from.count = 0;
+        $scope.relative.from.unit = shortUnit;
+        $scope.formatRelative('from');
 
         // The preview should match the start of the unit eg, the start of the minute
-        expect($scope.relative.preview).to.be(moment().startOf(longUnit).format($scope.format));
+        expect($scope.relative.from.preview).to.be(moment().startOf(longUnit).format($scope.format));
       });
 
       done();
@@ -292,15 +263,25 @@ describe('timepicker directive', function () {
 
     it('does not round the preview down to the unit when rounding is disable', function (done) {
       // Disable rounding
-      $scope.relative.round = false;
-      $scope.relative.count = 0;
+      $scope.relative.from.round = false;
+      $scope.relative.from.count = 1;
 
       _.each($scope.units, function (longUnit, shortUnit) {
-        $scope.relative.unit = shortUnit;
-        $scope.formatRelative();
+        $scope.relative.from.unit = shortUnit;
+        $scope.formatRelative('from');
+
+        const matches = shortUnit.match(/([smhdwMy])(\+)?/);
+        let unit;
+        let opp = '-';
+        if (matches) {
+          unit = matches[1];
+          opp = matches[2];
+        }
+
+        const fn = opp === '+' ? 'add' : 'subtract';
 
         // The preview should match the start of the unit eg, the start of the minute
-        expect($scope.relative.preview).to.be(moment().format($scope.format));
+        expect($scope.relative.from.preview).to.be(moment()[fn](1, unit).format($scope.format));
       });
 
       done();
@@ -308,44 +289,45 @@ describe('timepicker directive', function () {
 
     it('has a $scope.applyRelative() that sets from and to based on relative.round, relative.count and relative.unit', function (done) {
       // Disable rounding
-      $scope.relative.round = false;
-      $scope.relative.count = 1;
-      $scope.relative.unit = 's';
+      $scope.relative.from.round = false;
+      $scope.relative.from.count = 1;
+      $scope.relative.from.unit = 's';
       $scope.applyRelative();
-      expect($scope.from).to.be('now-1s');
+      sinon.assert.calledOnce($parentScope.updateFilter);
+      expect($parentScope.updateFilter.getCall(0).args[0]).to.be('now-1s');
 
-      $scope.relative.count = 2;
-      $scope.relative.unit = 'm';
+      $scope.relative.from.count = 2;
+      $scope.relative.from.unit = 'm';
       $scope.applyRelative();
-      expect($scope.from).to.be('now-2m');
+      expect($parentScope.updateFilter.getCall(1).args[0]).to.be('now-2m');
 
-      $scope.relative.count = 3;
-      $scope.relative.unit = 'h';
+      $scope.relative.from.count = 3;
+      $scope.relative.from.unit = 'h';
       $scope.applyRelative();
-      expect($scope.from).to.be('now-3h');
+      expect($parentScope.updateFilter.getCall(2).args[0]).to.be('now-3h');
 
       // Enable rounding
-      $scope.relative.round = true;
-      $scope.relative.count = 7;
-      $scope.relative.unit = 'd';
+      $scope.relative.from.round = true;
+      $scope.relative.from.count = 7;
+      $scope.relative.from.unit = 'd';
       $scope.applyRelative();
-      expect($scope.from).to.be('now-7d/d');
+      expect($parentScope.updateFilter.getCall(3).args[0]).to.be('now-7d/d');
 
       done();
     });
 
     it('updates the input fields when the scope variables are changed', function (done) {
-      const input = $elem.find('.kbn-timepicker-section input[ng-model="relative.count"]');
-      const select = $elem.find('.kbn-timepicker-section select[ng-model="relative.unit"]');
+      const input = $elem.find('.kbn-timepicker-section input[ng-model="relative.from.count"]');
+      const select = $elem.find('.kbn-timepicker-section select[ng-model="relative.from.unit"]');
 
-      $scope.relative.count = 5;
+      $scope.relative.from.count = 5;
       $scope.$digest();
       expect(input.val()).to.be('5');
 
 
       // Should update the selected option
       _.each($scope.units, function (longUnit, shortUnit) {
-        $scope.relative.unit = shortUnit;
+        $scope.relative.from.unit = shortUnit;
         $scope.$digest();
 
         expect(select.val().split(':')[1]).to.be(shortUnit);
@@ -369,8 +351,8 @@ describe('timepicker directive', function () {
       inputs = {
         fromInput: $elem.find('.kbn-timepicker-section input[ng-model="absolute.from"]'),
         toInput: $elem.find('.kbn-timepicker-section input[ng-model="absolute.to"]'),
-        fromCalendar: $elem.find('.kbn-timepicker-section div[ng-model="absolute.from"] '),
-        toCalendar: $elem.find('.kbn-timepicker-section div[ng-model="absolute.to"] '),
+        fromCalendar: $elem.find('.kbn-timepicker-section div[ng-model="pickFromDate"] '),
+        toCalendar: $elem.find('.kbn-timepicker-section div[ng-model="pickToDate"] '),
       };
 
     });
@@ -398,16 +380,6 @@ describe('timepicker directive', function () {
       done();
     });
 
-    it('should parse the time of scope.from and scope.to to set its own variables', function (done) {
-      $scope.setQuick('now-30m', 'now');
-      $scope.setMode('absolute');
-      $scope.$digest();
-
-      expect($scope.absolute.from.valueOf()).to.be(moment().subtract(30, 'minutes').valueOf());
-      expect($scope.absolute.to.valueOf()).to.be(moment().valueOf());
-      done();
-    });
-
     it('should update its own variables if timefilter time is updated', function (done) {
       $scope.setMode('absolute');
       $scope.$digest();
@@ -428,19 +400,18 @@ describe('timepicker directive', function () {
       $scope.absolute.from = moment('2012-02-01');
       $scope.absolute.to = moment('2012-02-11');
       $scope.$digest();
-      expect($elem.find('.kbn-timepicker-section button.kbn-timepicker-go').attr('disabled')).to.be(undefined);
+      expect($elem.find('[data-test-subj="timepickerGoButton"]').attr('disabled')).to.be(undefined);
 
       $scope.absolute.from = moment('2012-02-12');
       $scope.absolute.to = moment('2012-02-11');
       $scope.$digest();
-      expect($elem.find('.kbn-timepicker-section button.kbn-timepicker-go').attr('disabled')).to.be('disabled');
+      expect($elem.find('[data-test-subj="timepickerGoButton"]').attr('disabled')).to.be('disabled');
       done();
     });
 
     it('should only copy its input to scope.from and scope.to when scope.applyAbsolute() is called', function (done) {
-      $scope.setQuick('now-30m', 'now');
-      expect($scope.from).to.be('now-30m');
-      expect($scope.to).to.be('now');
+      $scope.from = 'now-30m';
+      $scope.to = 'now';
 
       $scope.absolute.from = moment('2012-02-01');
       $scope.absolute.to = moment('2012-02-11');
@@ -448,14 +419,64 @@ describe('timepicker directive', function () {
       expect($scope.to).to.be('now');
 
       $scope.applyAbsolute();
-      expect($scope.from.valueOf()).to.be(moment('2012-02-01').valueOf());
-      expect($scope.to.valueOf()).to.be(moment('2012-02-11').valueOf());
+      expect($parentScope.updateFilter.firstCall.args[0]).to.eql(moment('2012-02-01'));
+      expect($parentScope.updateFilter.firstCall.args[1]).to.eql(moment('2012-02-11'));
 
       $scope.$digest();
 
       done();
     });
 
-  });
+    it('should set from/to to start/end of day if set from datepicker', function (done) {
+      $scope.pickFromDate(new Date('2012-02-01 12:00'));
+      $scope.pickToDate(new Date('2012-02-11 12:00'));
+      $scope.applyAbsolute();
 
+      expect($parentScope.updateFilter.firstCall.args[0].valueOf()).to.be(moment('2012-02-01 00:00:00.000').valueOf());
+      expect($parentScope.updateFilter.firstCall.args[1].valueOf()).to.be(moment('2012-02-11 23:59:59.999').valueOf());
+
+      done();
+    });
+
+    it('should allow setting hour/minute/second after setting from datepicker', function (done) {
+      $scope.pickFromDate(new Date('2012-02-01 12:00'));
+      $scope.pickToDate(new Date('2012-02-11 12:00'));
+      $scope.applyAbsolute();
+
+      expect($parentScope.updateFilter.firstCall.args[0].valueOf()).to.be(moment('2012-02-01 00:00:00.000').valueOf());
+      expect($parentScope.updateFilter.firstCall.args[1].valueOf()).to.be(moment('2012-02-11 23:59:59.999').valueOf());
+
+      $scope.absolute.from = moment('2012-02-01 01:23:45');
+      $scope.absolute.to = moment('2012-02-11 12:34:56');
+      $scope.applyAbsolute();
+
+      expect($parentScope.updateFilter.secondCall.args[0].valueOf()).to.be(moment('2012-02-01 01:23:45').valueOf());
+      expect($parentScope.updateFilter.secondCall.args[1].valueOf()).to.be(moment('2012-02-11 12:34:56').valueOf());
+
+      done();
+    });
+
+    describe('datepicker timezone issue', function () {
+      it('should ignore the timezone from the datepicker because it does not respect dateFormat:tz advanced setting', function (done) {
+        moment.tz.setDefault('UTC');
+
+        $scope.pickFromDate(new Date('2012-02-01 12:00-05:00'));
+        $scope.pickToDate(new Date('2012-02-11 12:00-05:00'));
+        $scope.$digest();
+
+        const formattedFrom = inputs.fromInput.val();
+        const formattedTo = inputs.toInput.val();
+
+        expect(formattedFrom).to.be('2012-02-01 00:00:00.000');
+        expect(formattedTo).to.be('2012-02-11 23:59:59.999');
+
+        done();
+      });
+
+      after(function () {
+        moment.tz.setDefault('Browser');
+      });
+    });
+
+  });
 });

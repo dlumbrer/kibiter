@@ -1,9 +1,8 @@
-const _ = require('lodash');
-const processFunctionDefinition = require('./server/lib/process_function_definition');
+import _ from 'lodash';
+import processFunctionDefinition from './server/lib/process_function_definition';
 
 module.exports = function (server) {
   //var config = server.config();
-
   require('./server/routes/run.js')(server);
   require('./server/routes/functions.js')(server);
   require('./server/routes/validate_es.js')(server);

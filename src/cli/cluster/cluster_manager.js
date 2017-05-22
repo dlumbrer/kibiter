@@ -1,8 +1,5 @@
-import cluster from 'cluster';
-const { join, resolve } = require('path');
-const { format: formatUrl } = require('url');
-import Hapi from 'hapi';
-const { debounce, compact, get, invoke, bindAll, once, sample, uniq } = require('lodash');
+import { resolve } from 'path';
+import { debounce, invoke, bindAll, once, uniq } from 'lodash';
 
 import Log from '../log';
 import Worker from './worker';
@@ -65,10 +62,23 @@ module.exports = class ClusterManager {
     bindAll(this, 'onWatcherAdd', 'onWatcherError', 'onWatcherChange');
 
     if (opts.watch) {
-      this.setupWatching([
+      const extraPaths = [
         ...settings.plugins.paths,
-        ...settings.plugins.scanDirs
-      ]);
+        ...settings.plugins.scanDirs,
+      ];
+
+      const extraIgnores = settings.plugins.scanDirs
+        .map(scanDir => resolve(scanDir, '*'))
+        .concat(settings.plugins.paths)
+        .reduce((acc, path) => acc.concat(
+          resolve(path, 'test'),
+          resolve(path, 'build'),
+          resolve(path, 'target'),
+          resolve(path, 'scripts'),
+          resolve(path, 'docs'),
+        ), []);
+
+      this.setupWatching(extraPaths, extraIgnores);
     }
 
     else this.startCluster();
@@ -82,9 +92,9 @@ module.exports = class ClusterManager {
     }
   }
 
-  setupWatching(extraPaths) {
+  setupWatching(extraPaths, extraIgnores) {
     const chokidar = require('chokidar');
-    const fromRoot = require('../../utils/from_root');
+    const { fromRoot } = require('../../utils');
 
     const watchPaths = [
       fromRoot('src/core_plugins'),
@@ -97,7 +107,10 @@ module.exports = class ClusterManager {
 
     this.watcher = chokidar.watch(uniq(watchPaths), {
       cwd: fromRoot('.'),
-      ignored: /[\\\/](\..*|node_modules|bower_components|public|__tests__)[\\\/]/
+      ignored: [
+        /[\\\/](\..*|node_modules|bower_components|public|__tests__|coverage)[\\\/]/,
+        ...extraIgnores
+      ]
     });
 
     this.watcher.on('add', this.onWatcherAdd);
@@ -124,7 +137,7 @@ module.exports = class ClusterManager {
     rl.setPrompt('');
     rl.prompt();
 
-    rl.on('line', line => {
+    rl.on('line', () => {
       nls = nls + 1;
 
       if (nls >= 2) {

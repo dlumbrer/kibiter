@@ -1,13 +1,10 @@
 import d3 from 'd3';
-import angular from 'angular';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import _ from 'lodash';
-import fixtures from 'fixtures/fake_hierarchical_data';
 import series from 'fixtures/vislib/mock_data/date_histogram/_series';
 import terms from 'fixtures/vislib/mock_data/terms/_columns';
 import $ from 'jquery';
-import VislibVisualizationsTimeMarkerProvider from 'ui/vislib/visualizations/time_marker';
+import { VislibVisualizationsTimeMarkerProvider } from 'ui/vislib/visualizations/time_marker';
 
 describe('Vislib Time Marker Test Suite', function () {
   const height = 50;

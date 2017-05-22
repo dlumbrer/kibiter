@@ -1,9 +1,10 @@
 import _ from 'lodash';
-import AggResponsePointSeriesGetPointProvider from 'ui/agg_response/point_series/_get_point';
-import AggResponsePointSeriesAddToSiriProvider from 'ui/agg_response/point_series/_add_to_siri';
-export default function PointSeriesGetSeries(Private) {
-  const getPoint = Private(AggResponsePointSeriesGetPointProvider);
-  const addToSiri = Private(AggResponsePointSeriesAddToSiriProvider);
+import { PointSeriesGetPointProvider } from 'ui/agg_response/point_series/_get_point';
+import { PointSeriesAddToSiriProvider } from 'ui/agg_response/point_series/_add_to_siri';
+
+export function PointSeriesGetSeriesProvider(Private) {
+  const getPoint = Private(PointSeriesGetPointProvider);
+  const addToSiri = Private(PointSeriesAddToSiriProvider);
 
   return function getSeries(rows, chart) {
     const aspects = chart.aspects;
@@ -15,7 +16,7 @@ export default function PointSeriesGetSeries(Private) {
     .transform(function (series, row) {
       if (!multiY) {
         const point = partGetPoint(row, aspects.y, aspects.z);
-        if (point) addToSiri(series, point, point.series);
+        if (point) addToSiri(series, point, point.series, point.series, aspects.y.agg);
         return;
       }
 
@@ -35,7 +36,7 @@ export default function PointSeriesGetSeries(Private) {
           seriesLabel = prefix + seriesLabel;
         }
 
-        addToSiri(series, point, seriesId, seriesLabel);
+        addToSiri(series, point, seriesId, seriesLabel, y.agg);
       });
 
     }, new Map())

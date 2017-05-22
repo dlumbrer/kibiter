@@ -1,14 +1,13 @@
 
-import angular from 'angular';
 import _ from 'lodash';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import VislibComponentsZeroInjectionInjectZerosProvider from 'ui/vislib/components/zero_injection/inject_zeros';
-import VislibComponentsZeroInjectionOrderedXKeysProvider from 'ui/vislib/components/zero_injection/ordered_x_keys';
-import VislibComponentsZeroInjectionUniqKeysProvider from 'ui/vislib/components/zero_injection/uniq_keys';
-import VislibComponentsZeroInjectionFlattenDataProvider from 'ui/vislib/components/zero_injection/flatten_data';
+import { VislibComponentsZeroInjectionInjectZerosProvider } from 'ui/vislib/components/zero_injection/inject_zeros';
+import { VislibComponentsZeroInjectionOrderedXKeysProvider } from 'ui/vislib/components/zero_injection/ordered_x_keys';
+import { VislibComponentsZeroInjectionUniqKeysProvider } from 'ui/vislib/components/zero_injection/uniq_keys';
+import { VislibComponentsZeroInjectionFlattenDataProvider } from 'ui/vislib/components/zero_injection/flatten_data';
 import VislibComponentsZeroInjectionZeroFilledArrayProvider from 'ui/vislib/components/zero_injection/zero_filled_array';
-import VislibComponentsZeroInjectionZeroFillDataArrayProvider from 'ui/vislib/components/zero_injection/zero_fill_data_array';
+import { VislibComponentsZeroInjectionZeroFillDataArrayProvider } from 'ui/vislib/components/zero_injection/zero_fill_data_array';
 
 describe('Vislib Zero Injection Module Test Suite', function () {
   const dateHistogramRows = [
@@ -204,18 +203,6 @@ describe('Vislib Zero Injection Module Test Suite', function () {
     ]
   };
 
-  const childrenObject = {
-    children: []
-  };
-  const seriesObject = {
-    series: []
-  };
-  const rowsObject = {
-    rows: []
-  };
-  const columnsObject = {
-    columns: []
-  };
   const emptyObject = {};
   const str = 'string';
   const number = 24;

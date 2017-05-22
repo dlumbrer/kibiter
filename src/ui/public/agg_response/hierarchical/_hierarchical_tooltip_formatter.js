@@ -2,7 +2,8 @@ import _ from 'lodash';
 import $ from 'jquery';
 import collectBranch from 'ui/agg_response/hierarchical/_collect_branch';
 import numeral from 'numeral';
-export default function HierarchicalTooltipFormaterProvider($rootScope, $compile, $sce) {
+
+export function HierarchicalTooltipFormatterProvider($rootScope, $compile, $sce) {
   const $tooltip = $(require('ui/agg_response/hierarchical/_tooltip.html'));
   const $tooltipScope = $rootScope.$new();
 
@@ -18,7 +19,7 @@ export default function HierarchicalTooltipFormaterProvider($rootScope, $compile
       const metricCol = $tooltipScope.metricCol = _.find(columns, { categoryName: 'metric' });
 
       // Map those values to what the tooltipSource.rows format.
-      _.forEachRight($tooltipScope.rows, function (row, i, rows) {
+      _.forEachRight($tooltipScope.rows, function (row) {
         row.spacer = $sce.trustAsHtml(_.repeat('&nbsp;', row.depth));
 
         let percent;

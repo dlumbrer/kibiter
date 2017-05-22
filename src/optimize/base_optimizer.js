@@ -10,8 +10,8 @@ import DefinePlugin from 'webpack/lib/DefinePlugin';
 import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin';
 import { defaults, transform } from 'lodash';
 
-import fromRoot from '../utils/from_root';
-import babelOptions from './babel_options';
+import { fromRoot } from '../utils';
+import babelOptions from './babel/options';
 import pkg from '../../package.json';
 import { setLoaderQueryParam, makeLoaderString } from './loaders';
 
@@ -71,18 +71,18 @@ class BaseOptimizer {
 
     const makeStyleLoader = preprocessor => {
       let loaders = [
-        loaderWithSourceMaps('css-loader')
+        loaderWithSourceMaps('css-loader?autoprefixer=false'),
+        {
+          name: 'postcss-loader',
+          query: {
+            config: require.resolve('./postcss.config')
+          }
+        },
       ];
 
       if (preprocessor) {
         loaders = [
           ...loaders,
-          {
-            name: 'postcss-loader',
-            query: {
-              config: require.resolve('./postcss.config')
-            }
-          },
           loaderWithSourceMaps(preprocessor)
         ];
       }
@@ -90,7 +90,8 @@ class BaseOptimizer {
       return ExtractTextPlugin.extract(makeLoaderString(loaders));
     };
 
-    return {
+    const config = {
+      node: { fs: 'empty' },
       context: fromRoot('.'),
       entry: this.bundles.toWebpackEntries(),
 
@@ -125,7 +126,6 @@ class BaseOptimizer {
       module: {
         loaders: [
           { test: /\.less$/, loader: makeStyleLoader('less-loader') },
-          { test: /\.scss$/, loader: makeStyleLoader('sass-loader') },
           { test: /\.css$/, loader: makeStyleLoader() },
           { test: /\.jade$/, loader: 'jade-loader' },
           { test: /\.json$/, loader: 'json-loader' },
@@ -136,12 +136,8 @@ class BaseOptimizer {
           {
             test: /\.jsx?$/,
             exclude: babelExclude.concat(this.env.noParse),
-            loader: makeLoaderString([
-              {
-                name: 'babel-loader',
-                query: babelOptions.webpack
-              }
-            ]),
+            loader: 'babel-loader',
+            query: babelOptions.webpack
           },
         ],
         postLoaders: this.env.postLoaders || [],
@@ -167,6 +163,19 @@ class BaseOptimizer {
         }, {})
       }
     };
+
+    // In the test env we need to add react-addons (and a few other bits) for the
+    // enzyme tests to work.
+    // https://github.com/airbnb/enzyme/blob/master/docs/guides/webpack.md
+    if (this.env.context.env === 'development') {
+      config.externals = {
+        'react/lib/ExecutionEnvironment': true,
+        'react/addons': true,
+        'react/lib/ReactContext': true,
+      };
+    }
+
+    return config;
   }
 
   pluginsForEnv(env) {

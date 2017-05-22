@@ -1,5 +1,4 @@
-import _ from 'lodash';
-export default function PatternCache() {
+export function IndexPatternsPatternCacheProvider() {
 
   const vals = {};
 

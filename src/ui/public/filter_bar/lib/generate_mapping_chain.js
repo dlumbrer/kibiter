@@ -1,5 +1,4 @@
-import _ from 'lodash';
-export default function generateMappingChainProvider(Promise) {
+export function FilterBarLibGenerateMappingChainProvider(Promise) {
 
   const noop = function () {
     return Promise.reject(new Error('No mappings have been found for filter.'));

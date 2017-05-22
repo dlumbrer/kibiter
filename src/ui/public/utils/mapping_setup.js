@@ -1,7 +1,7 @@
 import angular from 'angular';
 import _ from 'lodash';
 define(function () {
-  return function MappingSetupService(kbnIndex, es) {
+  return function MappingSetupService(kbnIndex, esAdmin) {
     const mappingSetup = this;
 
     const json = {
@@ -23,7 +23,7 @@ define(function () {
      * @return {[type]} [description]
      */
     const getKnownKibanaTypes = _.once(function () {
-      return es.indices.getFieldMapping({
+      return esAdmin.indices.getFieldMapping({
         // only concerned with types in this kibana index
         index: kbnIndex,
         // check all types
@@ -39,7 +39,7 @@ define(function () {
     });
 
     mappingSetup.expandShorthand = function (sh) {
-      return _.mapValues(sh || {}, function (val, prop) {
+      return _.mapValues(sh || {}, function (val) {
         // allow shortcuts for the field types, by just setting the value
         // to the type name
         if (typeof val === 'string') val = { type: val };
@@ -83,11 +83,11 @@ define(function () {
           properties: mapping
         };
 
-        return es.indices.putMapping({
+        return esAdmin.indices.putMapping({
           index: kbnIndex,
           type: type,
           body: body
-        }).then(function (resp) {
+        }).then(function () {
           // add this type to the list of knownTypes
           knownTypes.push(type);
 

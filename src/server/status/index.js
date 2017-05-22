@@ -1,30 +1,38 @@
-import _ from 'lodash';
 import ServerStatus from './server_status';
 import wrapAuthConfig from './wrap_auth_config';
-import { join } from 'path';
+import { Metrics } from './metrics';
 
 export default function (kbnServer, server, config) {
   kbnServer.status = new ServerStatus(kbnServer.server);
 
   if (server.plugins['even-better']) {
-    kbnServer.mixin(require('./metrics'));
+    const metrics = new Metrics(config, server);
+
+    server.plugins['even-better'].monitor.on('ops', event => {
+      metrics.capture(event).then(data => { kbnServer.metrics = data; });
+    });
   }
 
   const wrapAuth = wrapAuthConfig(config.get('status.allowAnonymous'));
-
+  const matchSnapshot = /-SNAPSHOT$/;
   server.route(wrapAuth({
     method: 'GET',
     path: '/api/status',
     handler: function (request, reply) {
-      return reply({
+      const status = {
         name: config.get('server.name'),
-        version: config.get('pkg.version'),
-        buildNum: config.get('pkg.buildNum'),
-        buildSha: config.get('pkg.buildSha'),
         uuid: config.get('server.uuid'),
+        version: {
+          number: config.get('pkg.version').replace(matchSnapshot, ''),
+          build_hash: config.get('pkg.buildSha'),
+          build_number: config.get('pkg.buildNum'),
+          build_snapshot: matchSnapshot.test(config.get('pkg.version'))
+        },
         status: kbnServer.status.toJSON(),
         metrics: kbnServer.metrics
-      });
+      };
+
+      return reply(status);
     }
   }));
 

@@ -1,7 +1,7 @@
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import AggResponseTabifyGetColumnsProvider from 'ui/agg_response/tabify/_get_columns';
-import VisProvider from 'ui/vis';
+import { AggResponseGetColumnsProvider } from 'ui/agg_response/tabify/_get_columns';
+import { VisProvider } from 'ui/vis';
 import FixturesStubbedLogstashIndexPatternProvider from 'fixtures/stubbed_logstash_index_pattern';
 describe('get columns', function () {
   let getColumns;
@@ -9,8 +9,8 @@ describe('get columns', function () {
   let indexPattern;
 
   beforeEach(ngMock.module('kibana'));
-  beforeEach(ngMock.inject(function (Private, $injector) {
-    getColumns = Private(AggResponseTabifyGetColumnsProvider);
+  beforeEach(ngMock.inject(function (Private) {
+    getColumns = Private(AggResponseGetColumnsProvider);
     Vis = Private(VisProvider);
     indexPattern = Private(FixturesStubbedLogstashIndexPatternProvider);
   }));
@@ -94,7 +94,6 @@ describe('get columns', function () {
 
     expect(columns).to.have.length(12);
     for (let i = 0; i < columns.length; i += 3) {
-      const counts = { buckets: 0, metrics: 0 };
       columns.slice(i, i + 3).forEach(checkColumns);
     }
   });

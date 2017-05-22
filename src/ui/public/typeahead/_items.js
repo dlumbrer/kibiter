@@ -1,7 +1,6 @@
-import _ from 'lodash';
 import listTemplate from 'ui/typeahead/partials/typeahead-items.html';
 import 'ui/notify/directives';
-import uiModules from 'ui/modules';
+import { uiModules } from 'ui/modules';
 const typeahead = uiModules.get('kibana/typeahead');
 
 

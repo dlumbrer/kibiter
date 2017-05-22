@@ -6,8 +6,9 @@
  */
 
 import _ from 'lodash';
-import RegistryFieldFormatsProvider from 'ui/registry/field_formats';
-export default function AggConfigFactory(Private, fieldTypeFilter) {
+import { RegistryFieldFormatsProvider } from 'ui/registry/field_formats';
+
+export function VisAggConfigProvider(Private) {
   const fieldFormats = Private(RegistryFieldFormatsProvider);
 
   function AggConfig(vis, opts) {
@@ -162,8 +163,12 @@ export default function AggConfigFactory(Private, fieldTypeFilter) {
     return this.type.params.write(this);
   };
 
+  AggConfig.prototype.isFilterable = function () {
+    return _.isFunction(this.type.createFilter);
+  };
+
   AggConfig.prototype.createFilter = function (key) {
-    if (!_.isFunction(this.type.createFilter)) {
+    if (!this.isFilterable()) {
       throw new TypeError('The "' + this.type.title + '" aggregation does not support filtering.');
     }
 
@@ -210,9 +215,17 @@ export default function AggConfigFactory(Private, fieldTypeFilter) {
     configDsl[this.type.dslName || this.type.name] = output.params;
 
     // if the config requires subAggs, write them to the dsl as well
+    if (this.subAggs && !output.subAggs) output.subAggs = this.subAggs;
     if (output.subAggs) {
       const subDslLvl = configDsl.aggs || (configDsl.aggs = {});
       output.subAggs.forEach(function nestAdhocSubAggs(subAggConfig) {
+        subDslLvl[subAggConfig.id] = subAggConfig.toDsl();
+      });
+    }
+
+    if (output.parentAggs) {
+      const subDslLvl = configDsl.parentAggs || (configDsl.parentAggs = {});
+      output.parentAggs.forEach(function nestAdhocSubAggs(subAggConfig) {
         subDslLvl[subAggConfig.id] = subAggConfig.toDsl();
       });
     }
@@ -250,6 +263,11 @@ export default function AggConfigFactory(Private, fieldTypeFilter) {
       (this.type) ? this.type.params.raw : [],
       (this.schema) ? this.schema.params.raw : []
     );
+  };
+
+  AggConfig.prototype.getRequestAggs = function () {
+    if (!this.type) return;
+    return this.type.getRequestAggs(this) || [this];
   };
 
   AggConfig.prototype.getResponseAggs = function () {

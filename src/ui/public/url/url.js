@@ -1,14 +1,31 @@
 import _ from 'lodash';
 import 'ui/filters/uriescape';
 import 'ui/filters/rison';
-import uiModules from 'ui/modules';
-import rison from 'rison-node';
-import AppStateProvider from 'ui/state_management/app_state';
+import { uiModules } from 'ui/modules';
+import { AppStateProvider } from 'ui/state_management/app_state';
 
 uiModules.get('kibana/url')
 .service('kbnUrl', function (Private) { return Private(KbnUrlProvider); });
 
-function KbnUrlProvider($injector, $location, $rootScope, $parse, Private) {
+export function KbnUrlProvider($injector, $location, $rootScope, $parse, Private) {
+  /**
+   *  the `kbnUrl` service was created to smooth over some of the
+   *  inconsistent behavior that occurs when modifying the url via
+   *  the `$location` api. In general it is recommended that you use
+   *  the `kbnUrl` service any time you want to modify the url.
+   *
+   *  "features" that `kbnUrl` does it's best to guarantee, which
+   *  are not guaranteed with the `$location` service:
+   *   - calling `kbnUrl.change()` with a url that resolves to the current
+   *     route will force a full transition (rather than just updating the
+   *     properties of the $route object)
+   *
+   *  Additional features of `kbnUrl`
+   *   - parameterized urls
+   *   - easily include an app state with the url
+   *
+   *  @type {KbnUrl}
+   */
   const self = this;
 
   /**
@@ -138,6 +155,15 @@ function KbnUrlProvider($injector, $location, $rootScope, $parse, Private) {
     self.change(self.getRouteUrl(obj, route));
   };
 
+  /**
+   * Removes the given parameter from the url. Does so without modifying the browser
+   * history.
+   * @param param
+   */
+  self.removeParam = function (param) {
+    $location.search(param, null).replace();
+  };
+
   /////
   // private api
   /////
@@ -198,5 +224,3 @@ function KbnUrlProvider($injector, $location, $rootScope, $parse, Private) {
     return (reloadOnSearch && searchSame) || !reloadOnSearch;
   };
 }
-
-export default KbnUrlProvider;

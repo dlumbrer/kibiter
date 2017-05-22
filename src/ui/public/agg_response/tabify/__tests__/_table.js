@@ -1,13 +1,14 @@
 import _ from 'lodash';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import AggResponseTabifyTableProvider from 'ui/agg_response/tabify/_table';
+import { AggResponseTabifyTableProvider } from 'ui/agg_response/tabify/_table';
+
 describe('Table class', function () {
 
   let Table;
 
   beforeEach(ngMock.module('kibana'));
-  beforeEach(ngMock.inject(function (Private, $injector) {
+  beforeEach(ngMock.inject(function (Private) {
     Table = Private(AggResponseTabifyTableProvider);
   }));
 

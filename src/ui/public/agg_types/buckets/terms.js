@@ -1,27 +1,32 @@
 import _ from 'lodash';
-import AggTypesBucketsBucketAggTypeProvider from 'ui/agg_types/buckets/_bucket_agg_type';
-import AggTypesBucketsBucketCountBetweenProvider from 'ui/agg_types/buckets/_bucket_count_between';
-import VisAggConfigProvider from 'ui/vis/agg_config';
-import VisSchemasProvider from 'ui/vis/schemas';
-import AggTypesBucketsCreateFilterTermsProvider from 'ui/agg_types/buckets/create_filter/terms';
+import { AggTypesBucketsBucketAggTypeProvider } from 'ui/agg_types/buckets/_bucket_agg_type';
+import { VisAggConfigProvider } from 'ui/vis/agg_config';
+import { VisSchemasProvider } from 'ui/vis/schemas';
+import { AggTypesBucketsCreateFilterTermsProvider } from 'ui/agg_types/buckets/create_filter/terms';
 import orderAggTemplate from 'ui/agg_types/controls/order_agg.html';
 import orderAndSizeTemplate from 'ui/agg_types/controls/order_and_size.html';
-import routeBasedNotifierProvider from 'ui/route_based_notifier';
+import { RouteBasedNotifierProvider } from 'ui/route_based_notifier';
 
-export default function TermsAggDefinition(Private) {
+export function AggTypesBucketsTermsProvider(Private) {
   const BucketAggType = Private(AggTypesBucketsBucketAggTypeProvider);
-  const bucketCountBetween = Private(AggTypesBucketsBucketCountBetweenProvider);
   const AggConfig = Private(VisAggConfigProvider);
   const Schemas = Private(VisSchemasProvider);
   const createFilter = Private(AggTypesBucketsCreateFilterTermsProvider);
-  const routeBasedNotifier = Private(routeBasedNotifierProvider);
+  const routeBasedNotifier = Private(RouteBasedNotifierProvider);
+
+  const aggFilter = [
+    '!top_hits', '!percentiles', '!median', '!std_dev',
+    '!derivative', '!moving_avg', '!serial_diff', '!cumulative_sum',
+    '!avg_bucket', '!max_bucket', '!min_bucket', '!sum_bucket'
+  ];
 
   const orderAggSchema = (new Schemas([
     {
       group: 'none',
       name: 'orderAgg',
       title: 'Order Agg',
-      aggFilter: ['!percentiles', '!median', '!std_dev']
+      hideCustomLabel: true,
+      aggFilter: aggFilter
     }
   ])).all[0];
 
@@ -31,6 +36,21 @@ export default function TermsAggDefinition(Private) {
       return !field || field.type !== type;
     };
   }
+
+  const migrateIncludeExcludeFormat = {
+    serialize: function (value) {
+      if (!value || _.isString(value)) return value;
+      else return value.pattern;
+    },
+    write: function (aggConfig, output) {
+      const value = aggConfig.params[this.name];
+      if (_.isObject(value)) {
+        output.params[this.name] = value.pattern;
+      } else if (value) {
+        output.params[this.name] = value;
+      }
+    }
+  };
 
   return new BucketAggType({
     name: 'terms',
@@ -47,15 +67,17 @@ export default function TermsAggDefinition(Private) {
       },
       {
         name: 'exclude',
-        type: 'regex',
+        type: 'string',
         advanced: true,
-        disabled: isNotType('string')
+        disabled: isNotType('string'),
+        ...migrateIncludeExcludeFormat
       },
       {
         name: 'include',
-        type: 'regex',
+        type: 'string',
         advanced: true,
-        disabled: isNotType('string')
+        disabled: isNotType('string'),
+        ...migrateIncludeExcludeFormat
       },
       {
         name: 'size',
@@ -94,18 +116,26 @@ export default function TermsAggDefinition(Private) {
           $scope.$watch('responseValueAggs', updateOrderAgg);
           $scope.$watch('agg.params.orderBy', updateOrderAgg);
 
+          // Returns true if the agg is not compatible with the terms bucket
+          $scope.rejectAgg = function rejectAgg(agg) {
+            return aggFilter.includes(`!${agg.type.name}`);
+          };
+
           function updateOrderAgg() {
+            // abort until we get the responseValueAggs
+            if (!$scope.responseValueAggs) return;
             const agg = $scope.agg;
-            const aggs = agg.vis.aggs;
             const params = agg.params;
             const orderBy = params.orderBy;
             const paramDef = agg.type.params.byName.orderAgg;
 
             // setup the initial value of orderBy
             if (!orderBy && prevOrderBy === INIT) {
-              // abort until we get the responseValueAggs
-              if (!$scope.responseValueAggs) return;
-              params.orderBy = (_.first($scope.responseValueAggs) || { id: 'custom' }).id;
+              let respAgg = _($scope.responseValueAggs).filter((agg) => !$scope.rejectAgg(agg)).first();
+              if (!respAgg) {
+                respAgg = { id: '_term' };
+              }
+              params.orderBy = respAgg.id;
               return;
             }
 
@@ -115,15 +145,10 @@ export default function TermsAggDefinition(Private) {
             // we aren't creating a custom aggConfig
             if (!orderBy || orderBy !== 'custom') {
               params.orderAgg = null;
-
-              if (orderBy === '_term') {
-                params.orderBy = '_term';
-                return;
-              }
-
               // ensure that orderBy is set to a valid agg
-              if (!_.find($scope.responseValueAggs, { id: orderBy })) {
-                params.orderBy = null;
+              const respAgg = _($scope.responseValueAggs).filter((agg) => !$scope.rejectAgg(agg)).find({ id: orderBy });
+              if (!respAgg) {
+                params.orderBy = '_term';
               }
               return;
             }

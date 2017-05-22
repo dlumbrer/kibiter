@@ -1,7 +1,5 @@
-import $ from 'jquery';
-import _ from 'lodash';
-import keyMap from 'ui/utils/key_map';
-import uiModules from 'ui/modules';
+import { keyMap } from 'ui/utils/key_map';
+import { uiModules } from 'ui/modules';
 
 const INVALID = {}; // invalid flag
 const FLOATABLE = /^[\d\.e\-\+]+$/i;

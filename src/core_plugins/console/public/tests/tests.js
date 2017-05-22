@@ -2,12 +2,10 @@ require('ace');
 
 const module = require('ui/modules').get('app/sense');
 
-module.run(function (Private, $rootScope) {
-  module.setupResizeCheckerForRootEditors = ($el, ...editors) => {
-    // mock the resize checker
-  };
+// mock the resize checker
+module.run(function () {
+  module.setupResizeCheckerForRootEditors = () => {};
 });
-
 
 require('ui/chrome')
   .setRootTemplate(require('./index.html'))
@@ -27,7 +25,8 @@ require('ui/chrome')
     require('./src/kb_tests.js');
     require('./src/mapping_tests.js');
     require('./src/editor_tests.js');
-    require('./src/tokenization_tests.js');
+    require('./src/input_tokenization_tests.js');
+    require('./src/output_tokenization_tests.js');
     require('./src/integration_tests.js');
 
     console.log('all tests loaded');

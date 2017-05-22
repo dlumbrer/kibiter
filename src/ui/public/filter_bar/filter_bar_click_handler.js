@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import dedupFilters from './lib/dedup_filters';
-import uniqFilters from './lib/uniq_filters';
-import findByParam from 'ui/utils/find_by_param';
+import { dedupFilters } from './lib/dedup_filters';
+import { uniqFilters } from './lib/uniq_filters';
+import { findByParam } from 'ui/utils/find_by_param';
 
-export default function (Notifier) {
+export function FilterBarClickHandlerProvider(Notifier) {
   return function ($state) {
     return function (event, simulate) {
       const notify = new Notifier({
@@ -56,7 +56,7 @@ export default function (Notifier) {
           });
         }
 
-        filters = dedupFilters($state.filters, uniqFilters(filters));
+        filters = dedupFilters($state.filters, uniqFilters(filters), { negate: true });
         // We need to add a bunch of filter deduping here.
         if (!simulate) {
           $state.$newFilters = filters;
@@ -67,3 +67,4 @@ export default function (Notifier) {
     };
   };
 }
+

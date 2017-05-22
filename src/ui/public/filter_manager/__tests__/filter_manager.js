@@ -3,10 +3,9 @@ import sinon from 'auto-release-sinon';
 import MockState from 'fixtures/mock_state';
 import expect from 'expect.js';
 import ngMock from 'ng_mock';
-import FilterManagerProvider from 'ui/filter_manager';
-import FilterBarQueryFilterProvider from 'ui/filter_bar/query_filter';
+import { FilterManagerProvider } from 'ui/filter_manager';
+import { FilterBarQueryFilterProvider } from 'ui/filter_bar/query_filter';
 import { buildInlineScriptForPhraseFilter } from '../lib/phrase';
-let $rootScope;
 let queryFilter;
 let filterManager;
 let appState;
@@ -38,7 +37,6 @@ describe('Filter Manager', function () {
   ));
 
   beforeEach(ngMock.inject(function (_$rootScope_, Private) {
-    $rootScope = _$rootScope_;
     filterManager = Private(FilterManagerProvider);
 
     // mock required queryFilter methods, used in the manager

@@ -1,18 +1,8 @@
 import _, { keys } from 'lodash';
 
-const visualRegression = require('../utilities/visual_regression');
+import visualRegression from '../utilities/visual_regression';
 
 module.exports = function (grunt) {
-  grunt.registerTask('test:visualRegression', [
-    'intern:visualRegression:takeScreenshots',
-    'test:visualRegression:buildGallery'
-  ]);
-
-  grunt.registerTask('test:visualRegression:takeScreenshots', [
-    'clean:screenshots',
-    'intern:visualRegression'
-  ]);
-
   grunt.registerTask(
     'test:visualRegression:buildGallery',
     'Compare screenshots and generate diff images.',
@@ -53,6 +43,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test:quick', [
     'test:server',
     'test:ui',
+    'test:jest',
     'test:browser',
     'test:api'
   ]);
@@ -67,12 +58,18 @@ module.exports = function (grunt) {
     'checkPlugins',
     'esvm:ui',
     'run:testUIServer',
-    'run:chromeDriver',
-    'clean:screenshots',
-    'intern:dev',
+    'functional_test_runner:functional',
     'esvm_shutdown:ui',
-    'stop:chromeDriver',
     'stop:testUIServer'
+  ]);
+
+  grunt.registerTask('test:uiRelease', [
+    'checkPlugins',
+    'esvm:ui',
+    'run:testUIReleaseServer',
+    'functional_test_runner:functional',
+    'esvm_shutdown:ui',
+    'stop:testUIReleaseServer'
   ]);
 
   grunt.registerTask('test:ui:server', [
@@ -81,17 +78,10 @@ module.exports = function (grunt) {
     'run:testUIDevServer:keepalive'
   ]);
 
-  grunt.registerTask('test:ui:runner', [
-    'checkPlugins',
-    'clean:screenshots',
-    'run:devChromeDriver',
-    'intern:dev'
-  ]);
-
   grunt.registerTask('test:api', [
     'esvm:ui',
     'run:apiTestServer',
-    'intern:api',
+    'functional_test_runner:apiIntegration',
     'esvm_shutdown:ui',
     'stop:apiTestServer'
   ]);
@@ -101,9 +91,9 @@ module.exports = function (grunt) {
     'run:apiTestServer:keepalive'
   ]);
 
-  grunt.registerTask('test:api:runner', [
-    'intern:api'
-  ]);
+  grunt.registerTask('test:api:runner', () => {
+    grunt.fail.fatal('test:api:runner has moved, use: `node scripts/function_test_runner --config test/api_integration/config.js`');
+  });
 
   grunt.registerTask('test', subTask => {
     if (subTask) grunt.fail.fatal(`invalid task "test:${subTask}"`);
