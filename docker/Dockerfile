@@ -50,7 +50,8 @@ RUN apt-get update && \
     cd /opt/kibana/plugins && \
     git clone https://github.com/dlumbrer/kbn_network.git network_vis && \
     cd network_vis && \
-    sed -e "s|5.0.0-rc1|5.4.0|" -i package.json && \
+    git checkout Kibana-5.x-5-g18b93c8 && \
+    sed -e "s|5.3.0|5.4.0|" -i package.json && \
     npm install  && \
     cd /root && \
     # cleanup to thin the final image
