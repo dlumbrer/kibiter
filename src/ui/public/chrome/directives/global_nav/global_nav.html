@@ -32,13 +32,12 @@
 
   <!-- Links -->
   <div class="global-nav__links">
-
     <!-- Main apps -->
     <!-- <div class="global-nav__links-section">
       <app-switcher
         chrome="chrome"
       ></app-switcher>
-    </div> -->
+    </div -->
 
     <!-- Metadashboard Links: Bitergia hack -->
     <div class="global-nav__links-section">
@@ -46,7 +45,7 @@
           <!-- One level menu entry (no submenus) -->
           <span ng-if="panel.length">
             <a
-              class='global-nav-link__anchor' href='{{panel}}'>
+              class='global-nav-link__anchor' href='#/dashboard/{{panel}}'>
               <div class='global-nav-link__icon'>
               <!-- testing icon -->
               <img class="global-nav-link__icon-image ng-scope"
@@ -105,7 +104,6 @@
       </div>
     </div>
 
-
     <!-- Bottom button -->
     <div class="global-nav__links-section">
       <div class="chrome-actions" kbn-chrome-append-nav-controls></div>
@@ -116,7 +114,7 @@
         tooltip-content="globalNavToggleButton.tooltipContent"
         on-click="toggleGlobalNav($event)"
         icon="'plugins/kibana/assets/play-circle.svg'"
-        title="globalNavToggleButton.title"
+        label="globalNavToggleButton.title"
       ></global-nav-link>
     </div>
   </div>
