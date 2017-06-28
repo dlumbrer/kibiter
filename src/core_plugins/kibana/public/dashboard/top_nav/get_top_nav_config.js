@@ -11,7 +11,7 @@ import { TopNavIds } from './top_nav_ids';
 export function getTopNavConfig(dashboardMode, actions) {
   switch (dashboardMode) {
     case DashboardViewMode.VIEW:
-      return [getShareConfig(), getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE])];
+      return [getShareConfig(),  getEditConfig(actions[TopNavIds.CHECK_LOGIN])];// getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE])];
     case DashboardViewMode.EDIT:
       return [
         getSaveConfig(),

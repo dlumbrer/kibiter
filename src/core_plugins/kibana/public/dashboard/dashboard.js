@@ -235,6 +235,14 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
       navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
+      navActions[TopNavIds.CHECK_LOGIN] = () => {
+        /* Check if the user has logged in */
+        if(true){
+          alert("You are not logged in");
+          return;
+        }
+         onChangeViewMode(DashboardViewMode.EDIT);
+      }
 
       updateViewMode(dashboardState.getViewMode());
 
