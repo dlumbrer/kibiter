@@ -200,7 +200,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       $scope.$listen(timefilter, 'fetch', $scope.refresh);
 
       function updateViewMode(newMode) {
-        /* Here $scope.$root */
+        /* Here $scope.$root has the flag */
         $scope.topNavMenu = getTopNavConfig(newMode, navActions, $scope.$root.editDashboard); // eslint-disable-line no-use-before-define
         dashboardState.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;

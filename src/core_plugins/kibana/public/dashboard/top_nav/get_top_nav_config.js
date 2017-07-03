@@ -11,6 +11,7 @@ import { TopNavIds } from './top_nav_ids';
 export function getTopNavConfig(dashboardMode, actions, showEditButton) {
   switch (dashboardMode) {
     case DashboardViewMode.VIEW:
+      /* Show or not the button Edit */
       if(showEditButton){
         return [getShareConfig(), getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE])];
       }
