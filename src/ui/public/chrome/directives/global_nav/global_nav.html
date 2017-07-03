@@ -1,6 +1,6 @@
 <nav
   class="global-nav"
-  ng-class="{'is-global-nav-open': isGlobalNavOpen}"
+  ng-class="{'is-global-nav-open': isGlobalNavOpen, 'is-second-nav-open': isSecondNavOpen}"
   ng-show="isVisible"
 >
 
@@ -59,7 +59,7 @@
           </span>
           <span ng-if="!panel.length">
             <!-- Menu entry with submenus -->
-            <a ng-click="showMenu =! showMenu"
+            <a ng-click="toggleSecondNav(panel, $event)"
               class='global-nav-link__anchor' href=''>
               <div class='global-nav-link__icon'>
               <!-- testing icon -->
@@ -71,17 +71,28 @@
                 {{name}}
               </div>
             </a>
-            <div ng-if="showMenu">
+            <!-- div ng-if="showMenu">
               <ul style='list-style: none;'>
                 <li ng-repeat="(name, url) in panel">
                   <a  class='global-nav-link__anchor'
                     href='#/dashboard/{{url}}'>{{name}}</a>
                 </li>
               </ul>
+            </div -->
+            <div class="second-nav-content" ng-if="panel == actualPanel">
+              <ul style='list-style: none;'>
+                <li ng-repeat="(name, url) in actualPanel">
+                  <a  class='global-nav-link__anchor'
+                    ng-href='#/dashboard/{{url}}' ng-click="toggleSecondNav(panel, $event)">
+                    {{name}}</a>
+                </li>
+              </ul>
             </div>
         </span>
       </div>
     </div>
+
+
 
     <div class="grimoirelab-link"
       style="
