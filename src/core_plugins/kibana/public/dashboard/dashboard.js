@@ -47,8 +47,17 @@ uiRoutes
   .when(createDashboardEditUrl(':id'), {
     template: dashboardTemplate,
     resolve: {
-      dash: function (savedDashboards, Notifier, $route, $location, courier, kbnUrl, AppState) {
-        const id = $route.current.params.id;
+      dash: function (savedDashboards, Notifier, $rootScope, $route, $location, courier, kbnUrl, AppState) {
+        /*change the final "_edit" and change it*/
+        if($route.current.params.id.endsWith("_edit")){
+          var finalUrl = $route.current.params.id.substring(0, $route.current.params.id.indexOf( "_edit" ));
+          $rootScope.$root.editDashboard = true;
+        }else{
+          $rootScope.$root.editDashboard = false;
+          var finalUrl = $route.current.params.id;
+        }
+
+        const id = finalUrl;
         return savedDashboards.get(id)
           .catch((error) => {
             // Preserve BWC of v5.3.0 links for new, unsaved dashboards.
@@ -191,7 +200,8 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       $scope.$listen(timefilter, 'fetch', $scope.refresh);
 
       function updateViewMode(newMode) {
-        $scope.topNavMenu = getTopNavConfig(newMode, navActions); // eslint-disable-line no-use-before-define
+        /* Here $scope.$root */
+        $scope.topNavMenu = getTopNavConfig(newMode, navActions, $scope.$root.editDashboard); // eslint-disable-line no-use-before-define
         dashboardState.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;
       }
