@@ -4,8 +4,42 @@
 
 @global-nav-logo-height: 70px;
 
+
+//////////////////////////Nav at the top/////////////////////////////////////
+.topnewnav {
+    position: absolute;
+    top: 0;
+    left: @logo-widht;
+}
+
+.topnewnav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333333;
+}
+
+div.topnewnav ul li {
+    float: left;
+}
+
+div.topnewnav ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+
+div.topnewnav ul li a:hover {
+    color: #f49b42;
+    background-color: #111111;
+}
+///////////////////////////////////////////////////////////////////////////
+
 .global-nav {
-  width: @global-nav-closed-width;
+  width: 100%;/*@global-nav-closed-width;*/
   position: fixed;
   left: 0;
   top: 0;
@@ -15,14 +49,14 @@
   overflow: hidden;
 
   &.is-global-nav-open {
-    width: @global-nav-open-width;
+    width: 100%;/*@global-nav-open-width;*/
 
     .app-title {
       display: inline-block;
     }
 
     + .app-wrapper {
-      left: @global-nav-open-width;
+      top: @logo-height;
     }
   }
 

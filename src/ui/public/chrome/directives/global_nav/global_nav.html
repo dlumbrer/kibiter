@@ -40,15 +40,21 @@
     </div -->
 
     <!-- Metadashboard Links: Bitergia hack -->
-    <div class="global-nav__links-section">
+  <div class="topnewnav">
+    <ul style='list-style: none;'>
+      <li ng-repeat="(name, panel) in metadash"><a href="{{panel}}">{{name}}</a></li>
+    </ul>
+  </div>
+
+    <!-- div class="global-nav__links-section">
         <div class="global-nav-link" ng-repeat="(name, panel) in metadash">
           <!-- One level menu entry (no submenus) -->
-          <span ng-if="panel.length">
+          <!-- span ng-if="panel.length">
             <a
               class='global-nav-link__anchor' href='{{panel}}'>
               <div class='global-nav-link__icon'>
               <!-- testing icon -->
-              <img class="global-nav-link__icon-image ng-scope"
+              <!-- img class="global-nav-link__icon-image ng-scope"
                 kbn-src="/plugins/kibana/assets/discover.svg"
                 src="/plugins/kibana/assets/discover.svg">
               </div>
@@ -59,11 +65,11 @@
           </span>
           <span ng-if="!panel.length">
             <!-- Menu entry with submenus -->
-            <a ng-click="showMenu =! showMenu"
+            <!-- a ng-click="showMenu =! showMenu"
               class='global-nav-link__anchor' href=''>
               <div class='global-nav-link__icon'>
               <!-- testing icon -->
-              <img class="global-nav-link__icon-image ng-scope"
+              <!-- img class="global-nav-link__icon-image ng-scope"
                 kbn-src="/plugins/kibana/assets/discover.svg"
                 src="/plugins/kibana/assets/discover.svg">
               </div>
@@ -80,7 +86,7 @@
               </ul>
             </div>
         </span>
-      </div>
+      </div -->
     </div>
 
     <div class="grimoirelab-link"
