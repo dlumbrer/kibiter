@@ -86,7 +86,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
         docTitle.change(dash.title);
       }
 
-      const dashboardState = new DashboardState(dash, AppState);
+      const dashboardState = new DashboardState(dash, AppState, $scope);
 
       // The 'previouslyStored' check is so we only update the time filter on dashboard open, not during
       // normal cross app navigation.
