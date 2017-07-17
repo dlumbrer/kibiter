@@ -69,7 +69,7 @@ uiRoutes
     }
   });
 
-app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter, quickRanges, kbnUrl, confirmModal, Private) {
+app.directive('dashboardApp', function (es, kbnIndex, Notifier, courier, AppState, timefilter, quickRanges, kbnUrl, confirmModal, Private) {
   const brushEvent = Private(UtilsBrushEventProvider);
   const filterBarClickHandler = Private(FilterBarFilterBarClickHandlerProvider);
 
@@ -239,7 +239,23 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
 
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
-      navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
+      navActions[TopNavIds.ENTER_EDIT_MODE] = () => {
+        /* Force POST to see the HTTP login auth */
+        function allowLogin() {
+          return es.update({
+            index: kbnIndex,
+            type: 'checklogin',
+            id: 'checklogin',
+            body: {
+              doc: {}
+            }
+          });
+        }
+        allowLogin().then(function () { //results) {
+          //console.log('OK', results)
+          onChangeViewMode(DashboardViewMode.EDIT);
+        });
+      };
 
       updateViewMode(dashboardState.getViewMode());
 
