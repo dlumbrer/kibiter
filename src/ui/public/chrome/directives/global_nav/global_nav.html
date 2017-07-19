@@ -45,14 +45,14 @@
           <!-- One level menu entry (no submenus) -->
           <span ng-if="panel.length">
             <a
-              class='global-nav-link__anchor' href='{{panel}}'>
-              <div class='global-nav-link__icon'>
+              class='global-nav-link__anchor' ng-href='{{panel}}' ng-click="itemClicked($index)">
+              <div class='global-nav-link__icon' ng-class="{ 'selected-item': $index == selectedItem }">
               <!-- testing icon -->
               <img class="global-nav-link__icon-image ng-scope"
                 kbn-src="/plugins/kibana/assets/discover.svg"
                 src="/plugins/kibana/assets/discover.svg">
               </div>
-              <div class='global-nav-link__title'>
+              <div class='global-nav-link__title' ng-class="{ 'selected-item': $index == selectedItem }">
                 {{name}}
               </div>
             </a>
@@ -61,13 +61,13 @@
             <!-- Menu entry with submenus -->
             <a ng-click="toggleSecondNav(panel, $event)"
               class='global-nav-link__anchor' href=''>
-              <div class='global-nav-link__icon'>
+              <div class='global-nav-link__icon' ng-class="{ 'selected-item': $index == selectedItem }">
               <!-- testing icon -->
               <img class="global-nav-link__icon-image ng-scope"
                 kbn-src="/plugins/kibana/assets/discover.svg"
                 src="/plugins/kibana/assets/discover.svg">
               </div>
-              <div class='global-nav-link__title'>
+              <div class='global-nav-link__title' ng-class="{ 'selected-item': $index == selectedItem }">
                 {{name}}
               </div>
             </a>
@@ -83,7 +83,7 @@
               <ul style='list-style: none;'>
                 <li ng-repeat="(name, url) in actualPanel">
                   <a  class='global-nav-link__anchor'
-                    ng-href='#/dashboard/{{url}}' ng-click="toggleSecondNav(panel, $event)">
+                    ng-href='#/dashboard/{{url}}' ng-click="itemClicked($parent.$index)">
                     {{name}}</a>
                 </li>
               </ul>

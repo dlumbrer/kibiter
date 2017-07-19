@@ -48,7 +48,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
       scope.toggleGlobalNav = event => {
         event.preventDefault();
         globalNavState.setOpen(!globalNavState.isOpen());
-        if(globalNavState.isSecondOpen()){
+        if(globalNavState.isSecondOpen()) {
           globalNavState.setSecondOpen(!globalNavState.isSecondOpen());
           scope.actualPanel = undefined;
         }
@@ -72,6 +72,19 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
         scope.actualPanel = panel;
         if(!globalNavState.isSecondOpen()){
           globalNavState.setSecondOpen(!globalNavState.isSecondOpen());
+        }
+      };
+
+      /*
+      * Function that changes the CSS of the item that was clicked
+      */
+      scope.selectedItem = 0;
+      scope.itemClicked = ($index) => {
+        scope.selectedItem = $index;
+        //Close second nav if it was open
+        if(globalNavState.isSecondOpen()) {
+          globalNavState.setSecondOpen(!globalNavState.isSecondOpen());
+          scope.actualPanel = undefined;
         }
       };
 
