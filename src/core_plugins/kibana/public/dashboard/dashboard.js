@@ -244,8 +244,8 @@ app.directive('dashboardApp', function (es, kbnIndex, Notifier, courier, AppStat
         function allowLogin() {
           return es.update({
             index: kbnIndex,
-            type: 'checklogin',
-            id: 'checklogin',
+            type: 'metadashboard',
+            id: 'main',
             body: {
               doc: {}
             }
