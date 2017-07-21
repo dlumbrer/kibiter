@@ -45,7 +45,7 @@
           <!-- One level menu entry (no submenus) -->
           <span ng-if="panel.length">
             <a
-              class='global-nav-link__anchor' ng-href='{{panel}}' ng-click="itemClicked($index)">
+              class='global-nav-link__anchor' ng-href='#/dashboard/{{panel}}' ng-click="itemClicked($index)">
               <div class='global-nav-link__icon' ng-class="{ 'selected-item': $index == selectedItem }">
               <!-- testing icon -->
               <img class="global-nav-link__icon-image ng-scope"
