@@ -79,7 +79,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
       * Function that changes the CSS of the item that was clicked
       */
       scope.selectedItem = 0;
-      scope.itemClicked = ($index) => {
+      scope.$root.  itemClicked = ($index) => {
         scope.selectedItem = $index;
         //Close second nav if it was open
         if(globalNavState.isSecondOpen()) {
@@ -104,7 +104,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState) => {
       }
 
       getMetaDashboards().then(function (results) {
-        scope.metadash = results.hits[0]._source;
+        scope.$root.metadash = results.hits[0]._source;
       });
 
     }
