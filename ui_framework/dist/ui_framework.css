@@ -1443,6 +1443,18 @@ body {
           justify-content: space-between;
   height: 32px; }
 
+  .newLocalNav {
+    background-color: #333;
+  }
+
+  .newMenuItem,  .newLocalDropdownTitle{
+    color: #cecece
+  }
+
+  .newLocalDropdown {
+    background-color: #525252;
+  }
+
 .kuiLocalNavRow__section {
   height: 100%; }
 

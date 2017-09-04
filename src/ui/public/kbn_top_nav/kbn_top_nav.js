@@ -76,6 +76,7 @@ module.directive('kbnTopNav', function (Private) {
       // This is a semi-hacky solution to missing slot-transclusion support in Angular 1.4.7
       // (it was added as a core feature in 1.5). Borrowed from http://stackoverflow.com/a/22080765.
       $scope.transcludes = {};
+      $scope.showNewMenu = true;
 
       // Extract transcluded elements for use in the link function.
       $transclude(clone => {
