@@ -11,7 +11,7 @@ import { TopNavIds } from './top_nav_ids';
 export function getTopNavConfig(dashboardMode, actions) {
   switch (dashboardMode) {
     case DashboardViewMode.VIEW:
-      return [getShareConfig(), getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE])];
+      return [getShareConfig(), getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE]), getTutorialConfig(actions[TopNavIds.ENTER_TUTORIAL])];
     case DashboardViewMode.EDIT:
       return [
         getSaveConfig(),
@@ -32,6 +32,14 @@ function getEditConfig(action) {
     key: 'edit',
     description: 'Switch to edit mode',
     testId: 'dashboardEditMode',
+    run: action
+  };
+}
+
+function getTutorialConfig(action) {
+  return {
+    key: 'tutorial',
+    description: 'Entry into the tutorial',
     run: action
   };
 }

@@ -80,6 +80,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       const filterBar = Private(FilterBarQueryFilterProvider);
       const docTitle = Private(DocTitleProvider);
       const notify = new Notifier({ location: 'Dashboard' });
+      const introJs = require("intro.js")
 
       const dash = $scope.dash = $route.current.locals.dash;
       if (dash.id) {
@@ -235,6 +236,7 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
       navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
+      navActions[TopNavIds.ENTER_TUTORIAL]  = () => introJs.introJs("body").setOption("showStepNumbers", true).start();
 
       updateViewMode(dashboardState.getViewMode());
 

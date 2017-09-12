@@ -7,11 +7,11 @@
       <div
         data-transclude-slot="topLeftCorner"
       >
-        <div class="kuiLocalBreadcrumbs" data-test-subj="breadcrumbs">
+        <div class="kuiLocalBreadcrumbs"  data-step="2" data-intro='This is the path of the dashboard' data-test-subj="breadcrumbs">
           <div class="kuiLocalBreadcrumb">
             <a class="kuiLocalBreadcrumb__link" href="{{landingPageUrl()}}">Dashboard</a>
           </div>
-          <div class="kuiLocalBreadcrumb">
+          <div class="kuiLocalBreadcrumb" data-step="1" data-intro='Hello, you are in this dashboard'>
             {{ getDashTitle() }}
           </div>
         </div>
@@ -81,6 +81,8 @@
     create-child-ui-state="createChildUiState"
     toggle-expand="toggleExpandPanel"
     data-shared-items-count="{{panels.length}}"
+    data-step="3"
+    data-intro="Here is the dashboard with the visualizations"
   ></dashboard-grid>
 
   <dashboard-panel ng-if="hasExpandedPanel()"

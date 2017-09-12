@@ -7,12 +7,14 @@
   <!-- Logo -->
   <div class="global-nav__logo">
     <li
+      data-step="6" data-intro='We are bitergia'
       ng-if="!logoBrand && !smallLogoBrand"
       aria-label="{{ appTitle }} Logo"
       class="logo kibana"
     ></li>
 
     <li
+      data-step="6" data-intro='We are bitergia'
       ng-if="logoBrand"
       ng-style="{ 'background': logoBrand }"
       aria-label="{{ appTitle }} Logo"
@@ -20,6 +22,7 @@
     ></li>
 
     <li
+      data-step="6" data-intro='We are bitergia'
       ng-if="smallLogoBrand"
       ng-style="{ 'background': smallLogoBrand }"
       aria-label="{{ appTitle }} Logo"
@@ -30,7 +33,7 @@
   <!-- Links -->
   <div class="global-nav__links">
     <!-- Main apps -->
-    <div class="global-nav__links-section">
+    <div class="global-nav__links-section" data-step="5" data-intro='And there is the menu with the other dashboards!'>
       <app-switcher
         chrome="chrome"
       ></app-switcher>

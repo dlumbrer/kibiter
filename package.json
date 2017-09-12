@@ -149,6 +149,7 @@
     "less": "2.7.1",
     "less-loader": "2.2.3",
     "lodash": "3.10.1",
+    "intro.js": "2.7.0",
     "marked": "0.3.6",
     "minimatch": "2.0.10",
     "mkdirp": "0.5.1",
