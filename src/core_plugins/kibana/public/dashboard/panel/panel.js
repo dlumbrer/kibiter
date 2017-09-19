@@ -125,6 +125,14 @@ uiModules
             $scope.saveState();
           };
 
+          if ($scope.uiState) {
+            $scope.panel.title = $scope.uiState.get('title');
+            // sync external uiState changes
+            var syncUIState = function () {$scope.panel.title = $scope.uiState.get('title');};
+            $scope.uiState.on('change', syncUIState);
+            $scope.$on('$destroy', function () {$scope.uiState.off('change', syncUIState);});
+          }
+
           $scope.addColumn = function addColumn(columnName) {
             $scope.savedObj.searchSource.get('index').popularizeField(columnName, 1);
             columnActions.addColumn($scope.panel.columns, columnName);
@@ -179,6 +187,27 @@ uiModules
        */
       $scope.isViewOnlyMode = () => {
         return $scope.dashboardViewMode === DashboardViewMode.VIEW || $scope.isFullScreenMode;
+      };
+
+      $scope.setTitle = function () {
+        $scope.showFormTitle = !$scope.showFormTitle;
+        // save the panel title to the UI state
+        if (!_.isString($scope.panel.title)) $scope.panel.title = null;
+        $scope.uiState.set('title', $scope.panel.title);
+      };
+      $scope.confirmTitle = function () {$scope.setTitle();};
+      $scope.cancelTitle = function () {
+        $scope.panel.title = $scope.uiState.get('title');
+        $scope.showFormTitle = false;
+      };
+      $scope.resetTitle = function () {$scope.panel.title = null;};
+      $scope.maybeCancel = function ($event) {
+        const keyCodes = {
+          ESC: 27
+        };
+        if ($event.keyCode === keyCodes.ESC) {
+          $scope.cancelTitle();
+        }
       };
     }
   };
