@@ -24,7 +24,11 @@ module.controller('KbnTableVisController', function ($scope, $element, Private) 
    * - the underlying data changes (esResponse)
    * - one of the view options changes (vis.params)
    */
-  $scope.$watchMulti(['esResponse', 'vis.params'], function ([resp]) {
+   $scope.doSearch = function(id){
+       $scope.inputSearch = $("#inputSearch_" + id).val();
+   }
+
+  $scope.$watchMulti(['esResponse', 'vis.params', 'inputSearch'], function ([resp]) {
 
     let tableGroups = $scope.tableGroups = null;
     let hasSomeRows = $scope.hasSomeRows = null;
@@ -32,6 +36,10 @@ module.controller('KbnTableVisController', function ($scope, $element, Private) 
     if (resp) {
       const vis = $scope.vis;
       const params = vis.params;
+
+      if(!$scope.inputSearch){
+        $scope.inputSearch = "";
+      }
 
       tableGroups = tabifyAggResponse(vis, resp, {
         partialRows: params.showPartialRows,
@@ -49,8 +57,21 @@ module.controller('KbnTableVisController', function ($scope, $element, Private) 
 
     $scope.hasSomeRows = hasSomeRows;
     if (hasSomeRows) {
+      //Logic to search
+      var newrows = []
+      for (var i = 0; i < tableGroups.tables[0].rows.length; i++) {
+        for (var j = 0; j < tableGroups.tables[0].rows[i].length; j++) {
+          if(typeof tableGroups.tables[0].rows[i][j].key === 'string'){
+            if(tableGroups.tables[0].rows[i][j].key.includes($scope.inputSearch)){
+              newrows.push(tableGroups.tables[0].rows[i])
+              break;
+            }
+          }
+        }
+      }
+      tableGroups.tables[0].rows = newrows;
+      /////
       $scope.tableGroups = tableGroups;
     }
   });
 });
-
