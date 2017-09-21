@@ -8,7 +8,7 @@ import { uiModules } from 'ui/modules';
 
 const module = uiModules.get('kibana');
 
-module.directive('globalNav', globalNavState => {
+module.directive('globalNav',  (es, kbnIndex, globalNavState) => {
   return {
     restrict: 'E',
     replace: true,
@@ -45,6 +45,21 @@ module.directive('globalNav', globalNavState => {
         event.preventDefault();
         globalNavState.setOpen(!globalNavState.isOpen());
       };
+
+      es.search({
+       index: '.kibana',
+       type: 'metadashboard',
+       size: 5,
+       body: {
+         "query": {
+           "terms": {
+             "_id": [ "main" ]
+           }
+         }
+       }
+      }).then(function (resp) {
+      	scope.metadash = resp.hits.hits[0]._source;
+      })
 
     }
   };
