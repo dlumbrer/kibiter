@@ -248,8 +248,12 @@ app.directive('dashboardApp', function ($injector) {
         $scope.dashboardViewMode = newMode;
         if(newMode === DashboardViewMode.VIEW) {
           $scope.$root.showDefaultMenu = false;
+          $(".global-nav__links").css("background-color", "");
         } else if(newMode === DashboardViewMode.EDIT) {
           $scope.$root.showDefaultMenu = true;
+          $(".global-nav__links").css("background-color", "#999");
+          //Close second nav
+          $scope.$root.closeSecondNav();
         }
       }
 
@@ -408,6 +412,8 @@ app.directive('dashboardApp', function ($injector) {
       };
 
       $scope.$emit('application.load');
+      //Always check and close the second nav if it was open
+      $scope.$root.closeSecondNav();
     }
   };
 });
