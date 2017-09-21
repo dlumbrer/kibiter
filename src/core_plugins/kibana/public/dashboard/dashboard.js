@@ -50,8 +50,27 @@ uiRoutes
   .when(createDashboardEditUrl(':id'), {
     template: dashboardTemplate,
     resolve: {
-      dash: function (savedDashboards, Notifier, $route, $location, courier, kbnUrl, AppState) {
+      dash: function ($rootScope, savedDashboards, Notifier, $route, $location, courier, kbnUrl, AppState) {
         const id = $route.current.params.id;
+        //Search the panel in the menu to select it
+        var index = 0;
+        for(var key in $rootScope.metadash){
+          var value = $rootScope.metadash[key];
+          if(typeof value == 'object'){
+            for(var key2 in value){
+              if(value[key2] == id){
+                $rootScope.itemClicked(index);
+                break;
+              }
+            }
+          }else{
+            if(value == id){
+              $rootScope.itemClicked(index);
+              break;
+            }
+          }
+          index++;
+        };
         return savedDashboards.get(id)
           .catch((error) => {
             // Preserve BWC of v5.3.0 links for new, unsaved dashboards.
@@ -81,6 +100,8 @@ app.directive('dashboardApp', function ($injector) {
   const kbnUrl = $injector.get('kbnUrl');
   const confirmModal = $injector.get('confirmModal');
   const Private = $injector.get('Private');
+  const es = $injector.get('es');
+  const kbnIndex = $injector.get('kbnIndex');
 
   const brushEvent = Private(UtilsBrushEventProvider);
   const filterBarClickHandler = Private(FilterBarClickHandlerProvider);
@@ -99,7 +120,7 @@ app.directive('dashboardApp', function ($injector) {
         docTitle.change(dash.title);
       }
 
-      const dashboardState = new DashboardState(dash, AppState);
+      const dashboardState = new DashboardState(dash, AppState, $scope);
 
       // The 'previouslyStored' check is so we only update the time filter on dashboard open, not during
       // normal cross app navigation.
@@ -225,6 +246,15 @@ app.directive('dashboardApp', function ($injector) {
         $scope.topNavMenu = getTopNavConfig(newMode, navActions); // eslint-disable-line no-use-before-define
         dashboardState.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;
+        if(newMode === DashboardViewMode.VIEW) {
+          $scope.$root.showDefaultMenu = false;
+          $(".global-nav__links").css("background-color", "");
+        } else if(newMode === DashboardViewMode.EDIT) {
+          $scope.$root.showDefaultMenu = true;
+          $(".global-nav__links").css("background-color", "#999");
+          //Close second nav
+          $scope.$root.closeSecondNav();
+        }
       }
 
       const onChangeViewMode = (newMode) => {
@@ -281,7 +311,23 @@ app.directive('dashboardApp', function ($injector) {
 
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
-      navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
+      navActions[TopNavIds.ENTER_EDIT_MODE] = () => {
+        /* Force POST to see the HTTP login auth */
+        function allowLogin() {
+          return es.update({
+            index: kbnIndex,
+            type: 'metadashboard',
+            id: 'main',
+            body: {
+              doc: {}
+            }
+          });
+        }
+        allowLogin().then(function () { //results) {
+          //console.log('OK', results)
+          onChangeViewMode(DashboardViewMode.EDIT);
+        });
+      };
       navActions[TopNavIds.CLONE] = () => {
         const currentTitle = $scope.model.title;
         const onClone = (newTitle) => {
@@ -366,6 +412,8 @@ app.directive('dashboardApp', function ($injector) {
       };
 
       $scope.$emit('application.load');
+      //Always check and close the second nav if it was open
+      $scope.$root.closeSecondNav();
     }
   };
 });
