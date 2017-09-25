@@ -246,14 +246,18 @@ app.directive('dashboardApp', function ($injector) {
         $scope.topNavMenu = getTopNavConfig(newMode, navActions); // eslint-disable-line no-use-before-define
         dashboardState.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;
-        if(newMode === DashboardViewMode.VIEW) {
-          $scope.$root.showDefaultMenu = false;
-          $(".global-nav__links").css("background-color", "");
-        } else if(newMode === DashboardViewMode.EDIT) {
-          $scope.$root.showDefaultMenu = true;
-          $(".global-nav__links").css("background-color", "#999");
-          //Close second nav
-          $scope.$root.closeSecondNav();
+
+        //Check if metadashboard is loaded
+        if($scope.$root.loadedMetadashboard){
+          if(newMode === DashboardViewMode.VIEW) {
+            $scope.$root.showDefaultMenu = false;
+            $(".global-nav__links").css("background-color", "");
+          } else if(newMode === DashboardViewMode.EDIT) {
+            $scope.$root.showDefaultMenu = true;
+            $(".global-nav__links").css("background-color", "#999");
+            //Close second nav
+            $scope.$root.closeSecondNav();
+          }
         }
       }
 
