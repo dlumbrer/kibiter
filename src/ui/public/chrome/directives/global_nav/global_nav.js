@@ -91,8 +91,11 @@ module.directive('globalNav',  (es, kbnIndex, globalNavState) => {
         }
       };
 
+      //Default menu of Kibana by default
+      scope.$root.showDefaultMenu = true;
+      //get metadashboard
       es.search({
-       index: '.kibana',
+       index: kbnIndex,
        type: 'metadashboard',
        size: 5,
        body: {
@@ -104,6 +107,8 @@ module.directive('globalNav',  (es, kbnIndex, globalNavState) => {
        }
       }).then(function (resp) {
       	scope.$root.metadash = resp.hits.hits[0]._source;
+        scope.$root.loadedMetadashboard = true;
+        scope.$root.showDefaultMenu = false;
       })
 
     }
