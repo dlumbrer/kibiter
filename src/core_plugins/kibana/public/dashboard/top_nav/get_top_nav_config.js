@@ -13,7 +13,6 @@ export function getTopNavConfig(dashboardMode, actions) {
     case DashboardViewMode.VIEW:
       return [
         getShareConfig(),
-        getCloneConfig(actions[TopNavIds.CLONE]),
         getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE])];
     case DashboardViewMode.EDIT:
       return [
@@ -66,14 +65,6 @@ function getViewConfig(action) {
 /**
  * @returns {kbnTopNavConfig}
  */
-function getCloneConfig(action) {
-  return {
-    key: 'clone',
-    description: 'Create a copy of your dashboard',
-    testId: 'dashboardClone',
-    run: action
-  };
-}
 
 /**
  * @returns {kbnTopNavConfig}

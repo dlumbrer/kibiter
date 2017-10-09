@@ -282,25 +282,6 @@ app.directive('dashboardApp', function ($injector) {
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
       navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
-      navActions[TopNavIds.CLONE] = () => {
-        const currentTitle = $scope.model.title;
-        const onClone = (newTitle) => {
-          dashboardState.savedDashboard.copyOnSave = true;
-          dashboardState.setTitle(newTitle);
-          return $scope.save().then(id => {
-            // If the save wasn't successful, put the original title back.
-            if (!id) {
-              $scope.model.title = currentTitle;
-              // There is a watch on $scope.model.title that *should* call this automatically but
-              // angular is failing to trigger it, so do so manually here.
-              dashboardState.setTitle(currentTitle);
-            }
-            return id;
-          });
-        };
-
-        showCloneModal(onClone, currentTitle, $rootScope, $compile);
-      };
       updateViewMode(dashboardState.getViewMode());
 
       // update root source when filters update
