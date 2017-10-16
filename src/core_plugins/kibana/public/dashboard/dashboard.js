@@ -236,7 +236,13 @@ app.directive('dashboardApp', function (Notifier, courier, AppState, timefilter,
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
       navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
-      navActions[TopNavIds.ENTER_TUTORIAL]  = () => introJs.introJs("body").setOption("showStepNumbers", true).start();
+      navActions[TopNavIds.ENTER_TUTORIAL]  = () => {
+        $( "dashboard-panel[remove='removePanel(4)']" ).attr("data-step", "7")
+        $( "dashboard-panel[remove='removePanel(4)']" ).attr("data-intro", "added on code!")
+        $( "dashboard-panel[remove='removePanel(1)']" ).attr("data-step", "8")
+        $( "dashboard-panel[remove='removePanel(1)']" ).attr("data-intro", "added on code too")
+        introJs.introJs("body").setOption("showStepNumbers", true).start();
+      }
 
       updateViewMode(dashboardState.getViewMode());
 
