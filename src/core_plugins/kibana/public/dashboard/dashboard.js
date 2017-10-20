@@ -316,6 +316,10 @@ app.directive('dashboardApp', function ($injector) {
       const navActions = {};
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
       navActions[TopNavIds.ENTER_EDIT_MODE] = () => {
+        if(!$scope.$root.loadedMetadashboard){
+          onChangeViewMode(DashboardViewMode.EDIT);
+          return
+        }
         /* Force POST to see the HTTP login auth */
         function allowLogin() {
           return es.update({
