@@ -81,7 +81,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
       * Function that changes the CSS of the item that was clicked
       */
       scope.selectedItem = 0;
-      scope.$root.  itemClicked = ($index) => {
+      scope.$root.itemClicked = ($index) => {
         scope.selectedItem = $index;
         //Close second nav if it was open
         if(globalNavState.isSecondOpen()) {
@@ -90,6 +90,19 @@ module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
         }
       };
 
+      /*
+      * Function that closes the second nav if it was open
+      */
+      scope.$root.closeSecondNav = () => {
+        if(globalNavState.isSecondOpen()) {
+          globalNavState.setSecondOpen(!globalNavState.isSecondOpen());
+          scope.actualPanel = undefined;
+      }
+      };
+
+      //Default menu of Kibana by default
+      scope.$root.showDefaultMenu = true;
+      //get metadashboard
       es.search({
        index: '.kibana',
        body: {
@@ -101,6 +114,8 @@ module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
        }
       }).then(function (resp) {
       	scope.$root.metadash = resp.hits.hits[0]._source.metadashboard;
+        scope.$root.loadedMetadashboard = true;
+        scope.$root.showDefaultMenu = false;
       })
     }
   };
