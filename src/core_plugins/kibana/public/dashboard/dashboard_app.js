@@ -63,6 +63,25 @@ app.directive('dashboardApp', function ($injector) {
 
       const dash = $scope.dash = $route.current.locals.dash;
       if (dash.id) {
+        //Search the panel in the menu to select it
+        var index = 0;
+        for(var key in $rootScope.metadash){
+          var value = $rootScope.metadash[key];
+          if(typeof value == 'object'){
+            for(var key2 in value){
+              if(value[key2] == dash.id){
+                $rootScope.itemClicked(index);
+                break;
+              }
+            }
+          }else{
+            if(value == dash.id){
+              $rootScope.itemClicked(index);
+              break;
+            }
+          }
+          index++;
+        };
         docTitle.change(dash.title);
       }
 
