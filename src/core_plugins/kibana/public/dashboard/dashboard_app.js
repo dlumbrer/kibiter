@@ -49,6 +49,8 @@ app.directive('dashboardApp', function ($injector) {
   const confirmModal = $injector.get('confirmModal');
   const config = $injector.get('config');
   const Private = $injector.get('Private');
+  const es = $injector.get('es');
+  const kbnIndex = $injector.get('kbnIndex');
 
   return {
     restrict: 'E',
@@ -63,10 +65,29 @@ app.directive('dashboardApp', function ($injector) {
 
       const dash = $scope.dash = $route.current.locals.dash;
       if (dash.id) {
+        //Search the panel in the menu to select it
+        var index = 0;
+        for(var key in $rootScope.metadash){
+          var value = $rootScope.metadash[key];
+          if(typeof value == 'object'){
+            for(var key2 in value){
+              if(value[key2] == dash.id){
+                $rootScope.itemClicked(index);
+                break;
+              }
+            }
+          }else{
+            if(value == dash.id){
+              $rootScope.itemClicked(index);
+              break;
+            }
+          }
+          index++;
+        };
         docTitle.change(dash.title);
       }
 
-      const dashboardStateManager = new DashboardStateManager(dash, AppState, dashboardConfig.getHideWriteControls());
+      const dashboardStateManager = new DashboardStateManager(dash, AppState, dashboardConfig.getHideWriteControls(), $scope);
 
       $scope.getDashboardState = () => dashboardStateManager;
       $scope.appState = dashboardStateManager.getAppState();
@@ -215,6 +236,15 @@ app.directive('dashboardApp', function ($injector) {
         $scope.topNavMenu = getTopNavConfig(newMode, navActions, dashboardConfig.getHideWriteControls()); // eslint-disable-line no-use-before-define
         dashboardStateManager.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;
+        if(newMode === DashboardViewMode.VIEW) {
+          $scope.$root.showDefaultMenu = false;
+          $(".global-nav__links").css("background-color", "");
+        } else if(newMode === DashboardViewMode.EDIT) {
+          $scope.$root.showDefaultMenu = true;
+          $(".global-nav__links").css("background-color", "#999");
+          //Close second nav
+          $scope.$root.closeSecondNav();
+        }
       }
 
       const onChangeViewMode = (newMode) => {
@@ -284,7 +314,45 @@ app.directive('dashboardApp', function ($injector) {
       navActions[TopNavIds.FULL_SCREEN] = () =>
         dashboardStateManager.setFullScreenMode(true);
       navActions[TopNavIds.EXIT_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.VIEW);
-      navActions[TopNavIds.ENTER_EDIT_MODE] = () => onChangeViewMode(DashboardViewMode.EDIT);
+      navActions[TopNavIds.ENTER_EDIT_MODE] = () => {
+        /* Force POST to see the HTTP login auth */
+        function allowLogin() {
+          return es.update({
+            index: kbnIndex,
+            ignore: [404],
+            type: 'doc',
+            id: 'metadashboard',
+            body: {
+              query: {
+                doc: {}
+              }
+            }
+          });
+        }
+        allowLogin().then(function () { //results) {
+          //console.log('OK', results)
+          onChangeViewMode(DashboardViewMode.EDIT);
+        });
+      };
+      navActions[TopNavIds.CLONE] = () => {
+        const currentTitle = $scope.model.title;
+        const onClone = (newTitle) => {
+          dashboardStateManager.savedDashboard.copyOnSave = true;
+          dashboardStateManager.setTitle(newTitle);
+          return $scope.save().then(id => {
+            // If the save wasn't successful, put the original title back.
+            if (!id) {
+              $scope.model.title = currentTitle;
+              // There is a watch on $scope.model.title that *should* call this automatically but
+              // angular is failing to trigger it, so do so manually here.
+              dashboardStateManager.setTitle(currentTitle);
+            }
+            return id;
+          });
+        };
+
+        showCloneModal(onClone, currentTitle, $rootScope, $compile);
+      };
       updateViewMode(dashboardStateManager.getViewMode());
 
       // update root source when filters update
@@ -340,6 +408,8 @@ app.directive('dashboardApp', function ($injector) {
         addSearch: $scope.addSearch,
         timefilter: $scope.timefilter
       };
+
+       $scope.$root.closeSecondNav();
     }
   };
 });
