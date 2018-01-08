@@ -47,24 +47,15 @@ RUN apt-get update && \
     mv /opt/kibana-*-linux-x86_64* /opt/kibana && \
     chown -R kibana:kibana /opt/kibana  && \
     # Install dotplot plugin: https://github.com/dlumbrer/kbn_dotplot
-    # cd /opt/kibana/plugins && \
-    # git clone https://github.com/dlumbrer/kbn_dotplot.git && \
-    # cd kbn_dotplot && \
-    # sed -e "s|5.5.0|5.6.0|" -i package.json && \
-    # npm install  && \
-    # cd .. && \
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6-dev && \
+    cd kbn_dotplot && \
+    npm install  && \
+    cd .. && \
     # Install network plugin: https://dlumbrer.github.io/kbn_network/
-    # git clone https://github.com/dlumbrer/kbn_network.git network_vis && \
-    # cd network_vis && \
-    # git checkout 5.5.x && \
-    # sed -e "s|5.5.0|5.6.0|" -i package.json && \
-    # npm install  && \
-    # cd .. && \
-    # Install dropdown plugin: https://github.com/dlumbrer/kibana_dropdown
-    # git clone https://github.com/dlumbrer/kibana_dropdown.git && \
-    # cd kibana_dropdown && \
-    # sed -e "s|5.6.1|5.6.0|" -i package.json && \
-    # npm install  && \
+    git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6-dev && \
+    cd network_vis && \
+    npm install  && \
     cd /root && \
     # cleanup to thin the final image
     rm -rf /kibiter && \
