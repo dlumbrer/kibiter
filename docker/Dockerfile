@@ -43,8 +43,8 @@ RUN apt-get update && \
     sed -e "/return \[/,/\].map/ {/\(windows\|darwin\|x86\)/ d;s/,//g}" -i tasks/config/platforms.js && \
     grunt --no-color _build:downloadNodeBuilds:start _build:downloadNodeBuilds:finish && \
     grunt --no-color build && \
-    tar xfz target/kibana-*-linux-x86_64.tar.gz --directory /opt && \
-    mv /opt/kibana-*-linux-x86_64* /opt/kibana && \
+    tar xfz target/kibiter-*-linux-x86_64.tar.gz --directory /opt && \
+    mv /opt/kibiter-*-linux-x86_64* /opt/kibana && \
     chown -R kibana:kibana /opt/kibana  && \
     # Install dotplot plugin: https://github.com/dlumbrer/kbn_dotplot
     cd /opt/kibana/plugins && \
