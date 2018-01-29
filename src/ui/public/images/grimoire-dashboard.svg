@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="55.739243mm"
+   width="141mm"
    height="55.738708mm"
-   viewBox="0 0 175 55.738708"
+   viewBox="0 0 141 55.738708"
    version="1.1"
    id="svg3628"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
@@ -52,16 +52,16 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <text x="70"  y="20"
+  <text x="70"  y="22" font-size="16"
         style="font-family: Sans;
-               font-size  : 24;
+               font-size  : 16;
                stroke     : #ffffff;
                fill       : #ffffff;">
     Grimoire
   </text>
-  <text x="70"  y="50"
+  <text x="70"  y="48" font-size="13"
         style="font-family: Sans;
-               font-size  : 18;
+               font-size  : 13;
                stroke     : #ffffff;
                fill       : #ffffff;">
     Dashboard
