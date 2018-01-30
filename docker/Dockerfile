@@ -81,7 +81,8 @@ RUN arch="$(dpkg --print-architecture)" \
 ENV PATH /opt/kibana/bin:$PATH
 
 # Remove kibana optimize so it is regenerated when we modify src files in containers
-RUN rm -rf /opt/kibana/optimize/*
+# Don't delete because we don't modify anymore src in docker-entrypoint.sh
+# RUN rm -rf /opt/kibana/optimize/*
 
 COPY ./docker-entrypoint.sh /
 
