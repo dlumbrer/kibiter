@@ -200,7 +200,7 @@ export class DashboardStateManager {
   /**
    * Resets the state back to the last saved version of the dashboard.
    */
-  resetState() {
+  resetState(scope) {
     // In order to show the correct warning for the saved-object-save-as-check-box we have to store the unsaved
     // title on the dashboard object. We should fix this at some point, but this is how all the other object
     // save panels work at the moment.
