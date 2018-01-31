@@ -258,7 +258,7 @@ app.directive('dashboardApp', function ($injector) {
         }
 
         function revertChangesAndExitEditMode() {
-          dashboardStateManager.resetState();
+          dashboardStateManager.resetState($scope);
           kbnUrl.change(dash.id ? createDashboardEditUrl(dash.id) : DashboardConstants.CREATE_NEW_DASHBOARD_URL);
           // This is only necessary for new dashboards, which will default to Edit mode.
           updateViewMode(DashboardViewMode.VIEW);
