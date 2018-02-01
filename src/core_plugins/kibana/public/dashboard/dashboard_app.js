@@ -237,13 +237,17 @@ app.directive('dashboardApp', function ($injector) {
         dashboardStateManager.switchViewMode(newMode);
         $scope.dashboardViewMode = newMode;
         if(newMode === DashboardViewMode.VIEW) {
-          $scope.$root.showDefaultMenu = false;
-          $(".global-nav__links").css("background-color", "");
+          if($scope.$root.loadedMetadashboard){
+            $scope.$root.showDefaultMenu = false;
+            $(".global-nav__links").css("background-color", "");
+          }
         } else if(newMode === DashboardViewMode.EDIT) {
-          $scope.$root.showDefaultMenu = true;
-          $(".global-nav__links").css("background-color", "#999");
-          //Close second nav
-          $scope.$root.closeSecondNav();
+          if($scope.$root.loadedMetadashboard){
+            $scope.$root.showDefaultMenu = true;
+            $(".global-nav__links").css("background-color", "#999");
+            //Close second nav
+            $scope.$root.closeSecondNav();
+          }
         }
       }
 
