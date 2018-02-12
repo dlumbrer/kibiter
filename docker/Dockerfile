@@ -84,7 +84,8 @@ ENV PATH /opt/kibana/bin:$PATH
 
 # Remove kibana optimize so it is regenerated when we modify src files in containers
 # Don't delete because we don't modify anymore src in docker-entrypoint.sh
-# RUN rm -rf /opt/kibana/optimize/*
+RUN rm -rf /opt/kibana/optimize/*
+RUN ./opt/kibana/bin/kibana | sleep 200 > /tmp/run_kibana_log.txt
 
 COPY ./docker-entrypoint.sh /
 
