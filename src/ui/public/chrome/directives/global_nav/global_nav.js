@@ -8,7 +8,7 @@ import { uiModules } from 'ui/modules';
 
 const module = uiModules.get('kibana');
 
-module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
+module.directive('globalNav', (globalNavState, chrome) => {
   return {
     restrict: 'E',
     replace: true,
@@ -50,32 +50,6 @@ module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
         globalNavState.setOpen(!globalNavState.isOpen());
       };
 
-      es.search({
-       index: '.kibana',
-       body: {
-         query: {
-           match: {
-             _id:  "metadashboard"
-           }
-         }
-       }
-      }).then(function (resp) {
-      	scope.metadash = resp.hits.hits[0]._source.metadashboard;
-      })
-
-      scope.$root.appTitleCustom = "GrimoireLab"
-      es.search({
-       index: '.kibana',
-       body: {
-         query: {
-           match: {
-             _id:  "projectname"
-           }
-         }
-       }
-      }).then(function (resp) {
-      	scope.$root.appTitleCustom = resp.hits.hits[0]._source.projectname.name;
-      })
     }
   };
 });
