@@ -66,6 +66,12 @@ RUN apt-get update && \
     cd kbn_radar && \
     npm install  && \
     cd .. && \
+    # Install menu manager plugin: https://github.com/dlumbrer/kbn_dashmenu_manager
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_dashmenu_manager.git && \
+    cd kbn_dashmenu_manager && \
+    npm install  && \
+    cd .. && \
     # Install network plugin: https://dlumbrer.github.io/kbn_network/
     git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6-dev && \
     cd network_vis && \
@@ -95,7 +101,9 @@ RUN arch="$(dpkg --print-architecture)" \
 ENV PATH /opt/kibana/bin:$PATH
 
 # Remove kibana optimize so it is regenerated when we modify src files in containers
+# Don't delete because we don't modify anymore src in docker-entrypoint.sh
 RUN rm -rf /opt/kibana/optimize/*
+RUN ./opt/kibana/bin/kibana | sleep 200 > /tmp/run_kibana_log.txt
 
 COPY ./docker-entrypoint.sh /
 
