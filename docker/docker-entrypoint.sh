@@ -24,6 +24,11 @@ if [ "$1" = 'kibana' ]; then
                 sed -e "s|^#server.basePath: \"\".*$|server.basePath: \"$BASE_PATH\"|" -i /opt/kibana/config/kibana.yml
         fi
 
+        if [ "$PROJECT_NAME" != "" ]; then
+                sed -e "s/title: 'Kibana',$/title: '$PROJECT_NAME',/" -i /opt/kibana/src/core_plugins/kibana/index.js
+		sed -e "s|__PROJECT__|$PROJECT_NAME|" -i /opt/kibana/src/ui/views/chrome.jade
+        fi
+
         if [ "$ELASTICSEARCH_USER" != "" ]; then
                 sed -e "s|^#elasticsearch.username:.*$|elasticsearch.username: \"$ELASTICSEARCH_USER\"|" -i /opt/kibana/config/kibana.yml
                 sed -e "s|^#elasticsearch.password:.*$|elasticsearch.password: \"$ELASTICSEARCH_PASSWORD\"|" -i /opt/kibana/config/kibana.yml
