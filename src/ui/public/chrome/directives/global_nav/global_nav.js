@@ -63,7 +63,7 @@ module.directive('globalNav', (es, kbnIndex, globalNavState, chrome) => {
       	scope.metadash = resp.hits.hits[0]._source.metadashboard;
       })
 
-      scope.$root.appTitleCustom = "GrimoireLab"
+      scope.$root.appTitleCustom = "Bitergia"
       es.search({
        index: '.kibana',
        body: {
