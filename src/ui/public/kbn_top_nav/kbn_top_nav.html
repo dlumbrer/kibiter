@@ -33,18 +33,56 @@
     <span class="fa fa-chevron-circle-up" ng-click="showNewMenu = false"></span>
   </button>
 
-  <div class="kuiLocalDropdownPanels">
-    <!-- Left panel -->
-    <div class="kuiLocalDropdownPanel kuiLocalDropdownPanel" ng-repeat="(subitemName, subitemValue) in currentPanelsons">
-      <!-- Title -->
-      <a class="kuiLocalDropdownTitle newLocalDropdownTitle" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
-
-      <!-- Help text -->
-      <!--div class="kuiLocalDropdownHelpText newLocalDropdownTitle">
-        Here's some help text to explain the purpose of the panel.
-      </div-->
+  <div className="kuiLocalDropdownPanels">
+    <div class="col-md-2">
+      <div class="newLocalDropdownTitle">{{parentDashboard}}</div>
+      <div>
+        <ul class="list-unstyled">
+          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_first" class="ng-scope">
+            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <div class="col-md-2">
+      <div style="margin-top: 25px">
+        <ul class="list-unstyled">
+          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_second" class="ng-scope">
+            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div style="margin-top: 25px">
+        <ul class="list-unstyled">
+          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_third" class="ng-scope">
+            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6" style="margin-top: 20px" ng-show="showDescriptionDiv">
+      <div class="newLocalDropdownTitle">{{ descriptionTitle }} - Put title here</div>
+
+      <div class="newLocalDropdownText">
+        {{ descriptionContent }} - Put description here
+      </div>
+    </div>
+
   </div>
+
+  <!--div class="submenupicker">
+    <h2 class="kuiLocalDropdownTitle">
+      {{parentDashboard}}
+    </h2>
+    <ul class="list-unstyled">
+      <li ng-repeat="(subitemName, subitemValue) in currentPanelsons" class="ng-scope">
+        <a class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+      </li>
+    </ul>
+  </div-->
 </div>
 
   <!-- Top row -->

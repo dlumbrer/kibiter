@@ -138,8 +138,33 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
           window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + url)
         }else{
           $scope.showNewMenu = true;
-          $scope.currentPanelsons = $scope.$root.metadash[name]
+          $scope.parentDashboard = name;
+          // Divide in 3 columns
+          let countItems = 0;
+          $scope.currentPanelsons_third = {}
+          $scope.currentPanelsons_second = {}
+          $scope.currentPanelsons_first = {}
+          Object.keys($scope.$root.metadash[name]).forEach(function (key) {
+            if (countItems >= 12){
+              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
+            }else if (countItems < 12 && countItems > 5){
+              $scope.currentPanelsons_second[key] = $scope.$root.metadash[name][key]
+            }else{
+              $scope.currentPanelsons_first[key] = $scope.$root.metadash[name][key]
+            }
+            countItems++
+         });
         }
+      }
+
+      $scope.showDescription = (name, href) => {
+        $scope.showDescriptionDiv = true;
+        $scope.descriptionTitle = name;
+        $scope.descriptionContent = "You are going to be redirected to this panel: " + href
+      }
+
+      $scope.hideDescription = () => {
+        $scope.showDescriptionDiv = false;
       }
 
       return $scope.kbnTopNav;
