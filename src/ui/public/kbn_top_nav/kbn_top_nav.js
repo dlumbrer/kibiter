@@ -137,20 +137,31 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
           $scope.showNewMenu = false;
           window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + url)
         }else{
+          // If clicked in the same item
+          if($scope.parentDashboard === name){
+            $scope.showNewMenu = false;
+            $scope.parentDashboard = undefined;
+            return
+          }
           $scope.showNewMenu = true;
           $scope.parentDashboard = name;
-          // Divide in 3 columns
+          // Divide in 4 columns
           let countItems = 0;
+          $scope.currentPanelsons_fourth = {}
           $scope.currentPanelsons_third = {}
           $scope.currentPanelsons_second = {}
           $scope.currentPanelsons_first = {}
           Object.keys($scope.$root.metadash[name]).forEach(function (key) {
-            if (countItems >= 12){
-              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
-            }else if (countItems < 12 && countItems > 5){
-              $scope.currentPanelsons_second[key] = $scope.$root.metadash[name][key]
-            }else{
+            if (countItems === 0){
               $scope.currentPanelsons_first[key] = $scope.$root.metadash[name][key]
+            }else if (countItems === 1){
+              $scope.currentPanelsons_second[key] = $scope.$root.metadash[name][key]
+            }else if (countItems === 2){
+              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
+            }else{
+              $scope.currentPanelsons_fourth[key] = $scope.$root.metadash[name][key]
+              countItems = 0;
+              return
             }
             countItems++
          });
