@@ -137,6 +137,12 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
           $scope.showNewMenu = false;
           window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + url)
         }else{
+          // If clicked in the same item
+          if($scope.parentDashboard === name){
+            $scope.showNewMenu = false;
+            $scope.parentDashboard = undefined;
+            return
+          }
           $scope.showNewMenu = true;
           $scope.parentDashboard = name;
           // Divide in 3 columns

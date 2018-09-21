@@ -19,7 +19,7 @@
   <div class="kuiLocalNavRow__section">
     <div class="kuiLocalMenu">
       <div class="kuiLocalMenuItem extra" ng-click="showInfo(name, 'panel')">
-        Jira
+        Example of Selected item
       </div>
       <div class="kuiLocalMenuItem" ng-click="showInfo(name, panel)" ng-repeat="(name, panel) in $root.metadash">
         {{name}}
@@ -29,13 +29,14 @@
 </div>
 <div class="kuiLocalDropdown newLocalDropdown" ng-show="showNewMenu">
   <!-- Dropdown close button -->
-  <button class="kuiLocalDropdownCloseButton">
-    <span class="fa fa-chevron-circle-up" ng-click="showNewMenu = false"></span>
-  </button>
 
   <div className="kuiLocalDropdownPanels">
     <div class="col-md-2">
-      <div class="newLocalDropdownTitle">{{parentDashboard}}</div>
+      <div class="newLocalDropdownTitle">{{parentDashboard}}
+      <button class="kuiLocalDropdownCloseButton" ng-click="showNewMenu = false" >
+        <span class="fa fa-chevron-circle-up" style="color:white;"></span>
+      </button>
+    </div>
       <div>
         <ul class="list-unstyled">
           <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_first" class="ng-scope">
