@@ -31,12 +31,21 @@
   <!-- Dropdown close button -->
 
   <div className="kuiLocalDropdownPanels">
+
+    <div class="col-md-6" style="margin-top: 20px" >
+      <div class="newLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }} - Put title here</div>
+
+      <div class="newLocalDropdownText" ng-show="showDescriptionDiv">
+        {{ descriptionContent }} - Put description here
+      </div>
+    </div>
+
     <div class="col-md-2">
       <div class="newLocalDropdownTitle">{{parentDashboard}}
       <button class="kuiLocalDropdownCloseButton" ng-click="showNewMenu = false" >
         <span class="fa fa-chevron-circle-up" style="color:white;"></span>
       </button>
-    </div>
+      </div>
       <div>
         <ul class="list-unstyled">
           <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_first" class="ng-scope">
@@ -64,13 +73,7 @@
       </div>
     </div>
 
-    <div class="col-md-6" style="margin-top: 20px" ng-show="showDescriptionDiv">
-      <div class="newLocalDropdownTitle">{{ descriptionTitle }} - Put title here</div>
 
-      <div class="newLocalDropdownText">
-        {{ descriptionContent }} - Put description here
-      </div>
-    </div>
 
   </div>
 

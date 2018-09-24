@@ -151,12 +151,14 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
           $scope.currentPanelsons_second = {}
           $scope.currentPanelsons_first = {}
           Object.keys($scope.$root.metadash[name]).forEach(function (key) {
-            if (countItems >= 12){
-              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
-            }else if (countItems < 12 && countItems > 5){
+            if (countItems == 0){
+              $scope.currentPanelsons_first[key] = $scope.$root.metadash[name][key]
+            }else if (countItems === 1){
               $scope.currentPanelsons_second[key] = $scope.$root.metadash[name][key]
             }else{
-              $scope.currentPanelsons_first[key] = $scope.$root.metadash[name][key]
+              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
+              countItems = 0;
+              return
             }
             countItems++
          });
