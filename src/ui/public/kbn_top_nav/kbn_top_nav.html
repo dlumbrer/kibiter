@@ -41,11 +41,7 @@
     </div>
 
     <div class="col-md-2">
-      <div class="newLocalDropdownTitle">{{parentDashboard}}
-      <button class="kuiLocalDropdownCloseButton" ng-click="showNewMenu = false" >
-        <span class="fa fa-chevron-circle-up" style="color:white;"></span>
-      </button>
-      </div>
+      <div class="newLocalDropdownTitle">{{parentDashboard}}</div>
       <div>
         <ul class="list-unstyled">
           <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_first" class="ng-scope">
@@ -55,6 +51,11 @@
       </div>
     </div>
     <div class="col-md-2">
+        <div class="newLocalDropdownTitle">
+            <button class="kuiLocalDropdownCloseButton" ng-click="showNewMenu = false" >
+              <span class="fa fa-chevron-circle-up" style="color:white;"></span>
+            </button>
+          </div>
       <div style="margin-top: 25px">
         <ul class="list-unstyled">
           <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_second" class="ng-scope">
