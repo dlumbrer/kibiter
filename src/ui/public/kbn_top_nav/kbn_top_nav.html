@@ -18,16 +18,16 @@
 
   <div class="kuiLocalNavRow__section">
     <div class="kuiLocalMenu">
-      <div class="kuiLocalMenuItem extra" ng-click="showInfo(name, 'panel')">
+      <div class="kuiLocalMenuItem extra" ng-mouseover="showInfo(name, 'panel')">
         Example of Selected item
       </div>
-      <div class="kuiLocalMenuItem" ng-click="showInfo(name, panel)" ng-repeat="(name, panel) in $root.metadash">
+      <div class="kuiLocalMenuItem" ng-mouseover="showInfo(name, panel)" ng-click="showInfo(name, panel)" ng-repeat="(name, panel) in $root.metadash">
         {{name}}
       </div>
     </div>
   </div>
 </div>
-<div class="kuiLocalDropdown newLocalDropdown" ng-show="showNewMenu">
+<div class="kuiLocalDropdown newLocalDropdown" ng-show="showNewMenu" ng-mouseleave="showNewMenu = false; parentDashboard = undefined">
   <!-- Dropdown close button -->
 
   <div className="kuiLocalDropdownPanels">
