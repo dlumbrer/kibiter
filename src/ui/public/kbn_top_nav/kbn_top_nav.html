@@ -18,11 +18,11 @@
 
   <div class="kuiLocalNavRow__section">
     <div class="kuiLocalMenu">
-      <div class="kuiLocalMenuItem selectedExample" ng-click="showInfo(name, 'panel')">
+      <div class="kuiLocalMenuItem selectedExample" ng-click="showInfo()">
         Example of Selected item
       </div>
-      <button class="kuiLocalMenuItem newLocalMenuItem" ng-click="showInfo(name, panel)" ng-repeat="(name, panel) in $root.metadash">
-        {{name}}
+      <button class="kuiLocalMenuItem newLocalMenuItem" ng-click="showInfo(item)" ng-repeat="item in $root.metadash">
+        {{item.name}}
       </button>
     </div>
   </div>
@@ -32,19 +32,19 @@
 
   <div className="kuiLocalDropdownPanels">
   <div class="col-md-4" style="margin-top: 20px">
-      <div class="newLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }} - Put title here</div>
+      <div class="newLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }}</div>
 
       <div class="newLocalDropdownText" ng-show="showDescriptionDiv">
-        {{ descriptionContent }} - Put description here
+        {{ descriptionContent }}
       </div>
     </div>
     <div class="col-md-2">
-      <div class="newLocalDropdownTitle">{{parentDashboard}}
+      <div class="newLocalDropdownTitle">{{parentDashboard.title}}
     </div>
       <div>
         <ul class="list-unstyled">
-          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_first" class="ng-scope">
-            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          <li ng-repeat="subitem in currentPanelsons_first" class="ng-scope">
+            <a ng-mouseover="showDescription(subitem)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitem.link}}">{{subitem.name}}</a>
           </li>
         </ul>
       </div>
@@ -52,8 +52,8 @@
     <div class="col-md-2">
       <div style="margin-top: 25px">
         <ul class="list-unstyled">
-          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_second" class="ng-scope">
-            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          <li ng-repeat="subitem in currentPanelsons_second" class="ng-scope">
+            <a ng-mouseover="showDescription(subitem)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitem.link}}">{{subitem.name}}</a>
           </li>
         </ul>
       </div>
@@ -61,8 +61,8 @@
     <div class="col-md-2">
       <div style="margin-top: 25px">
         <ul class="list-unstyled">
-          <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_third" class="ng-scope">
-            <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+          <li ng-repeat="subitem in currentPanelsons_third" class="ng-scope">
+            <a ng-mouseover="showDescription(subitem)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitem.link}}">{{subitem.name}}</a>
           </li>
         </ul>
       </div>
@@ -70,8 +70,8 @@
     <div class="col-md-1">
         <div style="margin-top: 25px">
           <ul class="list-unstyled">
-            <li ng-repeat="(subitemName, subitemValue) in currentPanelsons_fourth" class="ng-scope">
-              <a ng-mouseover="showDescription(subitemName, subitemValue)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
+            <li ng-repeat="subitem in currentPanelsons_fourth" class="ng-scope">
+              <a ng-mouseover="showDescription(subitem)" ng-mouseleave = "hideDescription()" class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitem.link}}">{{subitem.name}}</a>
             </li>
           </ul>
         </div>

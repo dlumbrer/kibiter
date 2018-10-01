@@ -132,46 +132,46 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
 
       initTopNav(topNavConfig, null);
 
-      $scope.showInfo = function(name, url){
-        if (typeof $scope.$root.metadash[name] === 'string' || $scope.$root.metadash[name] instanceof String){
+      $scope.showInfo = function(item){
+        if (item.type === "entry"){
           $scope.showNewMenu = false;
-          window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + url)
-        }else{
+          window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + item.link)
+        }else if (item.type === "menu"){
           // If clicked in the same item
-          if($scope.parentDashboard === name){
+          if($scope.parentDashboard === item){
             $scope.showNewMenu = false;
             $scope.parentDashboard = undefined;
             return
           }
           $scope.showNewMenu = true;
-          $scope.parentDashboard = name;
+          $scope.parentDashboard = item;
           // Divide in 4 columns
           let countItems = 0;
-          $scope.currentPanelsons_fourth = {}
-          $scope.currentPanelsons_third = {}
-          $scope.currentPanelsons_second = {}
-          $scope.currentPanelsons_first = {}
-          Object.keys($scope.$root.metadash[name]).forEach(function (key) {
+          $scope.currentPanelsons_fourth = []
+          $scope.currentPanelsons_third = []
+          $scope.currentPanelsons_second = []
+          $scope.currentPanelsons_first = []
+          item.dashboards.forEach(function(subitem){
             if (countItems === 0){
-              $scope.currentPanelsons_first[key] = $scope.$root.metadash[name][key]
+              $scope.currentPanelsons_first.push(subitem)
             }else if (countItems === 1){
-              $scope.currentPanelsons_second[key] = $scope.$root.metadash[name][key]
+              $scope.currentPanelsons_second.push(subitem)
             }else if (countItems === 2){
-              $scope.currentPanelsons_third[key] = $scope.$root.metadash[name][key]
+              $scope.currentPanelsons_third.push(subitem)
             }else{
-              $scope.currentPanelsons_fourth[key] = $scope.$root.metadash[name][key]
+              $scope.currentPanelsons_fourth.push(subitem)
               countItems = 0;
               return
             }
             countItems++
-         });
+          });
         }
       }
 
-      $scope.showDescription = (name, href) => {
+      $scope.showDescription = (subitem) => {
         $scope.showDescriptionDiv = true;
-        $scope.descriptionTitle = name;
-        $scope.descriptionContent = "You are going to be redirected to this panel: " + href
+        $scope.descriptionTitle = subitem.title;
+        $scope.descriptionContent = subitem.description;
       }
 
       $scope.hideDescription = () => {
@@ -195,7 +195,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
       });
 
       es.search({
-        index: '.kibana',
+        index: kbnIndex,
         body: {
           query: {
             match: {
@@ -209,7 +209,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
 
       scope.$root.appTitleCustom = "GrimoireLab"
       es.search({
-        index: '.kibana',
+        index: kbnIndex,
         body: {
           query: {
             match: {
