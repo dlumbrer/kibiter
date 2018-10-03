@@ -18,10 +18,7 @@
 
   <div class="kuiLocalNavRow__section">
     <div class="kuiLocalMenu">
-      <div class="kuiLocalMenuItem selectedExample" ng-click="showInfo()">
-        Example of Selected item
-      </div>
-      <button class="kuiLocalMenuItem newLocalMenuItem" ng-click="showInfo(item)" ng-repeat="item in $root.metadash">
+      <button class="kuiLocalMenuItem newLocalMenuItem" ng-class="{ 'selected-item': item == $root.selectedItem }" ng-click="showInfo(item)" ng-repeat="item in $root.metadash">
         {{item.name}}
       </button>
     </div>
@@ -78,16 +75,6 @@
       </div>
   </div>
 
-  <!--div class="submenupicker">
-    <h2 class="kuiLocalDropdownTitle">
-      {{parentDashboard}}
-    </h2>
-    <ul class="list-unstyled">
-      <li ng-repeat="(subitemName, subitemValue) in currentPanelsons" class="ng-scope">
-        <a class="kuiLink submenuitem" tabindex="0" role="button" href="#/dashboard/{{subitemValue}}">{{subitemName}}</a>
-      </li>
-    </ul>
-  </div-->
 </div>
 
   <!-- Top row -->
