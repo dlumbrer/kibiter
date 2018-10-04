@@ -135,7 +135,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
       $scope.showInfo = function(item){
         if (item.type === "entry"){
           $scope.showNewMenu = false;
-          window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + item.link)
+          window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + item.panel_id)
         }else if (item.type === "menu"){
           // If clicked in the same item
           if($scope.parentDashboard === item){
@@ -213,11 +213,11 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
         scope.$root.selectedItem = undefined
         let currentDash = window.location.href.split("#/dashboard/")[1].split('?')[0]
         metadash.some((item) => {
-          if(item.type === "entry" && item.link === currentDash){
+          if(item.type === "entry" && item.panel_id === currentDash){
             scope.$root.selectedItem = item
           }else if (item.type === "menu"){
             item.dashboards.some((subitem) => {
-              if(subitem.type === "entry" && subitem.link === currentDash){
+              if(subitem.type === "entry" && subitem.panel_id === currentDash){
                 scope.$root.selectedItem = item
                 return true
               }
