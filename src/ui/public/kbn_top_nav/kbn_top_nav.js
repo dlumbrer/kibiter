@@ -35,6 +35,8 @@
 
 import _ from 'lodash';
 import angular from 'angular';
+import { customMenu } from './custom_menu'
+import { getMetadashboard } from './get_metadashboard';
 import 'ui/watch_multi';
 import 'ui/directives/input_focus';
 import { uiModules } from 'ui/modules';
@@ -74,7 +76,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
     //
     // scope: {}
 
-    controller($scope, $attrs, $element, $transclude, $location) {
+    controller($scope, $attrs, $element, $transclude) {
       // This is a semi-hacky solution to missing slot-transclusion support in Angular 1.4.7
       // (it was added as a core feature in 1.5). Borrowed from http://stackoverflow.com/a/22080765.
       $scope.transcludes = {};
@@ -132,51 +134,8 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
 
       initTopNav(topNavConfig, null);
 
-      $scope.showInfo = function(item){
-        if (item.type === "entry"){
-          $scope.showNewMenu = false;
-          window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + item.panel_id)
-        }else if (item.type === "menu"){
-          // If clicked in the same item
-          if($scope.parentDashboard === item){
-            $scope.showNewMenu = false;
-            $scope.parentDashboard = undefined;
-            return
-          }
-          $scope.showNewMenu = true;
-          $scope.parentDashboard = item;
-          // Divide in 4 columns
-          let countItems = 0;
-          $scope.currentPanelsons_fourth = []
-          $scope.currentPanelsons_third = []
-          $scope.currentPanelsons_second = []
-          $scope.currentPanelsons_first = []
-          item.dashboards.forEach(function(subitem){
-            if (countItems === 0){
-              $scope.currentPanelsons_first.push(subitem)
-            }else if (countItems === 1){
-              $scope.currentPanelsons_second.push(subitem)
-            }else if (countItems === 2){
-              $scope.currentPanelsons_third.push(subitem)
-            }else{
-              $scope.currentPanelsons_fourth.push(subitem)
-              countItems = 0;
-              return
-            }
-            countItems++
-          });
-        }
-      }
-
-      $scope.showDescription = (subitem) => {
-        $scope.showDescriptionDiv = true;
-        $scope.descriptionTitle = subitem.title;
-        $scope.descriptionContent = subitem.description;
-      }
-
-      $scope.hideDescription = () => {
-        $scope.showDescriptionDiv = false;
-      }
+      // Bitergia custom menu
+      customMenu($scope);
 
       return $scope.kbnTopNav;
     },
@@ -194,54 +153,8 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
         }
       });
 
-      es.search({
-        index: kbnIndex,
-        body: {
-          query: {
-            match: {
-              _id:  "metadashboard"
-            }
-          }
-        }
-      }).then(function (resp) {
-        scope.$root.metadash = resp.hits.hits[0]._source.metadashboard;
-        //Put the selected one in different color
-        styleSelected(scope, scope.$root.metadash)
-      })
-
-      const styleSelected = (scope, metadash) => {
-        scope.$root.selectedItem = undefined
-        let currentDash = window.location.href.split("#/dashboard/")[1].split('?')[0]
-        metadash.some((item) => {
-          if(item.type === "entry" && item.panel_id === currentDash){
-            scope.$root.selectedItem = item
-          }else if (item.type === "menu"){
-            item.dashboards.some((subitem) => {
-              if(subitem.type === "entry" && subitem.panel_id === currentDash){
-                scope.$root.selectedItem = item
-                return true
-              }
-            })
-          }
-          if (scope.$root.selectedItem){
-            return true
-          }
-        });
-      }
-
-      scope.$root.appTitleCustom = "GrimoireLab"
-      es.search({
-        index: kbnIndex,
-        body: {
-          query: {
-            match: {
-              _id:  "projectname"
-            }
-          }
-        }
-      }).then(function (resp) {
-        scope.$root.appTitleCustom = resp.hits.hits[0]._source.projectname.name;
-      })
+      // Bitergia custom metadashboard & project name
+      getMetadashboard(es, kbnIndex, scope)
     }
   };
 });
