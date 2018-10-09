@@ -35,8 +35,8 @@
 
 import _ from 'lodash';
 import angular from 'angular';
-import { customMenu } from './custom_menu'
-import { getMetadashboard } from './get_metadashboard';
+import { customMenu } from 'ui/kibiter/menu/custom_menu'
+import { getMetadashboard } from 'ui/kibiter/menu/get_metadashboard';
 import 'ui/watch_multi';
 import 'ui/directives/input_focus';
 import { uiModules } from 'ui/modules';
