@@ -35,7 +35,6 @@ export function getMetadashboard(es, kbnIndex, scope) {
         });
     }
 
-    scope.$root.appTitleCustom = "GrimoireLab"
     es.search({
         index: kbnIndex,
         body: {
@@ -46,6 +45,8 @@ export function getMetadashboard(es, kbnIndex, scope) {
             }
         }
     }).then(function (resp) {
-        scope.$root.appTitleCustom = resp.hits.hits[0]._source.projectname.name;
+        if (resp.hits.hits[0]) {
+            scope.$root.appTitleCustom = resp.hits.hits[0]._source.projectname.name;
+        }
     })
 }
