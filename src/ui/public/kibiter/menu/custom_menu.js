@@ -5,7 +5,7 @@ export function customMenu($scope) {
 
     $scope.showInfo = function (item) {
         if (item.type === "entry") {
-            redirectToPanel($scope, item)
+            $scope.redirectToPanel(item.panel_id)
         } else if (item.type === "menu") {
             // If clicked in the same item
             if ($scope.parentDashboard === item) {
@@ -49,8 +49,8 @@ export function customMenu($scope) {
         $scope.parentDashboard = undefined;
     }
 
-    const redirectToPanel = ($scope, item) => {
+    $scope.redirectToPanel = (panel_id) => {
         $scope.showNewMenu = false;
-        window.location.replace(window.location.href.split("#")[0] + "#/dashboard/" + item.panel_id)
+        window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/" + panel_id)
     }
 }

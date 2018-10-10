@@ -17,22 +17,25 @@ export function getMetadashboard(es, kbnIndex, scope) {
 
     const styleSelected = (scope, metadash) => {
         scope.$root.selectedItem = undefined
-        let currentDash = window.location.href.split("#/dashboard/")[1].split('?')[0]
-        metadash.some((item) => {
-            if (item.type === "entry" && item.panel_id === currentDash) {
-                scope.$root.selectedItem = item
-            } else if (item.type === "menu") {
-                item.dashboards.some((subitem) => {
-                    if (subitem.type === "entry" && subitem.panel_id === currentDash) {
-                        scope.$root.selectedItem = item
-                        return true
-                    }
-                })
-            }
-            if (scope.$root.selectedItem) {
-                return true
-            }
-        });
+        // Check if you are in dashboard section
+        if (window.location.href.split("#/dashboard/")[1]) {
+            let currentDash = window.location.href.split("#/dashboard/")[1].split('?')[0]
+            metadash.some((item) => {
+                if (item.type === "entry" && item.panel_id === currentDash) {
+                    scope.$root.selectedItem = item
+                } else if (item.type === "menu") {
+                    item.dashboards.some((subitem) => {
+                        if (subitem.type === "entry" && subitem.panel_id === currentDash) {
+                            scope.$root.selectedItem = item
+                            return true
+                        }
+                    })
+                }
+                if (scope.$root.selectedItem) {
+                    return true
+                }
+            });
+        }
     }
 
     es.search({
