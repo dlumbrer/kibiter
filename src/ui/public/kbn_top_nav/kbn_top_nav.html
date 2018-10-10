@@ -4,7 +4,7 @@
     <div class="kuiLocalNavRow__section">
       <div class="kuiLocalBreadcrumbs">
         <div class="kuiLocalBreadcrumb">
-          <a class="kuiLocalBreadcrumb__link projectName" href="#">
+          <a ng-show="$root.appTitleCustom" class="kuiLocalBreadcrumb__link projectName" ng-click="redirectToPanel('Overview')">
             {{$root.appTitleCustom}}
           </a>
         </div>
@@ -38,7 +38,7 @@
           <ul class="list-unstyled">
             <li ng-repeat="subitem in currentPanelsons[i]" class="ng-scope">
               <a ng-mouseover="showDescription(subitem)" ng-mouseleave="hideDescription()" class="kuiLink submenuitem"
-                tabindex="0" role="button" href="#/dashboard/{{subitem.panel_id}}">{{subitem.name}}</a>
+                tabindex="0" role="button" ng-click="redirectToPanel(subitem.panel_id)">{{subitem.name}}</a>
             </li>
           </ul>
         </div>
