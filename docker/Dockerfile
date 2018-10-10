@@ -14,17 +14,17 @@ RUN groupadd --system kibana && \
 # ruby gems are used for building binary packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-            ca-certificates dirmngr gnupg \
-            curl \
-            wget \
-            git \
-            python \
-            zip \
-            make \
-            g++ \
-            ruby-dev rpm rubygems \
-            libffi-dev \
-            && \
+    ca-certificates dirmngr gnupg \
+    curl \
+    wget \
+    git \
+    python \
+    zip \
+    make \
+    g++ \
+    ruby-dev rpm rubygems \
+    libffi-dev \
+    && \
     # install nvm
     curl -o /tmp/nvm-install.sh -sSL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh && \
     chmod +x /tmp/nvm-install.sh && \
@@ -52,6 +52,12 @@ RUN apt-get update && \
     cd /opt/kibana/plugins && \
     git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6.2-dev && \
     cd kbn_dotplot && \
+    npm install  && \
+    cd .. && \
+    # Install menu manager plugin: https://github.com/dlumbrer/kbn_dashmenu_manager
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_dashmenu_manager.git && \
+    cd kbn_dashmenu_manager && \
     npm install  && \
     cd .. && \
     # Install polar plugin: https://github.com/dlumbrer/kbn_polar
@@ -85,12 +91,12 @@ RUN apt-get update && \
 # grab gosu for easy step-down from root
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
 RUN arch="$(dpkg --print-architecture)" \
-	&& set -x \
-	&& curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.3/gosu-$arch" \
-	&& curl -o /usr/local/bin/gosu.asc -sSL "https://github.com/tianon/gosu/releases/download/1.3/gosu-$arch.asc" \
-	&& gpg --verify /usr/local/bin/gosu.asc \
-	&& rm /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu
+    && set -x \
+    && curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.3/gosu-$arch" \
+    && curl -o /usr/local/bin/gosu.asc -sSL "https://github.com/tianon/gosu/releases/download/1.3/gosu-$arch.asc" \
+    && gpg --verify /usr/local/bin/gosu.asc \
+    && rm /usr/local/bin/gosu.asc \
+    && chmod +x /usr/local/bin/gosu
 
 ENV PATH /opt/kibana/bin:$PATH
 
