@@ -35,17 +35,19 @@
 
 import _ from 'lodash';
 import angular from 'angular';
-import { customMenu } from 'ui/kibiter/menu/custom_menu'
-import { getMetadashboard } from 'ui/kibiter/menu/get_metadashboard';
+
 import 'ui/watch_multi';
 import 'ui/directives/input_focus';
 import { uiModules } from 'ui/modules';
 import template from './kbn_top_nav.html';
 import { KbnTopNavControllerProvider } from './kbn_top_nav_controller';
 import { NavBarExtensionsRegistryProvider } from 'ui/registry/navbar_extensions';
-import './less/custom_style.less';
 
 import './bread_crumbs/bread_crumbs';
+
+import { renderKibiterMenu } from 'ui/kibiter/menu/render_kibiter_menu'
+import { retrieveKibiterMenuData } from 'ui/kibiter/menu/retrieve_kibiter_menu_data';
+import 'ui/kibiter/menu/kibiter_menu_style.less';
 
 const module = uiModules.get('kibana');
 
@@ -134,8 +136,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
 
       initTopNav(topNavConfig, null);
 
-      // Bitergia custom menu
-      customMenu($scope);
+      renderKibiterMenu($scope);
 
       return $scope.kbnTopNav;
     },
@@ -153,8 +154,7 @@ module.directive('kbnTopNav', function (es, kbnIndex, Private) {
         }
       });
 
-      // Bitergia custom metadashboard & project name
-      getMetadashboard(es, kbnIndex, scope)
+      retrieveKibiterMenuData(es, kbnIndex, scope)
     }
   };
 });
