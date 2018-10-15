@@ -1,18 +1,17 @@
 
-export function customMenu($scope) {
+export function renderKibiterMenu($scope) {
     // Define the number of columns
     let numberColumns = 4
 
-    $scope.showInfo = function (item) {
+    $scope.showInfo = (item) => {
         if (item.type === "entry") {
             $scope.redirectToPanel(item.panel_id)
         } else if (item.type === "menu") {
-            // If clicked in the same item
             if ($scope.parentDashboard === item) {
                 closeSubmenu($scope)
-                return
+            } else {
+                showSubmenu($scope, item)
             }
-            showSubmenu($scope, item)
         }
     }
 
@@ -26,31 +25,31 @@ export function customMenu($scope) {
         $scope.showDescriptionDiv = false;
     }
 
+    $scope.redirectToPanel = (panel_id) => {
+        $scope.showKibiterMenu = false;
+        window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/" + panel_id)
+    }
+
     const showSubmenu = ($scope, item) => {
-        $scope.showNewMenu = true;
+        $scope.showKibiterMenu = true;
         $scope.parentDashboard = item;
         $scope.currentPanelsons = new Array(numberColumns)
         let countItems = 0;
-        item.dashboards.forEach(function (subitem) {
+        item.dashboards.forEach((subitem) => {
             if (!$scope.currentPanelsons[countItems]) {
                 $scope.currentPanelsons[countItems] = []
             }
             $scope.currentPanelsons[countItems].push(subitem)
             if (countItems >= numberColumns - 1) {
                 countItems = 0;
-                return
+            } else {
+                countItems++
             }
-            countItems++
         })
     }
 
     const closeSubmenu = ($scope) => {
-        $scope.showNewMenu = false;
+        $scope.showKibiterMenu = false;
         $scope.parentDashboard = undefined;
-    }
-
-    $scope.redirectToPanel = (panel_id) => {
-        $scope.showNewMenu = false;
-        window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/" + panel_id)
     }
 }
