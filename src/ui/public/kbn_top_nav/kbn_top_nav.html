@@ -1,6 +1,6 @@
 <div class="kuiLocalNav" ng-show="kbnTopNav.isVisible()" data-test-subj="top-nav">
 
-  <div class="kuiLocalNavRow theme-dark newLocalNav">
+  <div class="kuiLocalNavRow theme-dark kibiterLocalNav">
     <div class="kuiLocalNavRow__section">
       <div class="kuiLocalBreadcrumbs">
         <div class="kuiLocalBreadcrumb">
@@ -14,25 +14,25 @@
 
     <div class="kuiLocalNavRow__section">
       <div class="kuiLocalMenu">
-        <button class="kuiLocalMenuItem newLocalMenuItem" ng-class="{ 'selected-item': item == $root.selectedItem }"
+        <button class="kuiLocalMenuItem kibiterLocalMenuItem" ng-class="{ 'selected-item': item == $root.selectedItem }"
           ng-click="showInfo(item)" ng-repeat="item in $root.metadash">
           {{item.name}}
         </button>
       </div>
     </div>
   </div>
-  <div class="kuiLocalDropdown newLocalDropdown" ng-show="showNewMenu">
+  <div class="kuiLocalDropdown kibiterLocalDropdown" ng-show="showKibiterMenu">
     <!-- Dropdown close button -->
     <div className="kuiLocalDropdownPanels">
       <div class="col-md-4" style="margin-top: 20px">
-        <div class="newLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }}</div>
+        <div class="kibiterLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }}</div>
 
-        <div class="newLocalDropdownText" ng-show="showDescriptionDiv">
+        <div class="kibiterLocalDropdownText" ng-show="showDescriptionDiv">
           {{ descriptionContent }}
         </div>
       </div>
       <div class="col-md-2" ng-repeat="(i, column) in currentPanelsons">
-        <div class="newLocalDropdownTitle" ng-if="i === 0">{{parentDashboard.title}}</div>
+        <div class="kibiterLocalDropdownTitle" ng-if="i === 0">{{parentDashboard.title}}</div>
         <div style="height: 25px" ng-if="i !== 0"></div>
         <div>
           <ul class="list-unstyled">
