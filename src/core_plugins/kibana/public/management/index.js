@@ -12,6 +12,37 @@ import 'ui/kbn_top_nav';
 
 uiRoutes
   .when('/management', {
+    resolve: {
+      isAuthenticatedUser: function () {
+        var currentuser = JSON.parse(localStorage.getItem("sg_user"));
+        console.log(currentuser)
+        if (currentuser.username === "readall") {
+          //$window.location.href
+          window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/d1464900-c639-11e8-8b8c-73a3963ea1de")
+        }
+        return true
+      }
+    },
+    /*controller: function(
+      $route,
+      $scope,
+      $timeout,
+      $window,
+      AppState,
+      Notifier,
+      Private,
+      Promise,
+      config,
+      courier,
+      kbnUrl,
+      timefilter) {
+      var currentuser = JSON.parse(localStorage.getItem("sg_user"));
+      console.log(currentuser)
+      if (currentuser.username === "readall"){
+        //$window.location.href
+        window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/e312b5d0-b660-11e8-942d-addba25c8fca")
+      }
+      },*/
     template: landingTemplate
   });
 

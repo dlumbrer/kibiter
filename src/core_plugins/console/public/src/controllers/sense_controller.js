@@ -17,6 +17,12 @@ module.run(function (Private, $rootScope) {
 });
 
 module.controller('SenseController', function SenseController(Private, $scope, $timeout, $location, docTitle, kbnUiAceKeyboardModeService) {
+  /* var currentuser = JSON.parse(localStorage.getItem("sg_user"));
+  console.log(currentuser)
+  if (currentuser.username === "readall") {
+    //$window.location.href
+    window.location.replace(window.location.href.split("app/")[0] + "app/kibana#/dashboard/e312b5d0-b660-11e8-942d-addba25c8fca")
+  } */
   docTitle.change('Console');
 
   $scope.topNavController = Private(SenseTopNavController);

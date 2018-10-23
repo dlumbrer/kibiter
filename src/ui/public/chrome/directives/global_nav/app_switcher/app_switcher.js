@@ -55,15 +55,30 @@ uiModules
           throw new TypeError('appSwitcher directive requires the "chrome" config-object');
         }
 
-        this.links = $scope.chrome.getNavLinks();
+        this.links = $scope.chrome.getNavLinks()
+
+        var currentuser = JSON.parse(localStorage.getItem("sg_user"));
+        console.log(currentuser)
+        if (currentuser && currentuser.username === "readall") {
+          let management = this.links.find(function (element) {
+            return element.id === "kibana:management";
+          });
+
+          let dev_tools = this.links.find(function (element) {
+            return element.id === "kibana:dev_tools";
+          });
+
+          this.links.splice(this.links.indexOf(management), 1);
+          this.links.splice(this.links.indexOf(dev_tools), 1)
+        }
 
         // links don't cause full-navigation events in certain scenarios
         // so we force them when needed
         this.ensureNavigation = appSwitcherEnsureNavigation;
 
         this.getTooltip = link => {
-        // If the sidebar is open then we don't need to show the title because
-        // it will already be visible.
+          // If the sidebar is open then we don't need to show the title because
+          // it will already be visible.
           if (globalNavState.isOpen()) {
             return link.tooltip;
           }
