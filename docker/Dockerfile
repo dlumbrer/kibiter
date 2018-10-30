@@ -4,7 +4,7 @@ MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.co
 # Image for developing Kibiter/Kibana
 
 # ENV KIBANA_BRANCH master
-ENV KIBANA_BRANCH integration-6.1.0
+ENV KIBANA_BRANCH integration-6.1.4
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
@@ -17,6 +17,7 @@ RUN apt-get update && \
             ca-certificates dirmngr gnupg \
             curl \
             wget \
+            unzip \
             git \
             python \
             zip \
@@ -50,26 +51,39 @@ RUN apt-get update && \
     chown -R kibana:kibana /opt/kibana  && \
     # Install dotplot plugin: https://github.com/dlumbrer/kbn_dotplot
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6.2-dev && \
     cd kbn_dotplot && \
     npm install  && \
     cd .. && \
     # Install polar plugin: https://github.com/dlumbrer/kbn_polar
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_polar.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_polar.git -b 6.2-dev && \
     cd kbn_polar && \
     npm install  && \
     cd .. && \
     # Install radar plugin: https://github.com/dlumbrer/kbn_radar
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_radar.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_radar.git -b 6.2-dev && \
     cd kbn_radar && \
     npm install  && \
     cd .. && \
     # Install network plugin: https://dlumbrer.github.io/kbn_network/
-    git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6-dev && \
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6.2-dev && \
     cd network_vis && \
     npm install  && \
+    cd .. && \
+    # Install Search-Guard Custom Bitergia plugin: https://github.com/Bitergia/search-guard-kibana-plugin
+    cd /opt/kibana/plugins && \
+    wget https://github.com/Bitergia/search-guard-kibana-plugin/releases/download/biter-v6.1.0-12-3/searchguard-biter-6.1.0-12-3.zip && \
+    unzip searchguard-biter-6.1.0-12-3.zip && \
+    sed -e "s|6.1.0|6.1.4|" -i searchguard/package.json && \
+    cd .. && \
+    # Add Search-Guard configuration to kibana.yml
+    echo 'elasticsearch.ssl.verificationMode: none' >> /opt/kibana/config/kibana.yml && \
+    echo 'searchguard.basicauth.enabled: true' >> /opt/kibana/config/kibana.yml && \
+    echo '#searchguard.basicauth.login.contact_email:' >> /opt/kibana/config/kibana.yml && \
+
     cd /root && \
     # cleanup to thin the final image
     rm -rf /kibiter && \
@@ -95,7 +109,9 @@ RUN arch="$(dpkg --print-architecture)" \
 ENV PATH /opt/kibana/bin:$PATH
 
 # Remove kibana optimize so it is regenerated when we modify src files in containers
+# Don't delete because we don't modify anymore src in docker-entrypoint.sh
 RUN rm -rf /opt/kibana/optimize/*
+RUN ./opt/kibana/bin/kibana | sleep 200 > /tmp/run_kibana_log.txt
 
 COPY ./docker-entrypoint.sh /
 
