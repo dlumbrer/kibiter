@@ -1,34 +1,63 @@
-<div
-  class="kuiLocalNav"
-  ng-show="kbnTopNav.isVisible()"
-  data-test-subj="top-nav"
->
+<div class="kuiLocalNav" ng-show="kbnTopNav.isVisible()" data-test-subj="top-nav">
+
+  <div class="kuiLocalNavRow theme-dark kibiterLocalNav">
+    <div class="kuiLocalNavRow__section">
+      <div class="kuiLocalBreadcrumbs">
+        <div class="kuiLocalBreadcrumb">
+          <a ng-show="$root.appTitleCustom" class="kuiLocalBreadcrumb__link projectName" ng-click="redirectToPanel('Overview')">
+            {{$root.appTitleCustom}}
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="kuiLocalNavRow__section">
+      <div class="kuiLocalMenu">
+        <button class="kuiLocalMenuItem kibiterLocalMenuItem" ng-class="{ 'selected-item': item == $root.selectedItem }"
+          ng-click="showInfo(item)" ng-repeat="item in $root.metadash">
+          {{item.name}}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="kuiLocalDropdown kibiterLocalDropdown" ng-show="showKibiterMenu">
+    <!-- Dropdown close button -->
+    <div className="kuiLocalDropdownPanels">
+      <div class="col-md-4" style="margin-top: 20px">
+        <div class="kibiterLocalDropdownTitle" ng-show="showDescriptionDiv">{{ descriptionTitle }}</div>
+
+        <div class="kibiterLocalDropdownText" ng-show="showDescriptionDiv">
+          {{ descriptionContent }}
+        </div>
+      </div>
+      <div class="col-md-2" ng-repeat="(i, column) in currentPanelsons">
+        <div class="kibiterLocalDropdownTitle" ng-if="i === 0">{{parentDashboard.title}}</div>
+        <div style="height: 25px" ng-if="i !== 0"></div>
+        <div>
+          <ul class="list-unstyled">
+            <li ng-repeat="subitem in currentPanelsons[i]" class="ng-scope">
+              <a ng-mouseover="showDescription(subitem)" ng-mouseleave="hideDescription()" class="kuiLink submenuitem"
+                tabindex="0" role="button" ng-click="redirectToPanel(subitem.panel_id)">{{subitem.name}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Top row -->
   <div class="kuiLocalNavRow">
     <!-- Top left corner slot, e.g. breadcrumbs, title. -->
-    <div
-      class="kuiLocalNavRow__section"
-      data-transclude-slot="topLeftCorner"
-    ></div>
+    <div class="kuiLocalNavRow__section" data-transclude-slot="topLeftCorner"></div>
 
     <!-- Right-side: menu -->
     <div class="kuiLocalNavRow__section">
       <div class="kuiLocalMenu">
-        <button
-          class="kuiLocalMenuItem"
-          ng-repeat="menuItem in kbnTopNav.menuItems"
-          aria-label="{{::menuItem.description}}"
-          aria-haspopup="{{!menuItem.hasFunction}}"
-          aria-expanded="{{kbnTopNav.isCurrent(menuItem.key)}}"
-          ng-class="{'kuiLocalMenuItem-isSelected': kbnTopNav.isCurrent(menuItem.key), 'kuiLocalMenuItem-isDisabled': menuItem.disableButton()}"
-          ng-click="kbnTopNav.handleClick(menuItem)"
-          ng-bind="menuItem.label"
-          tooltip="{{menuItem.tooltip()}}"
-          tooltip-placement="bottom"
-          tooltip-popup-delay="400"
-          tooltip-append-to-body="1"
-          data-test-subj="{{menuItem.testId}}"
-        ></button>
+        <button class="kuiLocalMenuItem" ng-repeat="menuItem in kbnTopNav.menuItems" aria-label="{{::menuItem.description}}"
+          aria-haspopup="{{!menuItem.hasFunction}}" aria-expanded="{{kbnTopNav.isCurrent(menuItem.key)}}" ng-class="{'kuiLocalMenuItem-isSelected': kbnTopNav.isCurrent(menuItem.key), 'kuiLocalMenuItem-isDisabled': menuItem.disableButton()}"
+          ng-click="kbnTopNav.handleClick(menuItem)" ng-bind="menuItem.label" tooltip="{{menuItem.tooltip()}}"
+          tooltip-placement="bottom" tooltip-popup-delay="400" tooltip-append-to-body="1" data-test-subj="{{menuItem.testId}}"></button>
 
         <!-- Time-picker "menu item" -->
         <kbn-global-timepicker></kbn-global-timepicker>
@@ -37,10 +66,7 @@
   </div>
 
   <!-- Dropdown content, e.g. time-picker. -->
-  <div
-    class="kuiLocalDropdown"
-    ng-show="kbnTopNav.rendered"
-  >
+  <div class="kuiLocalDropdown" ng-show="kbnTopNav.rendered">
     <button class="kuiLocalDropdownCloseButton" ng-click="kbnTopNav.close()" aria-label="Close">
       <span class="kuiIcon fa-chevron-circle-up"></span>
     </button>
