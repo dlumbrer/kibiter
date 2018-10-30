@@ -8,7 +8,7 @@ uiModules.get('kibana')
         const isOpen = localStorage.get('kibana.isGlobalNavOpen');
         if (isOpen === null) {
         // The global nav should default to being open for the initial experience.
-          return true;
+          return false;
         }
         return isOpen;
       },
