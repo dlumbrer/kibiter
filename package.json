@@ -11,8 +11,8 @@
     "dashboarding"
   ],
   "private": false,
-  "version": "6.1.0",
-  "branch": "6.x",
+  "version": "6.1.4",
+  "branch": "6.1",
   "build": {
     "number": 8467,
     "sha": "6cb7fec4e154faa0a4a3fee4b33dfef91b9870d9"
@@ -150,7 +150,6 @@
     "lodash": "3.10.1",
     "lru-cache": "4.1.1",
     "markdown-it": "8.3.2",
-    "mathjs": "3.16.2",
     "minimatch": "2.0.10",
     "mkdirp": "0.5.1",
     "moment": "2.13.0",
@@ -248,7 +247,7 @@
     "grunt-cli": "0.1.13",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-copy": "0.8.1",
-    "grunt-esvm": "3.2.11",
+    "grunt-esvm": "3.2.12",
     "grunt-karma": "2.0.0",
     "grunt-run": "0.7.0",
     "grunt-simple-mocha": "0.4.0",
@@ -301,7 +300,7 @@
     "yo": "2.0.0"
   },
   "engines": {
-    "node": "6.11.5",
+    "node": "6.12.2",
     "npm": "3.10.10"
   }
 }
