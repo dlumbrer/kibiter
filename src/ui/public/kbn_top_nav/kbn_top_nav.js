@@ -35,6 +35,7 @@
 
 import _ from 'lodash';
 import angular from 'angular';
+
 import 'ui/watch_multi';
 import 'ui/directives/input_focus';
 import { uiModules } from 'ui/modules';
@@ -44,9 +45,13 @@ import { NavBarExtensionsRegistryProvider } from 'ui/registry/navbar_extensions'
 
 import './bread_crumbs/bread_crumbs';
 
+import { renderKibiterMenu } from 'ui/kibiter/menu/render_kibiter_menu'
+import { retrieveKibiterMenuData } from 'ui/kibiter/menu/retrieve_kibiter_menu_data';
+import 'ui/kibiter/menu/kibiter_menu_style.less';
+
 const module = uiModules.get('kibana');
 
-module.directive('kbnTopNav', function (Private) {
+module.directive('kbnTopNav', function (es, kbnIndex, Private) {
   const KbnTopNavController = Private(KbnTopNavControllerProvider);
   const navbarExtensions = Private(NavBarExtensionsRegistryProvider);
   const getNavbarExtensions = _.memoize(function (name) {
@@ -131,6 +136,8 @@ module.directive('kbnTopNav', function (Private) {
 
       initTopNav(topNavConfig, null);
 
+      renderKibiterMenu($scope);
+
       return $scope.kbnTopNav;
     },
 
@@ -146,6 +153,8 @@ module.directive('kbnTopNav', function (Private) {
           angular.element(transclusionSlot).replaceWith(transcludedItem);
         }
       });
+
+      retrieveKibiterMenuData(es, kbnIndex, scope)
     }
   };
 });
