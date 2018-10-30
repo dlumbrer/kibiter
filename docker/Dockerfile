@@ -4,7 +4,7 @@ MAINTAINER David Pose <dpose@bitergia.com>, Alvaro del Castillo <acs@bitergia.co
 # Image for developing Kibiter/Kibana
 
 # ENV KIBANA_BRANCH master
-ENV KIBANA_BRANCH integration-6.1.0
+ENV KIBANA_BRANCH integration-6.1.4
 
 # add our user and group first to make sure their IDs get assigned consistently
 RUN groupadd --system kibana && \
@@ -50,24 +50,24 @@ RUN apt-get update && \
     chown -R kibana:kibana /opt/kibana  && \
     # Install dotplot plugin: https://github.com/dlumbrer/kbn_dotplot
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_dotplot.git -b 6.2-dev && \
     cd kbn_dotplot && \
     npm install  && \
     cd .. && \
     # Install polar plugin: https://github.com/dlumbrer/kbn_polar
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_polar.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_polar.git -b 6.2-dev && \
     cd kbn_polar && \
     npm install  && \
     cd .. && \
     # Install radar plugin: https://github.com/dlumbrer/kbn_radar
     cd /opt/kibana/plugins && \
-    git clone https://github.com/dlumbrer/kbn_radar.git -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_radar.git -b 6.2-dev && \
     cd kbn_radar && \
     npm install  && \
     cd .. && \
     # Install network plugin: https://dlumbrer.github.io/kbn_network/
-    git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6-dev && \
+    git clone https://github.com/dlumbrer/kbn_network.git network_vis -b 6.2-dev && \
     cd network_vis && \
     npm install  && \
     cd /root && \
