@@ -83,7 +83,9 @@ RUN apt-get update && \
     rm -rf /usr/share/doc/*
 
 # grab gosu for easy step-down from root
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
+RUN ( gpg --batch --keyserver hkps://hkps.pool.sks-keyservers.net  --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+     || gpg --batch --keyserver pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \ 
+     || gpg --batch --keyserver hkp://keys.gnupg.net:80  --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 )
 RUN arch="$(dpkg --print-architecture)" \
 	&& set -x \
 	&& curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.3/gosu-$arch" \
