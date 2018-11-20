@@ -61,6 +61,12 @@ RUN apt-get update && \
     cd kbn_polar && \
     npm install  && \
     cd .. && \
+    # Install menu manager plugin: https://github.com/dlumbrer/kbn_dashmenu_manager
+    cd /opt/kibana/plugins && \
+    git clone https://github.com/dlumbrer/kbn_dashmenu_manager.git && \
+    cd kbn_dashmenu_manager && \
+    npm install  && \
+    cd .. && \
     # Install radar plugin: https://github.com/dlumbrer/kbn_radar
     cd /opt/kibana/plugins && \
     git clone https://github.com/dlumbrer/kbn_radar.git -b 6.2-dev && \
