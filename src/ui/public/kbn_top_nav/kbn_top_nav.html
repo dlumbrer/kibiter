@@ -31,7 +31,7 @@
           {{ descriptionContent }}
         </div>
       </div>
-      <div class="col-md-2" ng-repeat="(i, column) in currentPanelsons">
+      <div class="col-md-2" ng-repeat="(i, column) in currentPanelsons track by $index">
         <div class="kibiterLocalDropdownTitle" ng-if="i === 0">{{parentDashboard.title}}</div>
         <div style="height: 25px" ng-if="i !== 0"></div>
         <div>
