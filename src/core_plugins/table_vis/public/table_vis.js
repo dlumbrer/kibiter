@@ -74,7 +74,8 @@ function TableVisTypeProvider(Private) {
           group: 'buckets',
           name: 'split',
           title: 'Split Table',
-          aggFilter: ['!filter']
+          aggFilter: ['!filter'],
+          max: 1
         }
       ])
     },
