@@ -34,6 +34,7 @@ RUN apt-get update && \
 
     # install kibiter
     # gems needed in Kibana > 5.x to build binary packages
+    gem install rake && \
     gem install ffi && \
     gem install fpm -v 1.5.0 && \
     gem install pleaserun -v 0.0.24 && \
@@ -73,7 +74,7 @@ RUN apt-get update && \
     cd network_vis && \
     npm install  && \
     cd .. && \
-    # Install kibana-enchanced table plugin: https://github.com/fbaligand/kibana-enhanced-table
+    # Install kibana enhanced table plugin: https://github.com/fbaligand/kibana-enhanced-table
     cd /opt/kibana && \
     ./bin/kibana-plugin install https://github.com/fbaligand/kibana-enhanced-table/releases/download/v1.1.0/enhanced-table-1.1.0_6.1.4.zip && \
     cd .. && \
