@@ -35,7 +35,7 @@ const valueProps = {
     const label = this.params.customLabel || this.getFieldDisplayName();
 
     return i18n.translate('common.ui.aggTypes.metrics.percentileRanks.valuePropsLabel', {
-      defaultMessage: 'Percentile rank {format} of "{label}"',
+      defaultMessage: '{label} - {format} rank',
       values: { format: format.convert(this.key, 'text'), label }
     });
   }
