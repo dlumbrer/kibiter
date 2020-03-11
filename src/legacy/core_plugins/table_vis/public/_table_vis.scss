@@ -21,3 +21,39 @@
     display: none;
   }
 }
+
+.inputSearchContainer
+{
+  width: 100%;
+}
+
+.kuiLocalSearchSearchTable {
+  margin: 0.2em 1em;
+
+  .inputSearch {
+    width: 100%;
+    border-color: #ecf0f1;
+    border-width: 2px 0px 2px 2px;
+  }
+}
+
+.inputSearch:focus
+{
+  border-color: #b4bcc2;
+}
+
+.inputSearchButton, .cancelSearchButton
+{
+  height: 32px;
+  border-radius: 0px;
+}
+
+.table-vis-container {
+  ul.nav.navbar-nav {
+    width: 100%;
+
+    li {
+      width: 100%;
+    }
+  }
+}
