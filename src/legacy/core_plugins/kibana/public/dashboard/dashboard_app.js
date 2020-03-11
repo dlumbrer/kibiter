@@ -409,27 +409,6 @@ app.directive('dashboardApp', function ($injector) {
         );
         showSaveModal(dashboardSaveModal);
       };
-      navActions[TopNavIds.CLONE] = () => {
-        const currentTitle = dashboardStateManager.getTitle();
-        const onClone = (newTitle, isTitleDuplicateConfirmed, onTitleDuplicate) => {
-          dashboardStateManager.savedDashboard.copyOnSave = true;
-          dashboardStateManager.setTitle(newTitle);
-          const saveOptions = {
-            confirmOverwrite: false,
-            isTitleDuplicateConfirmed,
-            onTitleDuplicate,
-          };
-          return save(saveOptions).then(({ id, error }) => {
-            // If the save wasn't successful, put the original title back.
-            if (!id || error) {
-              dashboardStateManager.setTitle(currentTitle);
-            }
-            return { id, error };
-          });
-        };
-
-        showCloneModal(onClone, currentTitle);
-      };
       navActions[TopNavIds.ADD] = () => {
         const addNewVis = () => {
           showNewVisModal(visTypes, { editorParams: [DashboardConstants.ADD_VISUALIZATION_TO_DASHBOARD_MODE_PARAM] });
