@@ -20,8 +20,8 @@
 import chalk from 'chalk';
 
 export function createBuild({ config, oss }) {
-  const name = oss ? 'kibana-oss' : 'kibana';
-  const logTag = oss ? chalk`{magenta [kibana-oss]}` : chalk`{cyan [  kibana  ]}`;
+  const name = oss ? 'kibiter' : 'kibana';
+  const logTag = oss ? chalk`{magenta [kibiter]}` : chalk`{cyan [  kibiter  ]}`;
 
   return new class Build {
     isOss() {
@@ -36,7 +36,7 @@ export function createBuild({ config, oss }) {
       return config.resolveFromRepo(
         'build',
         oss ? 'oss' : 'default',
-        `kibana-${config.getBuildVersion()}-${platform.getBuildName()}`,
+        `kibiter-${config.getBuildVersion()}-${platform.getBuildName()}`,
         ...args
       );
     }
@@ -45,7 +45,7 @@ export function createBuild({ config, oss }) {
       const ext = platform.isWindows() ? 'zip' : 'tar.gz';
       return config.resolveFromRepo(
         'target',
-        `${name}-${config.getBuildVersion()}-${platform.getBuildName()}.${ext}`
+        `${name}-${config.getBuildVersion()}-${platform.getBuildName()}-1.${ext}`
       );
     }
 
