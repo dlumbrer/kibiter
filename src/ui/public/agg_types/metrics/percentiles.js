@@ -28,8 +28,14 @@ import { i18n } from '@kbn/i18n';
 const valueProps = {
   makeLabel: function () {
     const label = this.params.customLabel || this.getFieldDisplayName();
+    if(this.params.customLabel && this.type.name === 'median'){
+      return i18n.translate('common.ui.aggTypes.metrics.percentiles.valuePropsLabel', {
+        defaultMessage: '{label}',
+        values: { label }
+      });
+    }
     return i18n.translate('common.ui.aggTypes.metrics.percentiles.valuePropsLabel', {
-      defaultMessage: '{percentile} percentile of {label}',
+      defaultMessage: '{label} - {percentile} %',
       values: { percentile: ordinalSuffix(this.key), label }
     });
   }
