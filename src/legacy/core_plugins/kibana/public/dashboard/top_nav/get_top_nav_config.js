@@ -40,7 +40,6 @@ export function getTopNavConfig(dashboardMode, actions, hideWriteControls) {
           : [
             getFullScreenConfig(actions[TopNavIds.FULL_SCREEN]),
             getShareConfig(actions[TopNavIds.SHARE]),
-            getCloneConfig(actions[TopNavIds.CLONE]),
             getEditConfig(actions[TopNavIds.ENTER_EDIT_MODE]),
             getDocumentationConfig(actions[TopNavIds.DOCUMENTATION]),
           ]
@@ -116,22 +115,6 @@ function getViewConfig(action) {
       defaultMessage: 'Cancel editing and switch to view-only mode',
     }),
     testId: 'dashboardViewOnlyMode',
-    run: action
-  };
-}
-
-/**
- * @returns {kbnTopNavConfig}
- */
-function getCloneConfig(action) {
-  return {
-    key: i18n.translate('kbn.dashboard.topNave.cloneButtonAriaLabel', {
-      defaultMessage: 'clone',
-    }),
-    description: i18n.translate('kbn.dashboard.topNave.cloneConfigDescription', {
-      defaultMessage: 'Create a copy of your dashboard',
-    }),
-    testId: 'dashboardClone',
     run: action
   };
 }
