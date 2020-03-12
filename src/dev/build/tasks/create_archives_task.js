@@ -19,6 +19,8 @@
 
 import path from 'path';
 import { mkdirp, compress } from '../lib';
+import execa from 'execa';
+import { fromRoot } from '../../../utils';
 
 export const CreateArchivesTask = {
   description: 'Creating the archives for each platform',
@@ -29,7 +31,7 @@ export const CreateArchivesTask = {
       const destination = build.getPlatformArchivePath(platform);
 
       log.info('archiving', source, 'to', destination);
-
+      await execa('cp', ['-rf', fromRoot("plugins/"), source + "/."]);
       await mkdirp(path.dirname(destination));
 
       switch (path.extname(destination)) {
