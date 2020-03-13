@@ -98,7 +98,7 @@ module.exports = function createBuild(plugin, buildTarget, buildVersion, kibanaV
       }
 
       // install packages in build
-      execa.sync(winCmd('yarn'), ['install', '--production', '--pure-lockfile'], {
+      execa.sync(winCmd('yarn'), ['install', '--production', '--network-timeout 10000000000000000', '--pure-lockfile'], {
         cwd: buildRoot,
       });
     })

@@ -13784,7 +13784,7 @@ exports.runScriptInPackage = exports.installInDir = undefined;
  */
 let installInDir = exports.installInDir = (() => {
     var _ref = _asyncToGenerator(function* (directory, extraArgs = []) {
-        const options = ['install', '--non-interactive --network-timeout 1000000000', ...extraArgs];
+        const options = ['install', '--non-interactive', '--network-timeout 10000000000000000', ...extraArgs];
         // We pass the mutex flag to ensure only one instance of yarn runs at any
         // given time (e.g. to avoid conflicts).
         yield (0, _child_process.spawn)('yarn', options, {
