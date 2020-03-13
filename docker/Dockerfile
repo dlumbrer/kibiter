@@ -45,7 +45,8 @@ RUN apt-get update && \
     # yarn install --network-timeout 1000000000 && \
     # node scripts/kbn bootstrap --network-timeout 1000000000 && \
     # yarn build:types && node scripts/register_git_hook && \
-    npm install && \
+    # npm install && \
+    yarn kbn bootstrap && \
     # Build the kibiter package
     node scripts/build --oss --skip-os-packages --release --all-platforms && \
     tar xfz target/kibiter-*-linux-x86_64-*.tar.gz --directory /opt && \
