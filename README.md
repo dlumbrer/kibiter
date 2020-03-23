@@ -1,54 +1,96 @@
-# Kibana
+# Kibiter 6.8.6
 
-Kibana is your window into the [Elastic Stack](https://www.elastic.co/products). Specifically, it's a browser-based analytics and search dashboard for Elasticsearch.
+Kibiter is a custom soft fork of [Kibana](https://github.com/elastic/kibana) which empowers [GrimoireLab](https://chaoss.github.io/grimoirelab/) Panels with metrics & data visualizations.
 
-- [Getting Started](#getting-started)
-  - [Using a Kibana Release](#using-a-kibana-release)
-  - [Building and Running Kibana, and/or Contributing Code](#building-and-running-kibana-andor-contributing-code)
-- [Documentation](#documentation)
-- [Version Compatibility with Elasticsearch](#version-compatibility-with-elasticsearch)
-- [Questions? Problems? Suggestions?](#questions-problems-suggestions)
+- [Installation](#installation)
+- [Features](#features)
+- [Compatibility with Elasticsearch](#compatibility-with-elasticsearch)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Getting Started
+## Installation
 
-If you just want to try Kibana out, check out the [Elastic Stack Getting Started Page](https://www.elastic.co/start) to give it a whirl.
+There are several ways for installing Kibiter on your system: from releases, Docker images or source code.
 
-If you're interested in diving a bit deeper and getting a taste of Kibana's capabilities, head over to the [Kibana Getting Started Page](https://www.elastic.co/guide/en/kibana/current/getting-started.html).
+### Releases
 
-### Using a Kibana Release
+- Go to [release tab](https://github.com/chaoss/grimoirelab-kibiter/releases) and download the version you want.
 
-If you want to use a Kibana release in production, give it a test run, or just play around:
+### Docker images
 
-- Download the latest version on the [Kibana Download Page](https://www.elastic.co/downloads/kibana).
-- Learn more about Kibana's features and capabilities on the
-[Kibana Product Page](https://www.elastic.co/products/kibana).
-- We also offer a hosted version of Kibana on our
-[Cloud Service](https://www.elastic.co/cloud/as-a-service).
+There are four Docker images of Kibiter, they have the following tags:
 
-### Building and Running Kibana, and/or Contributing Code
+- `bitergia/kibiter:community-v6.8.6-X` (being X the version of the release), the image that corresponds to the community version of Kibiter.
+- `bitergia/kibiter:optimized-v6.8.6-X` (being X the version of the release), the image that corresponds to the optimized version of Kibiter.
+- `bitergia/kibiter:secured-v6.8.6-X` (being X the version of the release), the image that corresponds to the secured (with Search Guard) version of Kibiter.
 
-You may want to build Kibana locally to contribute some code, test out the latest features, or try
-out an open PR:
+#### Docker env variables for the secured version
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) will help you get Kibana up and running.
-- If you would like to contribute code, please follow our [STYLEGUIDE.md](STYLEGUIDE.md).
-- Learn more about our UI code with [UI_SYSTEMS.md](src/ui/public/UI_SYSTEMS.md).
-- For all other questions, check out the [FAQ.md](FAQ.md) and
-[wiki](https://github.com/elastic/kibana/wiki).
+There are docker env variables for the secured image (`bitergia/kibiter:secured-v6.8.6-X`) that should be defined:
 
-## Documentation
+- `ELASTICSEARCH_URL`: This env variable defines the URL of the ElasticSearch that Kibiter will connect.
+- `BASE_PATH`: Enables you to specify a path to mount Kibiter at if you are running behind a proxy.
+- `PROJECT_NAME`: The name of the project that will be in the menu top bar and the page title.
+- `ELASTICSEARCH_USER`: Username that will use Kibiter to connect to ElasticSearch.
+- `ELASTICSEARCH_PASSWORD`: Password of the username that will use Kibiter to connect to ElasticSearch.
+- `ANONYMOUS_USER`: If true, the anonymous user will be activated. If not defined or false, the anonymous user will be deactivated. ElasticSearch with SearchGuard plugin must have activated the anonymous authentication (`ANONYMOUS_USER` if using [Bitergia](https://github.com/Bitergia/elasticsearch) ElasticSearch image).
+- `LOGIN_BRANDIMAGE`: This env variable must be an URL to an image, this image will be the logo of the login form. If not defined, the Bitergia logo will appear.
+- `LOGIN_TITLE`: A string (or HTML) that will define the title of the login. If not defined, the title will be: `Please login to Bitergia Analytics Dashboard`.
+- `LOGIN_SUBTITLE`: A string (or HTML) that will define the subtitle of the login. If not defined, the subtitle will be: `If you have forgotten your username or password, please contact the <a href="mailto:support@bitergia.com?Subject=Credentials" target="_top">Bitergia staff</a>`.
 
-Visit [Elastic.co](http://www.elastic.co/guide/en/kibana/current/index.html) for the full Kibana documentation.
+### Source code
 
-For information about building the documentation, see the README in [elastic/docs](https://github.com/elastic/docs).
+Clone the repository from the branch `integration-6.8.6-<version>`, where version can be empty or //community//.
+```
+git clone https://github.com/chaoss/grimoirelab-kibiter -b integration-6.8.6-<version>
+```
 
-## Version Compatibility with Elasticsearch
+Install the npm dependencies
 
-Ideally, you should be running Elasticsearch and Kibana with matching version numbers. If your Elasticsearch has an older version number or a newer _major_ number than Kibana, then Kibana will fail to run. If Elasticsearch has a newer minor or patch number than Kibana, then the Kibana Server will log a warning.
+```
+cd grimoirelab-kibiter
+yarn kbn bootstrap
+```
 
-_Note: The version numbers below are only examples, meant to illustrate the relationships between different types of version numbers._
+Launch Kibiter
+```
+./bin/kibana --oss
+```
 
-| Situation                 | Example Kibana version     | Example ES version | Outcome |
+## Features
+
+Kibiter provides several features, not present in Kibana, that have been developed for GrimoireLab. The most important ones are described below.
+
+### Panel menu
+
+If you are using Kibiter with the [GrimoireLab](https://chaoss.github.io/grimoirelab/) tools, you will see a quick menu at the top of the page, like the one below:
+
+<img alt="Panel menu" src="https://i.imgur.com/6hO4aEV.png">
+
+
+This menu allows you to navigate through the GrimoireLab panels, see its structure below:
+
+<img alt="Panel menu opened" src="https://i.imgur.com/9yimD9m.png">
+
+### New visualization plugins
+
+Kibiter has several plugins installed by default, they improve the user customization and add more information to the dashboards. Clearly, they are all open source. The plugins are listed below:
+
+- [Network plugin](https://github.com/dlumbrer/kbn_network) supports data visualization in a graph-style way.
+- [Searchtables plugin](https://github.com/dlumbrer/kbn_searchtables) improves Kibiter tables by adding a search box to perform searches without applying filters.
+- [Radar plugin](https://github.com/dlumbrer/kbn_radar) allows to explore the data using radar visualizations.
+- [Dot plot plugin](https://github.com/dlumbrer/kbn_dotplot) empowers Kibiter with dot-plot visualizations, granting  to add metrics in both X and Y axis.
+- [Polar plugin](https://github.com/dlumbrer/kbn_network) enhances Kibiter with polar visualizations for your data.
+- [Enhanced table](https://github.com/fbaligand/kibana-enhanced-table) This Kibtier visualization plugin uses the Data Table, but with enhanced features like computed columns, filter bar and pivot table.
+
+## Version compatibility with Elasticsearch
+
+Following the Kibana docs, you should be running Elasticsearch and Kibiter with matching version numbers. However, Kibiter will run (and log a warning) in case your Elasticsearch has a newer minor or patch number. 
+Note that Kibiter won't be able to run, if your Elasticsearch has an older version number or a newer _major_ number. 
+
+The table below shows some examples to illustrate the relationships between different types of version numbers.
+
+| Situation                 | Example Kibiter version     | Example ES version | Outcome |
 | ------------------------- | -------------------------- |------------------- | ------- |
 | Versions are the same.    | 5.1.2                      | 5.1.2              | 💚 OK      |
 | ES patch number is newer. | 5.1.__2__                  | 5.1.__5__          | ⚠️ Logged warning      |
@@ -58,9 +100,12 @@ _Note: The version numbers below are only examples, meant to illustrate the rela
 | ES minor number is older. | 5.__1__.2                  | 5.__0__.0          | 🚫 Fatal error      |
 | ES major number is older. | __5__.1.2                  | __4__.0.0          | 🚫 Fatal error      |
 
-## Questions? Problems? Suggestions?
+## Contributing
 
-- If you've found a bug or want to request a feature, please create a [GitHub Issue](https://github.com/elastic/kibana/issues/new).
-Please check to make sure someone else hasn't already created an issue for the same topic.
-- Need help using Kibana? Ask away on our [Kibana Discuss Forum](https://discuss.elastic.co/c/kibana) and a fellow community member or
-Elastic engineer will be glad to help you out.
+We happily accept contributions, and we will help you in case you need. We follow the same contribution process that Kibana provides, thus have a look at:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) if you want to get Kibiter up and running.
+- [STYLEGUIDE.md](STYLEGUIDE.md) if you plan to submit a pull request.
+- [GitHub issue tracker](https://github.com/chaoss/grimoirelab-kibiter/issues) for all other questions, we will answer you as soon as possible.
+
+If you find a bug or want to request a new feature, please open a issue on [GitHub](https://github.com/chaoss/grimoirelab-kibiter/issues). To avoid duplicated issues, check the existing issues to make sure someone else hasn't already created a similar one.
