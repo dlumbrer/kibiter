@@ -37,12 +37,12 @@
       total-func="vis.params.totalFunc"
       ng-if="renderAgain && tableGroups">
     </kbn-agg-table-group>
-    <div ng-if="!hasSomeRows && hasSomeRows !== null" class="table-vis-error">
-      <div class="euiSpacer euiSpacer--l"></div>
-      <h2 aria-hidden="true"><i aria-hidden="true" class="fa fa-meh-o"></i></h2>
-      <h4>No results found <br>
-        <a ng-click="resetSearch()">Reset Search</a>
-      </h4>
-    </div>
+  </div>
+  <div ng-if="!hasSomeRows && hasSomeRows !== null" class="kbnDocTable__error">
+    <div class="euiSpacer euiSpacer--l"></div>
+    <h2 aria-hidden="true"><i aria-hidden="true" class="fa fa-meh-o"></i></h2>
+    <h4>No results found <br>
+      <a ng-click="resetSearch()">Reset Search</a>
+    </h4>
   </div>
 </div>
