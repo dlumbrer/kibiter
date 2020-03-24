@@ -34,7 +34,7 @@ uiModules.get('kibana')
     let isOpen = false;
     newPlatformChrome.getIsCollapsed$().pipe(distinctUntilChanged()).subscribe(isCollapsed => {
       $rootScope.$evalAsync(() => {
-        isOpen = !isCollapsed;
+        isOpen = isCollapsed;
         $rootScope.$broadcast('globalNavState:change');
       });
     });
@@ -43,7 +43,7 @@ uiModules.get('kibana')
       isOpen: () => isOpen,
 
       setOpen: newValue => {
-        newPlatformChrome.setIsCollapsed(!newValue);
+        newPlatformChrome.setIsCollapsed(newValue);
       }
     };
   });
