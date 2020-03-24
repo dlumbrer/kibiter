@@ -28,7 +28,7 @@ There are four Docker images of Kibiter, they have the following tags:
 
 There are docker env variables for the secured image (`bitergia/kibiter:secured-v6.8.6-X`) that should be defined:
 
-- `ELASTICSEARCH_URL`: This env variable defines the URL of the ElasticSearch that Kibiter will connect.
+- `ELASTICSEARCH_URL`: This env variable defines the URL or URL's of the ElasticSearch that Kibiter will connect. This env variable must be an array of the endpoints, each one must be a string.
 - `BASE_PATH`: Enables you to specify a path to mount Kibiter at if you are running behind a proxy.
 - `PROJECT_NAME`: The name of the project that will be in the menu top bar and the page title.
 - `ELASTICSEARCH_USER`: Username that will use Kibiter to connect to ElasticSearch.
