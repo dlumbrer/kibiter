@@ -45,7 +45,7 @@ if [ "$1" = 'kibana' ]; then
     if [ "$LOGIN_BRANDIMAGE" != "" ]; then
         sed -e "s|^#searchguard.basicauth.login.brandimage:.*$|searchguard.basicauth.login.brandimage: \"$LOGIN_BRANDIMAGE\"|" -i /opt/kibana/config/kibana.yml
     else
-        sed -e "s|^#searchguard.basicauth.login.brandimage:.*$|searchguard.basicauth.login.brandimage: 'https://bitergia.com/assets/img/bitergia_logo-907x227.png'|" -i /opt/kibana/config/kibana.yml
+        sed -e "s|^#searchguard.basicauth.login.brandimage:.*$|searchguard.basicauth.login.brandimage: 'https://raw.githubusercontent.com/chaoss/grimoirelab-kibiter/integration-6.8.6/docker/assets/bitergia_login_logo.png'|" -i /opt/kibana/config/kibana.yml
     fi
 
     if [ "$LOGIN_TITLE" != "" ]; then
